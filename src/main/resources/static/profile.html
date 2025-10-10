@@ -1,0 +1,669 @@
+<!-- src/main/resources/static/profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Boat Safari | My Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1fbfd6;
+            --secondary: #f6c453;
+            --dark-blue: #0e3a5b;
+            --navy: #0b1c2c;
+            --light: #f7fbff;
+            --text-light: #d7e6f1;
+            --text-muted: #8fa6b6;
+            --success: #28a745;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
+            background: linear-gradient(135deg, var(--dark-blue), var(--navy));
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background-color: var(--dark-blue);
+            color: #fff;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .top-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-info a {
+            margin-right: 20px;
+            color: #fff;
+        }
+
+        .contact-info a i {
+            margin-right: 5px;
+            color: var(--primary);
+        }
+
+        .social-icons a {
+            margin-left: 15px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .social-icons a:hover {
+            color: var(--primary);
+        }
+
+        /* Navigation */
+        .nav {
+            background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            backdrop-filter: blur(5px);
+            color: #fff;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .brand .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            font-weight: 500;
+            color: #fff;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            bottom: 0;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+
+        .nav-links .active:after {
+            width: 100%;
+        }
+
+        /* Profile Form */
+        .wrap {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary);
+        }
+
+        h2 {
+            margin: 0 0 10px;
+            font-size: 32px;
+            color: var(--dark-blue);
+        }
+
+        .muted {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        /* Form */
+        form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 1px solid #e7edf3;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(31, 191, 214, 0.1);
+        }
+
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .error {
+            color: #e74c3c;
+            min-height: 22px;
+            font-size: 14px;
+            grid-column: 1 / -1;
+        }
+
+        .success {
+            color: var(--success);
+            min-height: 22px;
+            font-size: 14px;
+            grid-column: 1 / -1;
+        }
+
+        .actions {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .secondary-btn {
+            background: var(--text-muted);
+        }
+
+        .secondary-btn:hover {
+            background: var(--navy);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-light);
+            padding: 20px 0;
+            margin-top: 40px;
+            backdrop-filter: blur(5px);
+        }
+
+        .foot-inner {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .top-bar-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-inner {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links a {
+                margin: 5px 10px;
+            }
+
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 30px 20px;
+            }
+
+            .actions {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .actions button {
+                width: 100%;
+            }
+
+            .foot-inner {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="top-bar-container">
+        <div class="contact-info">
+            <a href="tel:00123456789"><i class="fas fa-phone"></i> Have Any Questions?</a>
+            <a href="#"><i class="fas fa-map-marker-alt"></i> 45 Grand Central Terminal</a>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-pinterest"></i></a>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<header class="nav">
+    <div class="nav-inner">
+        <a href="/index.html" class="brand">
+            <div class="logo"><i class="fas fa-ship"></i></div>
+            Boat Safari
+        </a>
+        <div class="nav-links">
+            <a href="/index.html">Home</a>
+            <a href="/trips.html">Trips</a>
+            <a href="/boat.html">Boats</a>
+            <a href="/support.html">Support</a>
+            <a href="/booking-history.html">My Bookings</a>
+            <a href="/profile.html" class="active">My Profile</a>
+            <a href="#" id="logoutBtn">Logout</a>
+        </div>
+    </div>
+</header>
+
+<!-- Profile Form -->
+<main class="wrap">
+    <div class="card">
+        <h2>My Profile</h2>
+        <div class="muted">Update your personal information</div>
+
+        <form id="profileForm" novalidate>
+            <div class="form-group">
+                <i class="fas fa-user"></i>
+                <input id="firstName" name="firstName" type="text" placeholder="First Name" required />
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-user"></i>
+                <input id="secondName" name="secondName" type="text" placeholder="Last Name" required />
+            </div>
+
+            <div class="form-group full">
+                <i class="fas fa-envelope"></i>
+                <input id="email" name="email" type="email" placeholder="Email Address" required readonly />
+                <small style="color: var(--text-muted); margin-top: 5px; display: block;">Email address cannot be changed</small>
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-phone"></i>
+                <input id="contactNo" name="contactNo" type="text" placeholder="Contact Number" required />
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-home"></i>
+                <input id="address" name="address" type="text" placeholder="Address" required />
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-city"></i>
+                <input id="city" name="city" type="text" placeholder="City" required />
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-road"></i>
+                <input id="street" name="street" type="text" placeholder="Street" required />
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-map-pin"></i>
+                <input id="postalCode" name="postalCode" type="text" placeholder="Postal Code" required />
+            </div>
+
+            <div id="errorMessage" class="error"></div>
+            <div id="successMessage" class="success"></div>
+
+            <div class="actions">
+                <button type="button" class="secondary-btn" id="changePasswordBtn">Change Password</button>
+                <button type="submit">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer>
+    <div class="foot-inner">
+        <div>© <span id="year"></span> Boat Safari. All Rights Reserved.</div>
+        <div class="footer-links">
+            <a href="/index.html">Home</a>
+            <a href="/trips.html">Trips</a>
+            <a href="/boat.html">Boats</a>
+            <a href="/support.html">Support</a>
+        </div>
+    </div>
+</footer>
+
+<script src="/assets/js/auth.js"></script>
+<script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Check if user is logged in
+    document.addEventListener('DOMContentLoaded', async function() {
+        if (!isAuthenticated()) {
+            alert('Please login to access your profile.');
+            window.location.href = '/login.html';
+            return;
+        }
+
+        // Load user profile data
+        await loadUserProfile();
+
+        // Setup logout button
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
+            window.location.href = '/index.html';
+        });
+
+        // Setup change password button
+        document.getElementById('changePasswordBtn').addEventListener('click', function() {
+            // Simple password change dialog
+            const newPassword = prompt('Enter your new password:');
+            if (newPassword && newPassword.length >= 6) {
+                changePassword(newPassword);
+            } else if (newPassword) {
+                alert('Password must be at least 6 characters long.');
+            }
+        });
+    });
+
+    async function loadUserProfile() {
+        const errorDiv = document.getElementById('errorMessage');
+        const token = localStorage.getItem('token');
+
+        // Clear previous messages
+        errorDiv.textContent = '';
+        document.getElementById('successMessage').textContent = '';
+
+        console.log('Loading user profile with token:', token ? 'Token exists' : 'No token found');
+
+        if (!token) {
+            errorDiv.textContent = 'Authentication token missing. Please log in again.';
+            return;
+        }
+
+        try {
+            console.log('Fetching user profile data...');
+
+            // First check if we have cached user data
+            const cachedUserData = localStorage.getItem('userDetails');
+            if (cachedUserData) {
+                // Use cached data for immediate display
+                const userData = JSON.parse(cachedUserData);
+                populateProfileForm(userData);
+                console.log('Loaded profile from cache while fetching from server');
+            }
+
+            // Fetch fresh data from server
+            const response = await fetch('/api/user/profile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            console.log('API Response status:', response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text().catch(() => 'Unknown error');
+                console.error('Error response:', errorText);
+                throw new Error(`Failed to load profile data (${response.status}): ${errorText}`);
+            }
+
+            const userData = await response.json();
+            console.log('User data loaded successfully:', userData);
+
+            // Store user data in localStorage for faster loading next time
+            localStorage.setItem('userDetails', JSON.stringify(userData));
+
+            // Populate the form with user data
+            populateProfileForm(userData);
+
+        } catch (error) {
+            console.error('Error in loadUserProfile:', error);
+            errorDiv.textContent = 'Error loading profile: ' + error.message;
+        }
+    }
+
+    // Helper function to populate the profile form with user data
+    function populateProfileForm(userData) {
+        document.getElementById('firstName').value = userData.firstName || '';
+        document.getElementById('secondName').value = userData.secondName || '';
+        document.getElementById('email').value = userData.email || '';
+        document.getElementById('contactNo').value = userData.contactNo || '';
+        document.getElementById('address').value = userData.address || '';
+        document.getElementById('city').value = userData.city || '';
+        document.getElementById('street').value = userData.street || '';
+        document.getElementById('postalCode').value = userData.postalCode || '';
+
+        // Verify fields were populated
+        console.log('Form fields after population:',
+            'firstName:', document.getElementById('firstName').value,
+            'secondName:', document.getElementById('secondName').value,
+            'email:', document.getElementById('email').value,
+            'contactNo:', document.getElementById('contactNo').value
+        );
+    }
+
+    async function changePassword(newPassword) {
+        const token = localStorage.getItem('token');
+        const errorDiv = document.getElementById('errorMessage');
+        const successDiv = document.getElementById('successMessage');
+
+        errorDiv.textContent = '';
+        successDiv.textContent = '';
+
+        try {
+            const response = await fetch('/api/user/change-password', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ password: newPassword })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to change password');
+            }
+
+            successDiv.textContent = 'Password changed successfully!';
+
+        } catch (error) {
+            errorDiv.textContent = 'Error changing password: ' + error.message;
+            console.error('Error changing password:', error);
+        }
+    }
+
+    // Handle form submission for profile update
+    const form = document.getElementById('profileForm');
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const errorDiv = document.getElementById('errorMessage');
+        const successDiv = document.getElementById('successMessage');
+
+        errorDiv.textContent = '';
+        successDiv.textContent = '';
+
+        // Get form values
+        const firstName = document.getElementById('firstName').value.trim();
+        const secondName = document.getElementById('secondName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const contactNo = document.getElementById('contactNo').value.trim();
+        const address = document.getElementById('address').value.trim();
+        const city = document.getElementById('city').value.trim();
+        const street = document.getElementById('street').value.trim();
+        const postalCode = document.getElementById('postalCode').value.trim();
+
+        // Form validation
+        if (!firstName || !secondName || !contactNo || !address || !city || !street || !postalCode) {
+            errorDiv.textContent = 'All fields are required';
+            return;
+        }
+
+        // Prepare data for API
+        const userData = {
+            firstName: firstName,
+            secondName: secondName,
+            email: email, // This won't change as it's readonly
+            contactNo: contactNo,
+            address: address,
+            city: city,
+            street: street,
+            postalCode: postalCode
+        };
+
+        try {
+            // Submit data to backend API
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || 'Profile update failed');
+            }
+
+            // Update successful
+            successDiv.textContent = 'Profile updated successfully!';
+
+            // Reload the user profile data to show the updated information
+            await loadUserProfile();
+
+        } catch (error) {
+            errorDiv.textContent = 'Profile update failed: ' + error.message;
+            console.error('Error updating profile:', error);
+        }
+    });
+</script>
+</body>
+</html>

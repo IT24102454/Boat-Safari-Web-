@@ -1,0 +1,124 @@
+/**
+ * User profile styles for Boat Safari application
+ */
+
+.user-profile-container {
+    position: relative;
+    margin-left: 20px;
+}
+
+/* Profile dropdown styling */
+.profile-dropdown {
+    position: relative;
+}
+
+.profile-dropdown-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 30px;
+    transition: all 0.3s;
+}
+
+.profile-dropdown-btn:hover {
+    background-color: rgba(31, 191, 214, 0.1);
+}
+
+.profile-img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 8px;
+}
+
+.profile-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-name {
+    font-weight: 500;
+    margin-right: 8px;
+    color: var(--navy);
+}
+
+.profile-dropdown-list {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    width: 200px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    z-index: 1000;
+    margin-top: 10px;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.profile-dropdown-list.active {
+    max-height: 300px;
+    opacity: 1;
+    visibility: visible;
+}
+
+.profile-dropdown-list-item {
+    padding: 0;
+    list-style: none;
+}
+
+.profile-dropdown-list-item a {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: var(--navy);
+    transition: all 0.3s;
+}
+
+.profile-dropdown-list-item a:hover {
+    background-color: rgba(31, 191, 214, 0.1);
+    color: var(--primary);
+}
+
+.profile-dropdown-list-item i {
+    margin-right: 10px;
+    color: var(--primary);
+}
+
+/* Auth buttons styling */
+.auth-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.login-btn, .register-btn {
+    padding: 8px 15px;
+    font-weight: 500;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.login-btn {
+    color: var(--primary);
+    margin-right: 10px;
+}
+
+.login-btn:hover {
+    background-color: rgba(31, 191, 214, 0.1);
+}
+
+.register-btn {
+    background-color: var(--primary);
+    color: white;
+}
+
+.register-btn:hover {
+    background-color: var(--dark-blue);
+}

@@ -1,0 +1,866 @@
+<!-- src/main/resources/static/payment.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Boat Safari | Payment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1fbfd6;
+      --secondary: #f6c453;
+      --dark-blue: #0e3a5b;
+      --navy: #0b1c2c;
+      --light: #f7fbff;
+      --text-light: #d7e6f1;
+      --text-muted: #8fa6b6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
+      background: var(--light);
+      color: #333;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      background-color: var(--dark-blue);
+      color: #fff;
+      padding: 10px 0;
+      font-size: 14px;
+    }
+
+    .top-bar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .contact-info {
+      display: flex;
+      align-items: center;
+    }
+
+    .contact-info a {
+      margin-right: 20px;
+      color: #fff;
+    }
+
+    .contact-info a i {
+      margin-right: 5px;
+      color: var(--primary);
+    }
+
+    .social-icons a {
+      margin-left: 15px;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .social-icons a:hover {
+      color: var(--primary);
+    }
+
+    /* Navigation */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 15px 0;
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .brand .logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+      color: var(--primary);
+      font-size: 28px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-links a {
+      margin: 0 15px;
+      font-weight: 500;
+      color: var(--navy);
+      position: relative;
+      padding: 5px 0;
+    }
+
+    .nav-links a:after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      background: var(--primary);
+      bottom: 0;
+      left: 0;
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover:after {
+      width: 100%;
+    }
+
+    /* Header */
+    .head {
+      background: linear-gradient(rgba(14, 58, 91, 0.9), rgba(11, 28, 44, 0.95)),
+                url('https://demo.ovatheme.com/yachbat/wp-content/uploads/2023/05/bg-payment-header.jpg');
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      padding: 80px 0;
+    }
+
+    .head-inner {
+      max-width: 1200px;
+      margin: auto;
+      padding: 0 20px;
+    }
+
+    .head h2 {
+      margin: 0 0 15px;
+      font-size: 42px;
+      position: relative;
+      padding-bottom: 15px;
+    }
+
+    .head h2:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 80px;
+      height: 4px;
+      background: var(--primary);
+    }
+
+    .muted {
+      color: var(--text-light);
+      line-height: 1.8;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: -40px auto 60px;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 30px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .panel {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      background: var(--dark-blue);
+      color: #fff;
+      padding: 20px 25px;
+      position: relative;
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .panel-header .icon {
+      position: absolute;
+      right: 25px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 28px;
+      color: var(--primary);
+    }
+
+    .pad {
+      padding: 25px;
+    }
+
+    /* Payment Form */
+    .payment-methods {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .payment-method-option {
+      flex: 1;
+      padding: 20px;
+      border: 1px solid #e7edf3;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .payment-method-option:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .payment-method-option.active {
+      border-color: var(--primary);
+      background: rgba(31, 191, 214, 0.05);
+    }
+
+    .payment-method-option i {
+      font-size: 24px;
+      color: var(--primary);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .payment-method-option label {
+      display: block;
+      cursor: pointer;
+    }
+
+    .payment-method-option input {
+      display: none;
+    }
+
+    #cardForm {
+      margin-top: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .form-group i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 15px 15px 15px 45px;
+      border: 1px solid #e7edf3;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(31, 191, 214, 0.1);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .pay-button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .pay-button:hover {
+      background: var(--dark-blue);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .pay-button[disabled] {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .error {
+      color: #e74c3c;
+      margin-top: 15px;
+      min-height: 20px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .secure-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .secure-badge i {
+      margin-right: 8px;
+      color: #2ecc71;
+    }
+
+    /* Payment Info */
+    .payment-info {
+      margin-bottom: 20px;
+    }
+
+    .payment-info h3 {
+      color: var(--dark-blue);
+      margin-bottom: 15px;
+      font-size: 22px;
+    }
+
+    .info-item {
+      padding: 15px 0;
+      border-bottom: 1px solid #e7edf3;
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+    }
+
+    .info-item h4 {
+      color: var(--dark-blue);
+      margin-bottom: 8px;
+    }
+
+    .info-item p {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .info-item i {
+      color: var(--primary);
+      margin-right: 8px;
+    }
+
+    /* Payment Details Box */
+    .booking-summary {
+      background: rgba(31, 191, 214, 0.05);
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .booking-summary h4 {
+      color: var(--dark-blue);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .booking-summary h4 i {
+      margin-right: 10px;
+      color: var(--primary);
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #e7edf3;
+    }
+
+    .summary-item:last-child {
+      border-bottom: none;
+      font-weight: 700;
+      color: var(--dark-blue);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--navy);
+      color: var(--text-light);
+      padding: 40px 0;
+    }
+
+    .foot-inner {
+      max-width: 1200px;
+      margin: auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-logo {
+      font-size: 24px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+
+    .footer-logo span {
+      color: var(--primary);
+      margin-right: 10px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 30px;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+      margin-top: 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .card-icons {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+      gap: 10px;
+    }
+
+    .card-icons i {
+      font-size: 24px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .top-bar-container {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .nav-inner {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .nav-links a {
+        margin: 5px 10px;
+      }
+
+      .head h2 {
+        font-size: 32px;
+      }
+
+      .payment-methods {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .foot-inner {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+
+      .footer-logo {
+        justify-content: center;
+      }
+
+      .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="top-bar-container">
+    <div class="contact-info">
+      <a href="tel:00123456789"><i class="fas fa-phone"></i> Have Any Questions?</a>
+      <a href="#"><i class="fas fa-map-marker-alt"></i> 45 Grand Central Terminal</a>
+    </div>
+    <div class="social-icons">
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-pinterest"></i></a>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation -->
+<header class="nav">
+  <div class="nav-inner">
+    <a href="/index.html" class="brand">
+      <div class="logo"><i class="fas fa-ship"></i></div>
+      Boat Safari
+    </a>
+    <div class="nav-links">
+      <a href="/index.html">Home</a>
+      <a href="/trips.html">Trips</a>
+      <a href="/boat.html">Boats</a>
+      <a href="/support.html">Support</a>
+      <a href="/login.html">Login</a>
+      <a href="/register.html">Register</a>
+    </div>
+  </div>
+</header>
+
+<!-- Header Section -->
+<section class="head">
+  <div class="head-inner">
+    <h2>Complete Your Payment</h2>
+    <div id="bookingInfo" class="muted">Loading booking details...</div>
+  </div>
+</section>
+
+<!-- Main Content -->
+<main class="container">
+  <div class="panel">
+    <div class="panel-header">
+      <h3>Payment Details</h3>
+      <div class="icon"><i class="fas fa-credit-card"></i></div>
+    </div>
+    <div class="pad">
+      <div class="payment-methods">
+        <div class="payment-method-option active" id="cardOption">
+          <i class="fas fa-credit-card"></i>
+          <label>
+            <input type="radio" name="method" value="CARD" checked />
+            Pay by Card
+          </label>
+        </div>
+        <div class="payment-method-option" id="arrivalOption">
+          <i class="fas fa-money-bill-wave"></i>
+          <label>
+            <input type="radio" name="method" value="PAY_ON_ARRIVAL" />
+            Pay on Arrival
+          </label>
+        </div>
+      </div>
+
+      <div id="cardForm">
+        <div class="form-group">
+          <i class="far fa-user"></i>
+          <input id="cardHolderName" type="text" placeholder="Cardholder Name" />
+        </div>
+
+        <div class="form-group">
+          <i class="far fa-credit-card"></i>
+          <input id="cardNumber" type="text" placeholder="Card Number (16 digits)" maxlength="19" inputmode="numeric" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <i class="far fa-calendar"></i>
+            <input id="cardExpiry" type="text" placeholder="MM/YY" maxlength="5" />
+          </div>
+
+          <div class="form-group">
+            <i class="fas fa-lock"></i>
+            <input id="cardCvv" type="text" placeholder="CVV" maxlength="3" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="card-icons">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-amex"></i>
+          <i class="fab fa-cc-discover"></i>
+        </div>
+      </div>
+
+      <button id="payBtn" class="pay-button">
+        <i class="fas fa-lock"></i> Pay Now
+      </button>
+
+      <div id="error" class="error"></div>
+
+      <div class="secure-badge">
+        <i class="fas fa-shield-alt"></i> Secure Payment - Your data is protected
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h3>Booking Summary</h3>
+      <div class="icon"><i class="fas fa-receipt"></i></div>
+    </div>
+    <div class="pad">
+      <div id="bookingSummary" class="booking-summary">
+        <h4><i class="fas fa-ticket-alt"></i> Booking Details</h4>
+        <div id="bookingSummaryDetails">
+          <div class="summary-item">
+            <span>Booking ID</span>
+            <span id="summaryId">-</span>
+          </div>
+          <div class="summary-item">
+            <span>Passengers</span>
+            <span id="summaryPassengers">-</span>
+          </div>
+          <div class="summary-item">
+            <span>Total Amount</span>
+            <span id="summaryAmount">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="payment-info">
+        <div class="info-item">
+          <h4><i class="fas fa-credit-card"></i> Card Payment</h4>
+          <p>Your transaction will be processed securely. No card details are stored in our database.</p>
+        </div>
+
+        <div class="info-item">
+          <h4><i class="fas fa-money-bill-wave"></i> Pay on Arrival</h4>
+          <p>Choose this option to reserve your spots now and pay in cash or card at the dock before departure.</p>
+        </div>
+
+        <div class="info-item">
+          <h4><i class="fas fa-info-circle"></i> Need Help?</h4>
+          <p>For payment issues or questions, please contact our support team at <a href="mailto:support@boatsafari.local" style="color:var(--primary);text-decoration:underline">support@boatsafari.local</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="foot-inner">
+    <div class="footer-logo">
+      <span><i class="fas fa-ship"></i></span> Boat Safari
+    </div>
+    <div class="footer-links">
+      <a href="/index.html">Home</a>
+      <a href="/trips.html">Trips</a>
+      <a href="/boat.html">Boats</a>
+      <a href="/support.html">Support</a>
+    </div>
+    <div>
+      <a href="mailto:support@boatsafari.local">support@boatsafari.local</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <span id="year"></span> Boat Safari. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const bookingId = params.get('bookingId');
+  const token = localStorage.getItem('token');
+
+  const bookingInfo = document.getElementById('bookingInfo');
+  const cardForm = document.getElementById('cardForm');
+  const errorBox = document.getElementById('error');
+  const payBtn = document.getElementById('payBtn');
+
+  const cardOption = document.getElementById('cardOption');
+  const arrivalOption = document.getElementById('arrivalOption');
+
+  // Toggle between payment methods
+  document.querySelectorAll('input[name="method"]').forEach(r=>{
+    r.addEventListener('change',()=>{
+      const isCard = r.value === 'CARD' && r.checked;
+      cardForm.style.display = isCard ? 'block' : 'none';
+
+      if (isCard) {
+        cardOption.classList.add('active');
+        arrivalOption.classList.remove('active');
+        payBtn.innerHTML = '<i class="fas fa-lock"></i> Pay Now';
+      } else {
+        cardOption.classList.remove('active');
+        arrivalOption.classList.add('active');
+        payBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Booking';
+      }
+    });
+  });
+
+  // Format card number with spaces
+  document.getElementById('cardNumber').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s+/g, '').replace(/\D/g, '');
+    let formattedValue = '';
+
+    for (let i = 0; i < value.length; i++) {
+      if (i > 0 && i % 4 === 0) {
+        formattedValue += ' ';
+      }
+      formattedValue += value[i];
+    }
+
+    e.target.value = formattedValue;
+  });
+
+  // Format expiry date
+  document.getElementById('cardExpiry').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+
+    if (value.length > 2) {
+      e.target.value = value.substring(0, 2) + '/' + value.substring(2);
+    } else {
+      e.target.value = value;
+    }
+  });
+
+  function onlyDigits(s){ return (s||'').replace(/\D/g,''); }
+
+  async function loadBooking(){
+    if(!bookingId){ bookingInfo.textContent='Invalid booking.'; return; }
+    if(!token){ bookingInfo.textContent='Please login.'; return; }
+    try{
+      const resp = await fetch(`/api/bookings/${bookingId}`,{ headers:{ Authorization:`Bearer ${token}` }});
+      if(!resp.ok){
+        if(resp.status===401){ localStorage.removeItem('token'); window.location.href='/login.html'; return; }
+        throw new Error('Failed to load booking');
+      }
+      const b = await resp.json();
+
+      // Update header info
+      bookingInfo.innerHTML = `
+        <span style="font-size:18px;font-weight:600;color:var(--secondary)">
+          Your trip is almost ready!
+        </span><br/>
+        Complete your payment to confirm your reservation.
+      `;
+
+      // Update summary panel
+      document.getElementById('summaryId').textContent = `#${b.bookingId}`;
+      document.getElementById('summaryPassengers').textContent = `${b.passengers} ${b.passengers > 1 ? 'people' : 'person'}`;
+      document.getElementById('summaryAmount').textContent = `$${b.totalCost}`;
+
+    } catch(e){
+      bookingInfo.textContent = e.message;
+    }
+  }
+
+  document.getElementById('payBtn').addEventListener('click', async ()=>{
+    errorBox.textContent='';
+    if(!token){ alert('Please login'); window.location.href='/login.html'; return; }
+
+    const method = document.querySelector('input[name="method"]:checked').value;
+    const body = { bookingId:Number(bookingId), method };
+
+    if(method==='CARD'){
+      body.cardHolderName = document.getElementById('cardHolderName').value.trim();
+      body.cardNumber = onlyDigits(document.getElementById('cardNumber').value);
+      body.cardExpiry = document.getElementById('cardExpiry').value.trim();
+      body.cardCvv = document.getElementById('cardCvv').value.trim();
+
+      if(!body.cardHolderName){ errorBox.textContent='Cardholder name required'; return; }
+      if(!body.cardNumber || body.cardNumber.length!==16){ errorBox.textContent='Card number must be 16 digits'; return; }
+      if(!/^(0[1-9]|1[0-2])\/\d{2}$/.test(body.cardExpiry)){ errorBox.textContent='Expiry must be MM/YY'; return; }
+      if(!/^\d{3}$/.test(body.cardCvv)){ errorBox.textContent='CVV must be 3 digits'; return; }
+    }
+
+    try{
+      payBtn.disabled = true;
+      const originalBtnText = payBtn.innerHTML;
+      payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+      const resp = await fetch('/api/payments',{
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', Accept:'application/json', Authorization:`Bearer ${token}` },
+        body: JSON.stringify(body)
+      });
+
+      if(!resp.ok){
+        let msg='Payment failed. Try again.';
+        try{ const data = await resp.json(); if(data && data.message) msg = data.message; }
+        catch(_){ try{ const t = await resp.text(); if(t) msg = t; }catch(__){} }
+        throw new Error(msg);
+      }
+
+      const data = await resp.json();
+      alert(data.message || 'Payment processed successfully!');
+      window.location.href = '/trips.html';
+    }catch(e){
+      errorBox.textContent = e.message;
+    }finally{
+      payBtn.disabled = false;
+      payBtn.innerHTML = method === 'CARD' ? '<i class="fas fa-lock"></i> Pay Now' : '<i class="fas fa-check-circle"></i> Confirm Booking';
+    }
+  });
+
+  // Set year in footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  loadBooking();
+</script>
+</body>
+</html>
