@@ -133,6 +133,30 @@ public class AdminController {
     }
 
     /**
+     * Update user password (admin only)
+     */
+    @PutMapping("/users/{id}/password")
+    public ResponseEntity<?> updateUserPassword(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        try {
+            String newPassword = request.get("password");
+            if (newPassword == null || newPassword.trim().isEmpty()) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Password is required");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            userService.changePassword(id, newPassword);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Password updated successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to update password: " + e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
      * Simple test endpoint
      */
     @GetMapping("/test")
