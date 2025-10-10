@@ -49,6 +49,10 @@ public class User {
     @Column(name = "certification")
     private String certification;
 
+    // TODO: Add status field after database migration
+    // @Column(name = "status")
+    // private String status = "AVAILABLE"; // Default status
+
     // The role column is already in the database as a discriminator column
     @Column(name = "role", insertable = false, updatable = false)
     private String roleType;

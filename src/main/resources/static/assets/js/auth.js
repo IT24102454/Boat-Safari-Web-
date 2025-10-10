@@ -21,13 +21,26 @@ function isAuthenticated(requiredRole) {
     if (userRole === 'ADMIN') return true;
 
     // Handle guide role variations
-    if (requiredRole === 'GUIDE' && (userRole === 'GUIDE' || userRole === 'SAFARI_GUIDE')) return true;
+    if (requiredRole === 'GUIDE' && (userRole === 'GUIDE' || userRole === 'SAFARI_GUIDE' || userRole === 'SAFARIGUIDE')) return true;
 
     // Handle staff role variations  
     if (requiredRole === 'STAFF' && (userRole === 'STAFF' || userRole === 'STAFFMEMBER')) return true;
 
+    // Handle IT support variations
+    if (requiredRole === 'IT_SUPPORT' && (userRole === 'IT_SUPPORT' || userRole === 'ITSUPPORT')) return true;
+
+    // Handle IT assistant variations
+    if (requiredRole === 'IT_ASSISTANT' && (userRole === 'IT_ASSISTANT' || userRole === 'ITASSISTANT')) return true;
+
     // Otherwise, check if user has the specific required role
     return userRole === requiredRole;
+}
+
+// Check if user is any kind of staff member
+function isStaffMember() {
+    const userRole = getUserRole();
+    const staffRoles = ['STAFF', 'STAFFMEMBER', 'SAFARI_GUIDE', 'SAFARIGUIDE', 'IT_SUPPORT', 'ITSUPPORT', 'IT_ASSISTANT', 'ITASSISTANT', 'GUIDE', 'CAPTAIN', 'ADMIN'];
+    return staffRoles.includes(userRole);
 }
 
 // Get user role
@@ -149,12 +162,17 @@ function updateAuthUI() {
                 break;
             case 'GUIDE':
             case 'SAFARI_GUIDE':
+            case 'SAFARIGUIDE':
                 dashboardLink.href = '/guide.html';
                 dashboardLink.textContent = 'Guide Dashboard';
                 dashboardLink.style.display = 'block';
                 break;
             case 'STAFF':
             case 'STAFFMEMBER':
+            case 'IT_SUPPORT':
+            case 'ITSUPPORT':
+            case 'IT_ASSISTANT':
+            case 'ITASSISTANT':
                 dashboardLink.href = '/staff.html';
                 dashboardLink.textContent = 'Staff Portal';
                 dashboardLink.style.display = 'block';

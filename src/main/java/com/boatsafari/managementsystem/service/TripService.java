@@ -25,6 +25,25 @@ public class TripService {
         return tripRepository.findById(id);
     }
 
+    /**
+     * Get a trip by ID (returns Trip directly, not Optional)
+     * @param id The ID of the trip
+     * @return The Trip or null if not found
+     */
+    public Trip getTripByIdDirect(Long id) {
+        Optional<Trip> tripOpt = tripRepository.findById(id);
+        return tripOpt.orElse(null);
+    }
+
+    /**
+     * Update a trip (without requiring ID parameter)
+     * @param trip The trip to update
+     * @return The updated trip
+     */
+    public Trip updateTrip(Trip trip) {
+        return tripRepository.save(trip);
+    }
+
     public Trip createTrip(Trip trip) {
         // Optional: guard against duplicates on same day/time/route
         return tripRepository.save(trip);

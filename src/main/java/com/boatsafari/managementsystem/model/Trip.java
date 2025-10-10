@@ -48,6 +48,10 @@ public class Trip {
     @Column(name = "imageUrl")
     private String imageUrl;
 
+    // TODO: Add status field after database migration
+    // @Column(name = "status")
+    // private String status = "ACTIVE"; // Default status
+
     @ManyToOne
     @JoinColumn(name = "boatId")
     private Boat boat;
