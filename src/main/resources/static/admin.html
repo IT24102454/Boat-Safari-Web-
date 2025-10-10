@@ -161,32 +161,48 @@
 
         .dashboard-buttons {
             display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 14px;
+            margin: 24px 0 32px 0;
             flex-wrap: wrap;
-        }
-
-        .dashboard-buttons button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            display: flex;
             align-items: center;
         }
 
+        /* Improved pill-style dashboard buttons for clarity and better spacing */
+        .dashboard-buttons button {
+            background: linear-gradient(135deg, var(--primary), #17a2b8);
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 28px;
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            min-width: 170px;
+            justify-content: center;
+            box-shadow: 0 6px 18px rgba(23,162,184,0.08);
+        }
+
         .dashboard-buttons button i {
-            margin-right: 8px;
+            margin-right: 10px;
+            font-size: 16px;
         }
 
         .dashboard-buttons button:hover {
-            background-color: var(--dark-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(11,28,44,0.12);
+            opacity: 0.98;
+        }
+
+        /* Make buttons wrap nicely on small screens */
+        @media (max-width: 600px) {
+            .dashboard-buttons button {
+                min-width: unset;
+                width: 100%;
+                justify-content: flex-start;
+                padding-left: 18px;
+            }
         }
 
         .section {
@@ -536,13 +552,11 @@
 <div class="container">
     <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
     <div class="dashboard-buttons">
-        <button onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i> Analytics Dashboard</button>
+        <!-- Removed less-used buttons for a cleaner admin header -->
         <button onclick="showSection('users')"><i class="fas fa-users-cog"></i> User Management</button>
         <button onclick="showSection('trips')"><i class="fas fa-route"></i> Trip Management</button>
         <button onclick="showSection('bookings')"><i class="fas fa-calendar-check"></i> Booking Management</button>
-        <button onclick="showSection('staff')"><i class="fas fa-users"></i> Staff Assignment</button>
         <button onclick="showSection('staff-management')"><i class="fas fa-user-cog"></i> Staff Management</button>
-        <button onclick="showSection('system')"><i class="fas fa-cogs"></i> System Settings</button>
     </div>
 
     <!-- Analytics Dashboard Section -->
@@ -835,6 +849,9 @@
                     <option value="GUIDE">Safari Guide</option>
                     <option value="CAPTAIN">Boat Captain</option>
                     <option value="STAFF">General Staff</option>
+                    <option value="IT_SUPPORT">IT Support</option>
+                    <option value="IT_ASSISTANT">IT Assistant</option>
+                    <option value="CUSTOMER">Customer</option>
                 </select>
             </div>
             <button onclick="applyStaffManagementFilters()"><i class="fas fa-filter"></i> Apply Filters</button>
@@ -1212,6 +1229,55 @@
     </div>
 </div>
 
+<!-- Edit User Modal -->
+<div id="edit-user-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('edit-user-modal')">&times;</span>
+        <h2>Edit User</h2>
+        <form id="edit-user-form">
+            <input type="hidden" id="edit-user-id">
+            <div class="form-group">
+                <label for="edit-user-firstName">First Name:</label>
+                <input type="text" id="edit-user-firstName" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-user-secondName">Last Name:</label>
+                <input type="text" id="edit-user-secondName" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-user-email">Email:</label>
+                <input type="email" id="edit-user-email" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-user-contactNo">Contact Number:</label>
+                <input type="tel" id="edit-user-contactNo">
+            </div>
+            <div class="form-group">
+                <label for="edit-user-address">Address:</label>
+                <input type="text" id="edit-user-address">
+            </div>
+            <div class="form-group">
+                <label for="edit-user-city">City:</label>
+                <input type="text" id="edit-user-city">
+            </div>
+            <div class="form-group">
+                <label for="edit-user-role">Role:</label>
+                <select id="edit-user-role" required>
+                    <option value="">Select Role</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="CUSTOMER">Customer</option>
+                    <option value="STAFF">Staff Member</option>
+                    <option value="GUIDE">Guide</option>
+                    <option value="CAPTAIN">Captain</option>
+                    <option value="IT_ASSISTANT">IT Assistant</option>
+                    <option value="IT_SUPPORT">IT Support</option>
+                </select>
+            </div>
+            <button type="submit"><i class="fas fa-save"></i> Update User</button>
+        </form>
+    </div>
+</div>
+
 <!-- Add Booking Modal -->
 <div id="add-booking-modal" class="modal">
     <div class="modal-content">
@@ -1293,6 +1359,7 @@
         loadGuides();
         loadBookings();
         loadStaff();
+        loadAnalyticsData(); // Load analytics data on page load
 
         // Show staff management section if coming from direct link
         const urlParams = new URLSearchParams(window.location.search);
@@ -1326,7 +1393,7 @@
         } else if (section === 'staff') {
             loadStaff();
         } else if (section === 'staff-management') {
-            loadStaffManagement();
+            loadStaffMembers();
         } else if (section === 'dashboard') {
             loadAnalyticsData();
         } else if (section === 'users') {
@@ -1334,71 +1401,52 @@
         }
     }
 
+    async function loadAnalyticsData() {
+        try {
+            const response = await fetch('/api/admin/analytics', {
+                method: 'GET'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch analytics data');
+            }
+
+            const analytics = await response.json();
+            
+            // Update the analytics cards with real data
+            document.getElementById('total-users').textContent = analytics.totalUsers || 0;
+            document.getElementById('active-trips').textContent = analytics.activeTrips || 0;
+            document.getElementById('monthly-bookings').textContent = analytics.monthlyBookings || 0;
+            document.getElementById('monthly-revenue').textContent = '$' + (analytics.monthlyRevenue || 0).toFixed(2);
+            
+        } catch (error) {
+            console.error('Error loading analytics data:', error);
+            // Set error state for analytics
+            document.getElementById('total-users').textContent = 'Error';
+            document.getElementById('active-trips').textContent = 'Error';
+            document.getElementById('monthly-bookings').textContent = 'Error';
+            document.getElementById('monthly-revenue').textContent = 'Error';
+        }
+    }
+
     async function loadTrips() {
         try {
             document.getElementById('trips-tbody').innerHTML = '<tr><td colspan="10" style="text-align: center;">Loading trips...</td></tr>';
 
-            // Use mock data in development if API is not available
-            const useMockData = true;  // Set to false when connecting to real API
-
-            if (!useMockData) {
-                const response = await fetch('/api/trips', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('token')
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch trips');
+            const response = await fetch('/api/trips', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 }
+            });
 
-                const trips = await response.json();
-                currentTrips = trips;
-                displayTrips(trips);
-            } else {
-                // Mock data for development
-                setTimeout(() => {
-                    const mockTrips = [
-                        {
-                            tripId: 1,
-                            date: '2025-10-15',
-                            startTime: '09:00',
-                            endTime: '12:00',
-                            capacity: 10,
-                            price: 150.00,
-                            route: 'Coastal Safari',
-                            boat: { boatId: 1, boatName: 'Sea Explorer' },
-                            guide: { userId: 1, firstName: 'John', secondName: 'Doe' }
-                        },
-                        {
-                            tripId: 2,
-                            date: '2025-10-16',
-                            startTime: '14:00',
-                            endTime: '17:00',
-                            capacity: 8,
-                            price: 120.00,
-                            route: 'Dolphin Watching',
-                            boat: { boatId: 2, boatName: 'Ocean Voyager' },
-                            guide: { userId: 2, firstName: 'Jane', secondName: 'Smith' }
-                        },
-                        {
-                            tripId: 3,
-                            date: '2025-10-17',
-                            startTime: '10:00',
-                            endTime: '15:00',
-                            capacity: 12,
-                            price: 200.00,
-                            route: 'Deep Sea Adventure',
-                            boat: { boatId: 3, boatName: 'Wave Rider' },
-                            guide: { userId: 3, firstName: 'Mike', secondName: 'Johnson' }
-                        }
-                    ];
-
-                    currentTrips = mockTrips;
-                    displayTrips(mockTrips);
-                }, 500);
+            if (!response.ok) {
+                throw new Error('Failed to fetch trips');
             }
+
+            const trips = await response.json();
+            currentTrips = trips;
+            displayTrips(trips);
         } catch (error) {
             console.error('Error loading trips:', error);
             document.getElementById('trips-tbody').innerHTML =
@@ -1410,82 +1458,20 @@
         try {
             document.getElementById('bookings-tbody').innerHTML = '<tr><td colspan="11" style="text-align: center;">Loading bookings...</td></tr>';
 
-            // Use mock data in development if API is not available
-            const useMockData = true;  // Set to false when connecting to real API
-
-            if (!useMockData) {
-                const response = await fetch('/api/bookings', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('token')
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch bookings');
+            const response = await fetch('/api/bookings', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 }
+            });
 
-                const bookings = await response.json();
-                currentBookings = bookings;
-                displayBookings(bookings);
-            } else {
-                // Mock data for development
-                setTimeout(() => {
-                    const mockBookings = [
-                        {
-                            bookingId: 1,
-                            customerName: 'Alice Johnson',
-                            trip: {
-                                tripId: 1,
-                                route: 'Coastal Safari',
-                                date: '2025-10-15'
-                            },
-                            date: '2025-10-15',
-                            time: '2025-10-15T09:00:00',
-                            passengers: 3,
-                            totalPrice: 450.00,
-                            paymentStatus: 'PAID',
-                            bookingStatus: 'CONFIRMED',
-                            createdOn: '2025-09-30T14:25:00'
-                        },
-                        {
-                            bookingId: 2,
-                            customerName: 'Bob Wilson',
-                            trip: {
-                                tripId: 2,
-                                route: 'Dolphin Watching',
-                                date: '2025-10-16'
-                            },
-                            date: '2025-10-16',
-                            time: '2025-10-16T14:00:00',
-                            passengers: 2,
-                            totalPrice: 240.00,
-                            paymentStatus: 'UNPAID',
-                            bookingStatus: 'PENDING',
-                            createdOn: '2025-10-01T09:15:00'
-                        },
-                        {
-                            bookingId: 3,
-                            customerName: 'Carol Martinez',
-                            trip: {
-                                tripId: 3,
-                                route: 'Deep Sea Adventure',
-                                date: '2025-10-17'
-                            },
-                            date: '2025-10-17',
-                            time: '2025-10-17T10:00:00',
-                            passengers: 4,
-                            totalPrice: 800.00,
-                            paymentStatus: 'PAID',
-                            bookingStatus: 'COMPLETED',
-                            createdOn: '2025-09-25T16:30:00'
-                        }
-                    ];
-
-                    currentBookings = mockBookings;
-                    displayBookings(mockBookings);
-                }, 500);
+            if (!response.ok) {
+                throw new Error('Failed to fetch bookings');
             }
+
+            const bookings = await response.json();
+            currentBookings = bookings;
+            displayBookings(bookings);
         } catch (error) {
             console.error('Error loading bookings:', error);
             document.getElementById('bookings-tbody').innerHTML =
@@ -1497,86 +1483,19 @@
         try {
             document.getElementById('users-tbody').innerHTML = '<tr><td colspan="7" style="text-align: center;">Loading users...</td></tr>';
 
-            // Use mock data in development if API is not available
-            const useMockData = true;  // Set to false when connecting to real API
-
-            if (!useMockData) {
-                const response = await fetch('/api/users', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('token')
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch users');
+            const response = await fetch('/api/admin/users', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 }
+            });
 
-                const users = await response.json();
-                displayUsers(users);
-            } else {
-                // Mock data for development
-                setTimeout(() => {
-                    const mockUsers = [
-                        {
-                            userId: 1,
-                            firstName: 'John',
-                            lastName: 'Admin',
-                            email: 'admin@boatsafari.com',
-                            role: 'ADMIN',
-                            status: 'ACTIVE',
-                            joined: '2025-01-01'
-                        },
-                        {
-                            userId: 2,
-                            firstName: 'Alice',
-                            lastName: 'Johnson',
-                            email: 'alice@example.com',
-                            role: 'CUSTOMER',
-                            status: 'ACTIVE',
-                            joined: '2025-08-15'
-                        },
-                        {
-                            userId: 3,
-                            firstName: 'Bob',
-                            lastName: 'Wilson',
-                            email: 'bob@example.com',
-                            role: 'CUSTOMER',
-                            status: 'INACTIVE',
-                            joined: '2025-09-01'
-                        },
-                        {
-                            userId: 4,
-                            firstName: 'Mike',
-                            lastName: 'Guide',
-                            email: 'mike@boatsafari.com',
-                            role: 'GUIDE',
-                            status: 'ACTIVE',
-                            joined: '2025-03-15'
-                        },
-                        {
-                            userId: 5,
-                            firstName: 'Sarah',
-                            lastName: 'Captain',
-                            email: 'sarah@boatsafari.com',
-                            role: 'CAPTAIN',
-                            status: 'ACTIVE',
-                            joined: '2025-02-10'
-                        },
-                        {
-                            userId: 6,
-                            firstName: 'David',
-                            lastName: 'Smith',
-                            email: 'david@example.com',
-                            role: 'CUSTOMER',
-                            status: 'SUSPENDED',
-                            joined: '2025-07-22'
-                        }
-                    ];
-
-                    displayUsers(mockUsers);
-                }, 500);
+            if (!response.ok) {
+                throw new Error('Failed to fetch users');
             }
+
+            const users = await response.json();
+            displayUsers(users);
         } catch (error) {
             console.error('Error loading users:', error);
             document.getElementById('users-tbody').innerHTML =
@@ -1682,132 +1601,22 @@
         }
     }
 
-    async function loadStaffManagement() {
-        try {
-            document.getElementById('staff-management-tbody').innerHTML = '<tr><td colspan="9" style="text-align: center;">Loading staff...</td></tr>';
-
-            // Use mock data in development if API is not available
-            const useMockData = true;  // Set to false when connecting to real API
-
-            if (!useMockData) {
-                const response = await fetch('/api/staff/all', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('token')
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch staff members');
-                }
-
-                const staffMembers = await response.json();
-                displayStaffManagement(staffMembers);
-            } else {
-                // Mock data for development
-                setTimeout(() => {
-                    const mockStaffMembers = [
-                        {
-                            userId: 4,
-                            firstName: 'Mike',
-                            secondName: 'Guide',
-                            email: 'mike@boatsafari.com',
-                            contact: '555-1234',
-                            role: 'GUIDE',
-                            experience: 5,
-                            joinDate: '2025-03-15',
-                            status: 'ACTIVE'
-                        },
-                        {
-                            userId: 5,
-                            firstName: 'Sarah',
-                            secondName: 'Captain',
-                            email: 'sarah@boatsafari.com',
-                            contact: '555-5678',
-                            role: 'CAPTAIN',
-                            experience: 7,
-                            joinDate: '2025-02-10',
-                            status: 'ACTIVE'
-                        },
-                        {
-                            userId: 7,
-                            firstName: 'Tom',
-                            secondName: 'Jones',
-                            email: 'tom@boatsafari.com',
-                            contact: '555-9012',
-                            role: 'GUIDE',
-                            experience: 3,
-                            joinDate: '2025-05-20',
-                            status: 'ACTIVE'
-                        },
-                        {
-                            userId: 8,
-                            firstName: 'Laura',
-                            secondName: 'Miller',
-                            email: 'laura@boatsafari.com',
-                            contact: '555-3456',
-                            role: 'CAPTAIN',
-                            experience: 4,
-                            joinDate: '2025-04-05',
-                            status: 'ACTIVE'
-                        }
-                    ];
-
-                    displayStaffManagement(mockStaffMembers);
-                }, 500);
-            }
-        } catch (error) {
-            console.error('Error loading staff members:', error);
-            document.getElementById('staff-management-tbody').innerHTML =
-                '<tr><td colspan="9" style="text-align: center; color: #e74c3c;">Failed to load staff members. Please try again later.</td></tr>';
-        }
-    }
-
     async function loadBoats() {
         try {
-            // Use mock data in development if API is not available
-            const useMockData = true;  // Set to false when connecting to real API
-
-            if (!useMockData) {
-                const response = await fetch('/api/boats', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('token')
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch boats');
+            const response = await fetch('/api/boats', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 }
+            });
 
-                const boats = await response.json();
-                availableBoats = boats;
-                populateBoatDropdowns(boats);
-            } else {
-                // Mock data for development
-                setTimeout(() => {
-                    const mockBoats = [
-                        {
-                            boatId: 1,
-                            boatName: 'Sea Explorer',
-                            capacity: 15
-                        },
-                        {
-                            boatId: 2,
-                            boatName: 'Ocean Voyager',
-                            capacity: 12
-                        },
-                        {
-                            boatId: 3,
-                            boatName: 'Wave Rider',
-                            capacity: 20
-                        }
-                    ];
-
-                    availableBoats = mockBoats;
-                    populateBoatDropdowns(mockBoats);
-                }, 300);
+            if (!response.ok) {
+                throw new Error('Failed to fetch boats');
             }
+
+            const boats = await response.json();
+            availableBoats = boats;
+            populateBoatDropdowns(boats);
         } catch (error) {
             console.error('Error loading boats:', error);
             // Continue without boat data
@@ -1816,42 +1625,19 @@
 
     async function loadGuides() {
         try {
-            // Use mock data in development if API is not available
-            const useMockData = true;  // Set to false when connecting to real API
-
-            if (!useMockData) {
-                const response = await fetch('/api/guides', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('token')
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch guides');
+            const response = await fetch('/api/guides', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 }
+            });
 
-                const guides = await response.json();
-                populateGuideDropdowns(guides);
-            } else {
-                // Mock data for development
-                setTimeout(() => {
-                    const mockGuides = [
-                        {
-                            userId: 4,
-                            firstName: 'Mike',
-                            secondName: 'Guide'
-                        },
-                        {
-                            userId: 7,
-                            firstName: 'Tom',
-                            secondName: 'Jones'
-                        }
-                    ];
-
-                    populateGuideDropdowns(mockGuides);
-                }, 300);
+            if (!response.ok) {
+                throw new Error('Failed to fetch guides');
             }
+
+            const guides = await response.json();
+            populateGuideDropdowns(guides);
         } catch (error) {
             console.error('Error loading guides:', error);
             // Continue without guide data
@@ -1963,24 +1749,30 @@
         bookings.forEach(booking => {
             const row = document.createElement('tr');
 
-            // Format the date and time for display
-            const bookingDate = booking.date ? new Date(booking.date).toLocaleDateString() : 'N/A';
-            const bookingTime = booking.time ? new Date(booking.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A';
+            // Handle the booking date and time based on actual Booking model
+            const bookingDate = booking.trip && booking.trip.date ? new Date(booking.trip.date).toLocaleDateString() : 'N/A';
+            const bookingTime = booking.trip && booking.trip.startTime ? booking.trip.startTime : 'N/A';
 
             // Get trip details
-            const tripDetails = booking.trip ? `${booking.trip.route} (${booking.trip.date})` : 'N/A';
+            const tripDetails = booking.trip ? `${booking.trip.route || booking.trip.name || 'Unknown Route'} (${bookingDate})` : 'N/A';
+
+            // Handle payment status
+            let paymentStatus = 'UNPAID';
+            if (booking.payment && booking.payment.status) {
+                paymentStatus = booking.payment.status;
+            }
 
             row.innerHTML = `
                 <td>${booking.bookingId}</td>
-                <td>${booking.customerName || 'N/A'}</td>
+                <td>${booking.name || 'N/A'}</td>
                 <td>${tripDetails}</td>
                 <td>${bookingDate}</td>
                 <td>${bookingTime}</td>
                 <td>${booking.passengers || 0}</td>
-                <td>$${(booking.totalPrice || 0).toFixed(2)}</td>
-                <td>${booking.paymentStatus || 'N/A'}</td>
-                <td>${booking.bookingStatus || 'N/A'}</td>
-                <td>${new Date(booking.createdOn).toLocaleString() || 'N/A'}</td>
+                <td>$${(booking.totalCost || 0).toFixed(2)}</td>
+                <td>${paymentStatus}</td>
+                <td>${booking.status || 'N/A'}</td>
+                <td>${booking.holdTimer ? new Date(booking.holdTimer).toLocaleString() : 'N/A'}</td>
                 <td class="action-buttons">
                     <button onclick="openEditBookingModal(${booking.bookingId})"><i class="fas fa-edit"></i> Edit</button>
                     <button onclick="openDeleteBookingConfirmation(${booking.bookingId})"><i class="fas fa-trash"></i> Delete</button>
@@ -2055,37 +1847,6 @@
         });
     }
 
-    function displayStaffManagement(staff) {
-        const tbody = document.getElementById('staff-management-tbody');
-        tbody.innerHTML = '';
-
-        if (staff.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No staff members found</td></tr>';
-            return;
-        }
-
-        staff.forEach(member => {
-            const row = document.createElement('tr');
-
-            row.innerHTML = `
-                <td>${member.userId}</td>
-                <td>${member.firstName} ${member.secondName}</td>
-                <td>${member.email || 'N/A'}</td>
-                <td>${member.contact || 'N/A'}</td>
-                <td>${member.role || 'N/A'}</td>
-                <td>${member.experience || 0}</td>
-                <td>${member.joinDate ? new Date(member.joinDate).toLocaleDateString() : 'N/A'}</td>
-                <td>${member.status || 'N/A'}</td>
-                <td class="action-buttons">
-                    <button onclick="openEditStaffModal(${member.userId})"><i class="fas fa-edit"></i> Edit</button>
-                    <button onclick="openDeleteStaffConfirmation(${member.userId})"><i class="fas fa-trash"></i> Delete</button>
-                </td>
-            `;
-
-            tbody.appendChild(row);
-        });
-    }
-
     function displayUsers(users) {
         const tbody = document.getElementById('users-tbody');
         tbody.innerHTML = '';
@@ -2098,25 +1859,36 @@
         users.forEach(user => {
             const row = document.createElement('tr');
 
-            // Format the joined date
-            const joinedDate = user.joined ? new Date(user.joined).toLocaleDateString() : 'N/A';
+            // Format the joined date - use hireDate if available
+            const joinedDate = user.hireDate ? new Date(user.hireDate).toLocaleDateString() : 'N/A';
+
+            // Get user role/type
+            let userRole = user.role || 'CUSTOMER';
+            if (user.roleType) {
+                userRole = user.roleType;
+            }
+
+            // Determine user status - default to ACTIVE if not specified
+            const userStatus = user.status || 'ACTIVE';
 
             // Determine user status class
             let statusClass = '';
-            if (user.status === 'ACTIVE') {
+            if (userStatus === 'ACTIVE') {
                 statusClass = 'user-status-active';
-            } else if (user.status === 'INACTIVE') {
+            } else if (userStatus === 'INACTIVE') {
                 statusClass = 'user-status-inactive';
-            } else if (user.status === 'SUSPENDED') {
+            } else if (userStatus === 'SUSPENDED') {
                 statusClass = 'user-status-suspended';
             }
 
+            const fullName = `${user.firstName || ''} ${user.secondName || user.lastName || ''}`.trim();
+
             row.innerHTML = `
                 <td>${user.userId}</td>
-                <td>${user.firstName} ${user.lastName}</td>
-                <td>${user.email}</td>
-                <td>${user.role}</td>
-                <td class="user-status-badge ${statusClass}">${user.status}</td>
+                <td>${fullName || 'N/A'}</td>
+                <td>${user.email || 'N/A'}</td>
+                <td>${userRole}</td>
+                <td class="user-status-badge ${statusClass}">${userStatus}</td>
                 <td>${joinedDate}</td>
                 <td class="action-buttons">
                     <button onclick="openEditUserModal(${user.userId})"><i class="fas fa-edit"></i> Edit</button>
@@ -2337,10 +2109,64 @@
             }
 
             closeModal('add-staff-modal');
-            loadStaffManagement();
+            loadStaffMembers();
         } catch (error) {
             console.error('Error adding staff member:', error);
             alert('Failed to add staff member: ' + error.message);
+        }
+    });
+
+    // Edit User Form Handler
+    document.getElementById('edit-user-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const userId = document.getElementById('edit-user-id').value;
+        const userData = {
+            firstName: document.getElementById('edit-user-firstName').value,
+            secondName: document.getElementById('edit-user-secondName').value,
+            email: document.getElementById('edit-user-email').value,
+            contactNo: document.getElementById('edit-user-contactNo').value,
+            address: document.getElementById('edit-user-address').value,
+            city: document.getElementById('edit-user-city').value
+        };
+
+        const newRole = document.getElementById('edit-user-role').value;
+
+        try {
+            // First update basic user details
+            const updateResponse = await fetch(`/api/admin/users/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData)
+            });
+
+            if (!updateResponse.ok) {
+                const errorText = await updateResponse.text();
+                throw new Error(`Failed to update user details: ${errorText}`);
+            }
+
+            // Then update role if it has changed
+            const roleResponse = await fetch(`/api/admin/users/${userId}/role`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ role: newRole })
+            });
+
+            if (!roleResponse.ok) {
+                const errorText = await roleResponse.text();
+                throw new Error(`Failed to update user role: ${errorText}`);
+            }
+
+            closeModal('edit-user-modal');
+            loadUsers(); // Reload the users table
+            alert('User updated successfully!');
+        } catch (error) {
+            console.error('Error updating user:', error);
+            alert('Failed to update user: ' + error.message);
         }
     });
 
@@ -2391,7 +2217,7 @@
             }
 
             closeModal('delete-staff-modal');
-            loadStaffManagement();
+            loadStaffMembers();
         } catch (error) {
             console.error('Error deleting staff member:', error);
             alert('Failed to delete staff member: ' + error.message);
@@ -2430,20 +2256,6 @@
 
         // TODO: Implement logic to reload all staff
         loadStaff();
-    }
-
-    function applyStaffManagementFilters() {
-        const roleFilter = document.getElementById('staff-role-filter').value;
-
-        // TODO: Implement filtering logic for staff management
-        console.log('Applying staff management filters:', { roleFilter });
-    }
-
-    function clearStaffManagementFilters() {
-        document.getElementById('staff-role-filter').value = '';
-
-        // TODO: Implement logic to reload all staff in management
-        loadStaffManagement();
     }
 
     function applyUserFilters() {
@@ -2535,13 +2347,157 @@
             trips.forEach(trip => {
                 const option = document.createElement('option');
                 option.value = trip.tripId;
-                option.textContent = `${trip.route} on ${new Date(trip.date).toLocaleDateString()}`;
+                option.textContent = `${trip.route || trip.name} on ${new Date(trip.date).toLocaleDateString()}`;
                 tripSelect.appendChild(option);
             });
         } catch (error) {
             console.error('Error loading trips:', error);
             alert('Failed to load trips for booking. Please try again.');
         }
+    }
+
+    // Missing CRUD functions for bookings and users
+    async function openEditBookingModal(bookingId) {
+        try {
+            const response = await fetch(`/api/bookings/${bookingId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch booking details');
+            }
+
+            const booking = await response.json();
+
+            // Populate form fields based on actual Booking model
+            document.getElementById('edit-booking-id').value = booking.bookingId;
+            document.getElementById('edit-booking-customer').value = booking.name || '';
+            
+            // Set trip selection
+            if (booking.trip && booking.trip.tripId) {
+                document.getElementById('edit-booking-trip').value = booking.trip.tripId;
+            }
+            
+            document.getElementById('edit-booking-passengers').value = booking.passengers || 1;
+            document.getElementById('edit-booking-status').value = booking.status || 'PENDING';
+            
+            // Set payment status
+            let paymentStatus = 'UNPAID';
+            if (booking.payment && booking.payment.status) {
+                paymentStatus = booking.payment.status;
+            }
+            document.getElementById('edit-payment-status').value = paymentStatus;
+            
+            // Handle notes if field exists
+            const notesField = document.getElementById('edit-booking-notes');
+            if (notesField) {
+                notesField.value = ''; // Booking model doesn't have notes field
+            }
+
+            document.getElementById('edit-booking-modal').style.display = 'block';
+        } catch (error) {
+            console.error('Error loading booking details:', error);
+            alert('Failed to load booking details. Please try again.');
+        }
+    }
+
+    function openDeleteBookingConfirmation(bookingId) {
+        document.getElementById('delete-booking-id').value = bookingId;
+        document.getElementById('delete-booking-modal').style.display = 'block';
+    }
+
+    async function confirmDeleteBooking() {
+        const bookingId = document.getElementById('delete-booking-id').value;
+
+        try {
+            const response = await fetch(`/api/bookings/${bookingId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to delete booking');
+            }
+
+            closeModal('delete-booking-modal');
+            loadBookings();
+        } catch (error) {
+            console.error('Error deleting booking:', error);
+            alert('Failed to delete booking: ' + error.message);
+        }
+    }
+
+    async function openEditUserModal(userId) {
+        try {
+            const response = await fetch(`/api/admin/users/${userId}`, {
+                method: 'GET'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch user details');
+            }
+
+            const user = await response.json();
+
+            // Populate form fields
+            document.getElementById('edit-user-id').value = user.userId;
+            document.getElementById('edit-user-firstName').value = user.firstName || '';
+            document.getElementById('edit-user-secondName').value = user.secondName || '';
+            document.getElementById('edit-user-email').value = user.email || '';
+            document.getElementById('edit-user-contactNo').value = user.contactNo || '';
+            document.getElementById('edit-user-address').value = user.address || '';
+            document.getElementById('edit-user-city').value = user.city || '';
+            document.getElementById('edit-user-role').value = user.role || '';
+
+            // Show the modal
+            document.getElementById('edit-user-modal').style.display = 'block';
+            
+        } catch (error) {
+            console.error('Error loading user details:', error);
+            alert('Failed to load user details. Please try again.');
+        }
+    }
+
+    function openDeleteUserConfirmation(userId) {
+        if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+            deleteUser(userId);
+        }
+    }
+
+    async function deleteUser(userId) {
+        try {
+            const response = await fetch(`/api/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to delete user');
+            }
+
+            loadUsers();
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            alert('Failed to delete user: ' + error.message);
+        }
+    }
+
+    function openDeleteStaffConfirmation(userId) {
+        document.getElementById('delete-staff-id').value = userId;
+        document.getElementById('delete-staff-modal').style.display = 'block';
+    }
+
+    function openAddUserModal() {
+        alert('Add user functionality needs to be implemented with a modal form');
     }
 </script>
 <script src="/assets/js/staff-management.js"></script>

@@ -58,6 +58,101 @@ public class UserService {
     }
 
     /**
+     * Update user role by creating a new entity of the correct type
+     * This is necessary because of JPA discriminator column constraints
+     */
+    @Transactional
+    public User updateUserRole(Long userId, String newRole) {
+        System.out.println("=== ROLE UPDATE START ===");
+        System.out.println("User ID: " + userId);
+        System.out.println("New Role: " + newRole);
+        
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (!userOpt.isPresent()) {
+            throw new RuntimeException("User not found with ID: " + userId);
+        }
+
+        User existingUser = userOpt.get();
+        System.out.println("Found existing user: " + existingUser.getFirstName() + " " + existingUser.getSecondName());
+        System.out.println("Current role: " + existingUser.getRole());
+        
+        // If the role is the same, just return the existing user
+        if (newRole.equals(existingUser.getRole())) {
+            System.out.println("Role is the same, returning existing user");
+            return existingUser;
+        }
+
+        // Store user data before deletion
+        String firstName = existingUser.getFirstName();
+        String secondName = existingUser.getSecondName();
+        String password = existingUser.getPassword();
+        String email = existingUser.getEmail();
+        String contactNo = existingUser.getContactNo();
+        String address = existingUser.getAddress();
+        String city = existingUser.getCity();
+        String street = existingUser.getStreet();
+        String postalCode = existingUser.getPostalCode();
+        String hireDate = existingUser.getHireDate();
+        String certification = existingUser.getCertification();
+
+        // Delete the existing user first
+        System.out.println("Deleting existing user...");
+        userRepository.delete(existingUser);
+        userRepository.flush(); // Ensure deletion is committed
+        System.out.println("User deleted successfully");
+
+        // Create new user instance based on the new role
+        System.out.println("Creating new user with role: " + newRole);
+        User newUser = createUserByRole(newRole);
+        System.out.println("New user instance created: " + newUser.getClass().getSimpleName());
+        
+        // Copy all properties to new user (let database generate new ID)
+        newUser.setFirstName(firstName);
+        newUser.setSecondName(secondName);
+        newUser.setPassword(password);
+        newUser.setEmail(email);
+        newUser.setContactNo(contactNo);
+        newUser.setAddress(address);
+        newUser.setCity(city);
+        newUser.setStreet(street);
+        newUser.setPostalCode(postalCode);
+        newUser.setHireDate(hireDate);
+        newUser.setCertification(certification);
+        
+        System.out.println("Saving new user...");
+        User savedUser = userRepository.save(newUser);
+        System.out.println("New user saved with ID: " + savedUser.getUserId() + " and role: " + savedUser.getRole());
+        System.out.println("=== ROLE UPDATE END ===");
+        
+        return savedUser;
+    }
+
+    /**
+     * Create a user instance based on role
+     */
+    private User createUserByRole(String role) {
+        switch (role.toUpperCase()) {
+            case "ADMIN":
+                return new Admin();
+            case "CUSTOMER":
+                return new Customer();
+            case "GUIDE":
+            case "SAFARI_GUIDE":
+                return new SafariGuide();
+            case "IT_ASSISTANT":
+                return new ITAssistant();
+            case "IT_SUPPORT":
+                return new ITSupport();
+            case "STAFFMEMBER":
+            case "STAFF":
+            case "CAPTAIN":
+                return new StaffMember();
+            default:
+                throw new IllegalArgumentException("Invalid role: " + role);
+        }
+    }
+
+    /**
      * Change a user's password
      * @param userId The ID of the user
      * @param newPassword The new password (will be encoded)

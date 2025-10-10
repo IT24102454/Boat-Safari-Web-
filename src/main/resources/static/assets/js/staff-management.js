@@ -1,9 +1,9 @@
-// Staff management functions for admin dashboard
-let staffMembers = [];
+// User management functions for admin dashboard
+let allUsers = [];
 
-// Function to load all staff members
+// Function to load all users for role management
 function loadStaffMembers() {
-    fetch('/api/staff/all', {
+    fetch('/api/admin/users', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -12,86 +12,86 @@ function loadStaffMembers() {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Failed to fetch staff members');
+            throw new Error('Failed to fetch users');
         }
         return response.json();
     })
     .then(data => {
-        staffMembers = data;
-        displayStaffMembers(staffMembers);
+        allUsers = data;
+        displayStaffMembers(allUsers);
     })
     .catch(error => {
-        console.error('Error loading staff members:', error);
-        alert('Failed to load staff members. Please try again.');
+        console.error('Error loading users:', error);
+        alert('Failed to load users. Please try again.');
     });
 }
 
-// Function to display staff members in the table
-function displayStaffMembers(staffList) {
+// Function to display users in the table
+function displayStaffMembers(userList) {
     const tbody = document.getElementById('staff-management-tbody');
     tbody.innerHTML = '';
 
-    if (staffList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No staff members found</td></tr>';
+    if (userList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No users found</td></tr>';
         return;
     }
 
-    staffList.forEach(staff => {
-        // Format the date to display properly
-        const hireDate = staff.hireDate ? new Date(staff.hireDate).toLocaleDateString() : 'N/A';
+    userList.forEach(user => {
+        // Format the date to display properly (only for staff roles)
+        const hireDate = user.hireDate ? new Date(user.hireDate).toLocaleDateString() : 'N/A';
 
-        // Determine staff role
-        let role = getStaffRole(staff.roleType);
+        // Determine user role
+        let role = getStaffRole(user.roleType);
 
         // Create row
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${staff.id || staff.userId}</td>
-            <td>${staff.firstName} ${staff.secondName}</td>
-            <td>${staff.email}</td>
-            <td>${staff.contactNo || 'N/A'}</td>
+            <td>${user.userId}</td>
+            <td>${user.firstName} ${user.secondName}</td>
+            <td>${user.email}</td>
+            <td>${user.contactNo || 'N/A'}</td>
             <td>${role}</td>
-            <td>${staff.certification || 'N/A'}</td>
+            <td>${user.certification || 'N/A'}</td>
             <td>${hireDate}</td>
             <td><span class="status-badge active">Active</span></td>
             <td class="action-buttons">
-                <button onclick="viewStaffDetails(${staff.id || staff.userId})"><i class="fas fa-eye"></i> View</button>
-                <button onclick="editStaffMember(${staff.id || staff.userId})"><i class="fas fa-edit"></i> Edit</button>
-                <button onclick="showRoleAssignmentModal(${staff.id || staff.userId}, '${role}')"><i class="fas fa-user-tag"></i> Role</button>
-                <button onclick="showDeleteStaffModal(${staff.id || staff.userId})" class="delete-btn"><i class="fas fa-trash"></i> Delete</button>
+                <button onclick="viewStaffDetails(${user.userId})"><i class="fas fa-eye"></i> View</button>
+                <button onclick="editStaffMember(${user.userId})"><i class="fas fa-edit"></i> Edit</button>
+                <button onclick="showRoleAssignmentModal(${user.userId}, '${role}')"><i class="fas fa-user-tag"></i> Role</button>
+                <button onclick="showDeleteStaffModal(${user.userId})" class="delete-btn"><i class="fas fa-trash"></i> Delete</button>
             </td>
         `;
         tbody.appendChild(row);
     });
 }
 
-// Filter staff members by role
+// Filter users by role
 function applyStaffManagementFilters() {
     const roleFilter = document.getElementById('staff-role-filter').value.toUpperCase();
 
-    let filteredStaff;
+    let filteredUsers;
 
     if (roleFilter) {
         // Map selected filter to actual discriminator value
-        filteredStaff = roleFilter ?
-            staffMembers.filter(staff => staff.roleType === roleFilter) :
-            staffMembers;
+        filteredUsers = roleFilter ?
+            allUsers.filter(user => user.roleType === roleFilter) :
+            allUsers;
     } else {
-        filteredStaff = staffMembers;
+        filteredUsers = allUsers;
     }
 
-    displayStaffMembers(filteredStaff);
+    displayStaffMembers(filteredUsers);
 }
 
-// Clear staff filters
+// Clear filters
 function clearStaffManagementFilters() {
     document.getElementById('staff-role-filter').value = '';
-    displayStaffMembers(staffMembers);
+    displayStaffMembers(allUsers);
 }
 
 // View staff details
 function viewStaffDetails(staffId) {
-    const staff = staffMembers.find(s => s.id === staffId || s.userId === staffId);
+    const staff = allUsers.find(s => s.id === staffId || s.userId === staffId);
     if (!staff) return;
 
     // Create modal content
@@ -123,14 +123,50 @@ function viewStaffDetails(staffId) {
 
 // Helper function to get staff role from discriminator
 function getStaffRole(roleType) {
-    switch (roleType) {
-        case 'ADMIN': return 'Administrator';
-        case 'GUIDE': return 'Safari Guide';
-        case 'IT_SUPPORT': return 'IT Support';
-        case 'IT_ASSISTANT': return 'IT Assistant';
-        case 'CAPTAIN': return 'Boat Captain';
-        case 'STAFF': return 'General Staff';
-        default: return 'Staff Member';
+    // Handle null/undefined values
+    if (!roleType) {
+        return 'Not Assigned';
+    }
+    
+    // Convert to uppercase for case-insensitive comparison
+    const role = roleType.toUpperCase();
+    
+    switch (role) {
+        case 'ADMIN': 
+        case 'ADMINISTRATOR': 
+            return 'Administrator';
+            
+        case 'GUIDE': 
+        case 'SAFARI_GUIDE': 
+        case 'SAFARIGUIDE':
+            return 'Safari Guide';
+            
+        case 'IT_SUPPORT': 
+        case 'ITSUPPORT':
+            return 'IT Support';
+            
+        case 'IT_ASSISTANT': 
+        case 'ITASSISTANT':
+            return 'IT Assistant';
+            
+        case 'CAPTAIN': 
+        case 'BOAT_CAPTAIN':
+        case 'BOATCAPTAIN':
+            return 'Boat Captain';
+            
+        case 'STAFF': 
+        case 'GENERAL_STAFF':
+        case 'STAFF_MEMBER':
+        case 'STAFFMEMBER':
+            return 'General Staff';
+            
+        case 'CUSTOMER':
+        case 'CLIENT':
+            return 'Customer';
+            
+        default: 
+            console.warn('Unknown role type:', roleType);
+            return `Unknown Role (${roleType})`;
     }
 }
 
@@ -147,7 +183,7 @@ function formatAddress(staff) {
 
 // Function to edit staff member
 function editStaffMember(staffId) {
-    const staff = staffMembers.find(s => s.id === staffId || s.userId === staffId);
+    const staff = allUsers.find(s => s.id === staffId || s.userId === staffId);
     if (!staff) return;
 
     // Populate form fields
@@ -199,10 +235,10 @@ function editStaffMember(staffId) {
 }
 
 // Function to show the role assignment modal
-function showRoleAssignmentModal(staffId, currentRole) {
-    const staff = staffMembers.find(s => (s.id || s.userId) == staffId);
-    if (!staff) {
-        alert('Staff member not found');
+function showRoleAssignmentModal(userId, currentRole) {
+    const user = allUsers.find(u => u.userId == userId);
+    if (!user) {
+        alert('User not found');
         return;
     }
 
@@ -214,7 +250,7 @@ function showRoleAssignmentModal(staffId, currentRole) {
         <div class="modal-content">
             <span class="close" onclick="closeModal('roleAssignmentModal')">&times;</span>
             <h2>Assign Role</h2>
-            <p>Assigning role for: <strong>${staff.firstName} ${staff.secondName}</strong></p>
+            <p>Assigning role for: <strong>${user.firstName} ${user.secondName}</strong></p>
             <p>Current role: <strong>${currentRole}</strong></p>
             
             <div class="form-group">
@@ -226,11 +262,12 @@ function showRoleAssignmentModal(staffId, currentRole) {
                     <option value="IT_SUPPORT">IT Support</option>
                     <option value="IT_ASSISTANT">IT Assistant</option>
                     <option value="CAPTAIN">Boat Captain</option>
+                    <option value="CUSTOMER">Customer</option>
                 </select>
             </div>
             
             <div class="form-actions">
-                <button class="btn btn-primary" onclick="assignRole(${staffId})">Assign Role</button>
+                <button class="btn btn-primary" onclick="assignRole(${userId})">Assign Role</button>
                 <button class="btn btn-secondary" onclick="closeModal('roleAssignmentModal')">Cancel</button>
             </div>
         </div>
@@ -249,22 +286,21 @@ function closeModal(modalId) {
     }
 }
 
-// Function to assign role to staff member
+// Function to assign role to user
 function assignRole(staffId) {
     const roleSelect = document.getElementById('role-select');
     const selectedRole = roleSelect.value; // Use value instead of text
 
-    console.log(`Assigning role ${selectedRole} to staff ID: ${staffId}`);
+    console.log(`Assigning role ${selectedRole} to user ID: ${staffId}`);
 
     // Send role assignment request to server
-    fetch('/api/staff/assign-role', {
+    fetch(`/api/admin/users/${staffId}/role`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + localStorage.getItem('token')
         },
         body: JSON.stringify({
-            userId: staffId,
             role: selectedRole
         })
     })
@@ -279,7 +315,7 @@ function assignRole(staffId) {
     .then(data => {
         alert('Role successfully updated');
         closeModal('roleAssignmentModal');
-        // Reload staff members to reflect changes
+        // Reload users to reflect changes
         loadStaffMembers();
     })
     .catch(error => {
@@ -356,7 +392,7 @@ function addStaffMember() {
         hireDate: hireDate
     };
 
-    fetch('/api/staff', {
+    fetch('/api/admin/users', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -447,7 +483,7 @@ function saveEditedStaff() {
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
     button.disabled = true;
 
-    fetch(`/api/staff/${staffId}`, {
+    fetch(`/api/admin/users/${staffId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -491,7 +527,7 @@ function saveEditedStaff() {
 
 // Function to show delete staff modal
 function showDeleteStaffModal(staffId) {
-    const staff = staffMembers.find(s => s.id === staffId || s.userId === staffId);
+    const staff = allUsers.find(s => s.id === staffId || s.userId === staffId);
     if (!staff) return;
 
     // Create modal content
@@ -521,7 +557,7 @@ function showDeleteStaffModal(staffId) {
 
 // Function to confirm staff deletion
 function confirmDeleteStaff(staffId) {
-    fetch(`/api/staff/${staffId}`, {
+    fetch(`/api/admin/users/${staffId}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
