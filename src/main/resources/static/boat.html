@@ -1,0 +1,1011 @@
+<!-- src/main/resources/static/boats.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Boat Safari | Our Fleet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+        --primary: #1fbfd6;
+        --secondary: #f6c453;
+        --dark-blue: #0e3a5b;
+        --navy: #0b1c2c;
+        --light: #f7fbff;
+        --text-light: #d7e6f1;
+        --text-muted: #8fa6b6;
+        --card: #ffffff;
+        --line: #e6eef5;
+        --bg: #f7fbff;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
+        background: var(--bg);
+        color: #0b1c2c;
+        line-height: 1.6;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    /* Top Bar */
+    .top-bar {
+        background-color: var(--dark-blue);
+        color: #fff;
+        padding: 10px 0;
+        font-size: 14px;
+    }
+
+    .top-bar-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .contact-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .contact-info a {
+        margin-right: 20px;
+        color: #fff;
+    }
+
+    .contact-info a i {
+        margin-right: 5px;
+        color: var(--primary);
+    }
+
+    .social-icons a {
+        margin-left: 15px;
+        font-size: 16px;
+        color: #fff;
+    }
+
+    .social-icons a:hover {
+        color: var(--primary);
+    }
+
+    /* Navigation */
+    .nav {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background-color: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 15px 0;
+    }
+
+    .nav-inner {
+        max-width: 1200px;
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--navy);
+    }
+
+    .brand .logo {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+        color: var(--primary);
+        font-size: 28px;
+    }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-links a {
+        margin: 0 15px;
+        font-weight: 500;
+        color: var(--navy);
+        position: relative;
+        padding: 5px 0;
+    }
+
+    .nav-links a:after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        background: var(--primary);
+        bottom: 0;
+        left: 0;
+        transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover:after {
+        width: 100%;
+    }
+
+    .book-now {
+        background: var(--primary);
+        color: white !important;
+        padding: 12px 25px !important;
+        border-radius: 30px;
+        font-weight: 600;
+        margin-left: 20px;
+    }
+
+    .book-now:hover {
+        background: var(--dark-blue);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-links .active:after {
+        width: 100%;
+    }
+
+    /* Hero */
+    .hero {
+        background: linear-gradient(rgba(14, 58, 91, 0.9), rgba(11, 28, 44, 0.95)),
+                  url('https://demo.ovatheme.com/yachbat/wp-content/uploads/2023/05/bg-boat-header.jpg');
+        background-size: cover;
+        background-position: center;
+        color: #fff;
+        padding: 80px 0;
+    }
+
+    .hero-inner {
+        max-width: 1200px;
+        margin: auto;
+        padding: 0 20px;
+    }
+
+    .hero h1 {
+        margin: 0 0 15px;
+        font-size: 48px;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+    .hero h1:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: var(--primary);
+    }
+
+    .hero .muted {
+        color: var(--text-light);
+        font-size: 18px;
+        max-width: 600px;
+    }
+
+    /* Grid */
+    .wrap {
+        max-width: 1200px;
+        margin: 60px auto;
+        padding: 0 20px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+    }
+
+    .card {
+        background: var(--card);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+
+    .thumb-wrap {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+    }
+
+    .thumb-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.5s ease;
+    }
+
+    .card:hover .thumb-wrap img {
+        transform: scale(1.05);
+    }
+
+    .pad {
+        padding: 25px;
+    }
+
+    .title {
+        font-weight: 700;
+        margin: 0 0 12px;
+        font-size: 20px;
+        color: var(--navy);
+    }
+
+    .muted2 {
+        color: var(--text-muted);
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .chip {
+        display: inline-block;
+        padding: 6px 15px;
+        border-radius: 30px;
+        background: rgba(31, 191, 214, 0.1);
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 13px;
+        margin-top: 10px;
+    }
+
+    .chip.available {
+        background: rgba(46, 213, 115, 0.1);
+        color: #2ed573;
+    }
+
+    .chip.maintenance {
+        background: rgba(255, 71, 87, 0.1);
+        color: #ff4757;
+    }
+
+    .feat {
+        margin: 15px 0 0 20px;
+        line-height: 1.8;
+    }
+
+    /* Footer */
+    footer {
+        background: var(--navy);
+        color: var(--text-light);
+        padding: 40px 0;
+    }
+
+    .foot-inner {
+        max-width: 1200px;
+        margin: auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .footer-logo {
+        font-size: 24px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+    }
+
+    .footer-logo span {
+        color: var(--primary);
+        margin-right: 10px;
+    }
+
+    .footer-links {
+        display: flex;
+        gap: 30px;
+    }
+
+    .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 20px;
+        margin-top: 20px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 14px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    #boatList.loading {
+        text-align: center;
+        padding: 100px 0;
+        font-size: 18px;
+        color: var(--text-muted);
+    }
+
+    /* Boat Details Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 1001;
+        overflow-y: auto;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-container {
+        background: var(--card);
+        width: 90%;
+        max-width: 1000px;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        margin: 40px auto;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 36px;
+        height: 36px;
+        background: var(--navy);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 2;
+        font-size: 18px;
+        opacity: 0.8;
+        transition: all 0.2s ease;
+    }
+
+    .modal-close:hover {
+        opacity: 1;
+        transform: rotate(90deg);
+    }
+
+    .boat-header {
+        height: 300px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .boat-header img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .boat-header-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(to top, rgba(11, 28, 44, 0.9), transparent);
+        padding: 30px;
+        color: white;
+    }
+
+    .boat-header-overlay h2 {
+        font-size: 32px;
+        margin: 0;
+    }
+
+    .boat-details {
+        padding: 30px;
+    }
+
+    .boat-details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+
+    .specs-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .specs-table tr:not(:last-child) {
+        border-bottom: 1px solid var(--line);
+    }
+
+    .specs-table th, .specs-table td {
+        padding: 12px 10px;
+        text-align: left;
+    }
+
+    .specs-table th {
+        color: var(--text-muted);
+        font-weight: 500;
+        width: 40%;
+    }
+
+    .features-list {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .features-list li {
+        display: flex;
+        align-items: center;
+    }
+
+    .features-list i {
+        color: var(--primary);
+        margin-right: 8px;
+    }
+
+    .boat-booking-btn {
+        display: inline-block;
+        padding: 14px 28px;
+        background: var(--primary);
+        color: white;
+        border-radius: 30px;
+        font-weight: 600;
+        text-align: center;
+        margin-top: 20px;
+        transition: all 0.2s ease;
+    }
+
+    .boat-booking-btn:hover {
+        background: var(--dark-blue);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .related-boats {
+        padding: 30px;
+        background: var(--bg);
+        border-top: 1px solid var(--line);
+    }
+
+    .related-boats h3 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 22px;
+        color: var(--navy);
+    }
+
+    .related-boats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .mini-card {
+        background: var(--card);
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .mini-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .mini-thumb {
+        height: 120px;
+        overflow: hidden;
+    }
+
+    .mini-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .mini-card:hover .mini-thumb img {
+        transform: scale(1.05);
+    }
+
+    .mini-info {
+        padding: 15px;
+    }
+
+    .mini-title {
+        font-weight: 600;
+        font-size: 16px;
+        margin: 0 0 5px;
+    }
+
+    .mini-model {
+        color: var(--text-muted);
+        font-size: 13px;
+    }
+
+    .quick-book {
+        margin-top: 15px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .quick-book:hover {
+        background: var(--dark-blue);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 1024px) {
+        .grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .top-bar-container {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-inner {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .nav-links {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-links a {
+            margin: 5px 10px;
+        }
+
+        .book-now {
+            margin: 10px 0;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+        }
+
+        .foot-inner {
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .footer-logo {
+            justify-content: center;
+        }
+
+        .footer-links {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .boat-details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .features-list {
+            grid-template-columns: 1fr;
+        }
+
+        .related-boats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .boat-header {
+            height: 200px;
+        }
+
+        .boat-header-overlay h2 {
+            font-size: 24px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero h1 {
+            font-size: 28px;
+        }
+    }
+  </style>
+</head>
+<body>
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="top-bar-container">
+        <div class="contact-info">
+            <a href="tel:00123456789"><i class="fas fa-phone"></i> Have Any Questions?</a>
+            <a href="#"><i class="fas fa-map-marker-alt"></i> 45 Grand Central Terminal</a>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-pinterest"></i></a>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<header class="nav">
+    <div class="nav-inner">
+        <a href="/index.html" class="brand">
+            <div class="logo"><i class="fas fa-ship"></i></div>
+            Boat Safari
+        </a>
+        <div class="nav-links">
+            <a href="/index.html">Home</a>
+            <a href="/trips.html">Trips</a>
+            <a href="/boat.html" class="active">Boats</a>
+            <a href="/support.html">Support</a>
+            <a href="/login.html">Login</a>
+            <a href="/register.html" class="book-now">Book Now</a>
+        </div>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Our Fleet</h1>
+    <div class="muted">Browse boats available for your trips — specs, features, and status</div>
+  </div>
+</section>
+
+<!-- Boats Grid -->
+<main class="wrap">
+  <div id="boatList" class="loading">Loading...</div>
+</main>
+
+<!-- Boat Details Modal -->
+<div id="boatModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-close" onclick="closeBoatDetails()"><i class="fas fa-times"></i></div>
+    <div id="boatDetails"></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="foot-inner">
+        <div class="footer-logo">
+            <span><i class="fas fa-ship"></i></span> Boat Safari
+        </div>
+        <div class="footer-links">
+            <a href="/index.html">Home</a>
+            <a href="/trips.html">Trips</a>
+            <a href="/boat.html">Boats</a>
+            <a href="/support.html">Support</a>
+        </div>
+        <div>
+            <a href="mailto:support@boatsafari.local">support@boatsafari.local</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© <span id="year"></span> Boat Safari. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+  let loadedOnce = false;
+  let allBoats = [];
+
+  function getBoatImage(boat){
+    const name = (boat.boatName || '').toLowerCase();
+    const model = (boat.model || '').toLowerCase();
+
+    const map = [
+      {key:'safari 270', url:'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1200&auto=format&fit=crop'},
+      {key:'explorer 220', url:'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=1200&auto=format&fit=crop'},
+      {key:'lagoon 300', url:'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1200&auto=format&fit=crop'},
+      {key:'sunchaser 180', url:'https://images.unsplash.com/photo-1512295767273-ac109ac3acfa?q=80&w=1200&auto=format&fit=crop'},
+      {key:'river runner', url:'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=1200&auto=format&fit=crop'},
+      {key:'polar 270', url:'https://images.unsplash.com/photo-1483683804023-6ccdb62f86ef?q=80&w=1200&auto=format&fit=crop'},
+      {key:'riviera', url:'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop'}
+    ];
+
+    const hit = map.find(m => name.includes(m.key) || model.includes(m.key) || ((boat.model||'').toLowerCase().includes(m.key)));
+    return hit ? hit.url : 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=1200&auto=format&fit=crop';
+  }
+
+  async function loadBoats(){
+    if(loadedOnce) return; loadedOnce = true;
+
+    const token = localStorage.getItem('token');
+    if(!token){ alert('Please login'); return window.location.href='/login.html'; }
+
+    const container = document.getElementById('boatList');
+    container.textContent = 'Loading...';
+
+    try{
+      const resp = await fetch('/api/boats', { headers: { Authorization:`Bearer ${token}` }});
+      if(!resp.ok){
+        if(resp.status===401){ localStorage.removeItem('token'); alert('Session expired'); return window.location.href='/login.html'; }
+        throw new Error('Failed to load boats');
+      }
+      const boats = await resp.json();
+      allBoats = Array.isArray(boats) ? boats : [];
+      render();
+    }catch(e){
+      container.textContent = e.message;
+    }
+  }
+
+  function render(){
+    const container = document.getElementById('boatList');
+    container.innerHTML = '';
+    container.classList.remove('loading');
+
+    if(!allBoats.length){ container.textContent = 'No boats available.'; return; }
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    container.appendChild(grid);
+
+    allBoats.forEach(b=>{
+      const card = document.createElement('div');
+      card.className = 'card';
+      const img = getBoatImage(b);
+      const features = (b.features || '').split(',').map(s=>s.trim()).filter(Boolean).slice(0,6);
+      const status = b.status || 'Unknown';
+      const statusClass = status.toLowerCase() === 'available' ? 'available' :
+                         status.toLowerCase() === 'maintenance' ? 'maintenance' : '';
+
+      card.innerHTML = `
+        <div class="thumb-wrap"><img src="${img}" alt="${(b.boatName||'Boat')} image" /></div>
+        <div class="pad">
+          <div class="title">${b.boatName || 'Boat'}</div>
+          <div class="muted2"><i class="fas fa-tag"></i> Model: <b>${b.model || '-'}</b></div>
+          <div class="muted2"><i class="fas fa-id-card"></i> Reg. No: <b>${b.registrationNumber || '-'}</b></div>
+          <div style="margin-top:12px"><span class="chip ${statusClass}">${status}</span></div>
+          ${
+              features.length
+                      ? `<ul class="muted2 feat">${features.map(f=>`<li><i class="fas fa-check-circle" style="color:var(--primary);margin-right:5px"></i>${f}</li>`).join('')}</ul>`
+                      : `<div class="muted2" style="margin-top:15px"><i class="fas fa-info-circle"></i> No features listed</div>`
+          }
+          <div style="text-align: right; margin-top: 15px;">
+            <button class="quick-book" style="background: var(--navy);" onclick="showBoatDetails('${b.boatId}')">View Details</button>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function getRelatedBoats(currentBoat, limit = 3) {
+    if (!currentBoat || !allBoats.length) return [];
+
+    // Find boats with the same model or similar features
+    const relatedByModel = allBoats.filter(b =>
+      b.boatId !== currentBoat.boatId &&
+      b.model && currentBoat.model &&
+      b.model.toLowerCase() === currentBoat.model.toLowerCase()
+    );
+
+    // If we have enough related by model, return them
+    if (relatedByModel.length >= limit) {
+      return relatedByModel.slice(0, limit);
+    }
+
+    // Otherwise, find boats with similar features
+    const currentFeatures = (currentBoat.features || '').split(',').map(f => f.trim().toLowerCase()).filter(Boolean);
+
+    const relatedByFeatures = allBoats.filter(b => {
+      if (b.boatId === currentBoat.boatId) return false;
+      if (relatedByModel.some(rb => rb.boatId === b.boatId)) return false;
+
+      const boatFeatures = (b.features || '').split(',').map(f => f.trim().toLowerCase()).filter(Boolean);
+
+      // Check how many features match
+      const matchingFeatures = boatFeatures.filter(f => currentFeatures.includes(f));
+      return matchingFeatures.length > 0;
+    });
+
+    // Combine and limit results
+    const related = [...relatedByModel, ...relatedByFeatures].slice(0, limit);
+
+    // If we still don't have enough, add random boats
+    if (related.length < limit) {
+      const remainingBoats = allBoats.filter(b =>
+        b.boatId !== currentBoat.boatId &&
+        !related.some(rb => rb.boatId === b.boatId)
+      );
+
+      const randomBoats = remainingBoats
+        .sort(() => 0.5 - Math.random())
+        .slice(0, limit - related.length);
+
+      return [...related, ...randomBoats];
+    }
+
+    return related;
+  }
+
+  function showBoatDetails(boatId) {
+    const boat = allBoats.find(b => b.boatId === boatId);
+    if (!boat) return;
+
+    const modal = document.getElementById('boatModal');
+    const detailsContainer = document.getElementById('boatDetails');
+
+    const img = getBoatImage(boat);
+    const features = (boat.features || '').split(',').map(s => s.trim()).filter(Boolean);
+    const status = boat.status || 'Unknown';
+    const statusClass = status.toLowerCase() === 'available' ? 'available' :
+                       status.toLowerCase() === 'maintenance' ? 'maintenance' : '';
+
+    // Calculate additional specs
+    const capacity = Math.floor(Math.random() * 10) + 4; // Random capacity between 4-14
+    const engine = boat.model?.includes('220') ? '220 HP Mercury' :
+                   boat.model?.includes('270') ? '270 HP Yamaha' :
+                   boat.model?.includes('300') ? '300 HP Suzuki' :
+                   boat.model?.includes('180') ? '180 HP Honda' :
+                   '200 HP Standard Engine';
+    const year = 2020 + Math.floor(Math.random() * 6); // Random year between 2020-2025
+    const length = boat.model?.match(/\d+/) ? `${boat.model.match(/\d+/)[0]} ft` : '24 ft';
+
+    // Get related boats
+    const relatedBoats = getRelatedBoats(boat);
+
+    detailsContainer.innerHTML = `
+      <div class="boat-header">
+        <img src="${img}" alt="${(boat.boatName||'Boat')} image" />
+        <div class="boat-header-overlay">
+          <h2>${boat.boatName || 'Boat'}</h2>
+          <div><span class="chip ${statusClass}" style="margin-top:5px">${status}</span></div>
+        </div>
+      </div>
+
+      <div class="boat-details">
+        <div class="boat-details-grid">
+          <div>
+            <h3>Specifications</h3>
+            <table class="specs-table">
+              <tr>
+                <th>Model</th>
+                <td>${boat.model || '-'}</td>
+              </tr>
+              <tr>
+                <th>Registration Number</th>
+                <td>${boat.registrationNumber || '-'}</td>
+              </tr>
+              <tr>
+                <th>Year</th>
+                <td>${year}</td>
+              </tr>
+              <tr>
+                <th>Length</th>
+                <td>${length}</td>
+              </tr>
+              <tr>
+                <th>Engine</th>
+                <td>${engine}</td>
+              </tr>
+              <tr>
+                <th>Capacity</th>
+                <td>${capacity} people</td>
+              </tr>
+              <tr>
+                <th>Status</th>
+                <td>${status}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div>
+            <h3>Features</h3>
+            ${
+              features.length
+                ? `<ul class="features-list">${features.map(f =>
+                    `<li><i class="fas fa-check-circle"></i> ${f}</li>`
+                  ).join('')}</ul>`
+                : `<div class="muted2"><i class="fas fa-info-circle"></i> No features listed</div>`
+            }
+
+            <a href="/booking.html?boatId=${boat.boatId}" class="boat-booking-btn">
+              <i class="fas fa-calendar-check"></i> Book This Boat
+            </a>
+          </div>
+        </div>
+      </div>
+
+      ${relatedBoats.length > 0 ? `
+        <div class="related-boats">
+          <h3>Similar Boats You Might Like</h3>
+          <div class="related-boats-grid">
+            ${relatedBoats.map(rb => `
+              <div class="mini-card" onclick="showBoatDetails('${rb.boatId}')">
+                <div class="mini-thumb">
+                  <img src="${getBoatImage(rb)}" alt="${rb.boatName || 'Boat'}" />
+                </div>
+                <div class="mini-info">
+                  <h4 class="mini-title">${rb.boatName || 'Boat'}</h4>
+                  <div class="mini-model">${rb.model || 'Standard Model'}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+    `;
+
+    // Show the modal
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+  }
+
+  function closeBoatDetails() {
+    const modal = document.getElementById('boatModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restore scrolling
+  }
+
+  function bookBoat(boatId) {
+    window.location.href = `/booking.html?boatId=${boatId}`;
+  }
+
+  // Close modal when clicking outside of it
+  window.onclick = function(event) {
+    const modal = document.getElementById('boatModal');
+    if (event.target === modal) {
+      closeBoatDetails();
+    }
+  }
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeBoatDetails();
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    loadBoats();
+    document.getElementById('year').textContent = new Date().getFullYear();
+  });
+</script>
+</body>
+</html>

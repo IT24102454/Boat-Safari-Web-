@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Boat Safari | Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/user-profile.css">
+    <style>
+        :root {
+            --primary: #1fbfd6;
+            --secondary: #f6c453;
+            --dark-blue: #0e3a5b;
+            --navy: #0b1c2c;
+            --light: #f7fbff;
+            --text-light: #d7e6f1;
+            --text-muted: #8fa6b6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, 'Helvetica Neue', Arial, sans-serif;
+            color: #333;
+            background: #ffffff;
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background-color: var(--dark-blue);
+            color: #fff;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .top-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-info a {
+            margin-right: 20px;
+            color: #fff;
+        }
+
+        .contact-info a i {
+            margin-right: 5px;
+            color: var(--primary);
+        }
+
+        .social-icons a {
+            margin-left: 15px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .social-icons a:hover {
+            color: var(--primary);
+        }
+
+        /* Navigation */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .brand .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            font-weight: 500;
+            color: var(--navy);
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            bottom: 0;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+
+        .book-now {
+            background: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-left: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .book-now:hover {
+            background: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 85vh;
+            background: linear-gradient(rgba(14, 58, 91, 0.8), rgba(11, 28, 44, 0.9)),
+                        url('https://demo.ovatheme.com/yachbat/wp-content/uploads/2023/05/slider-home2-img1.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .hero-inner {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .hero-content {
+            max-width: 650px;
+        }
+
+        .hero-subtitle {
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .hero-subtitle:before {
+            content: '';
+            width: 50px;
+            height: 2px;
+            background: var(--secondary);
+            position: absolute;
+            top: 50%;
+            left: -70px;
+        }
+
+        .hero h1 {
+            font-size: 60px;
+            margin: 10px 0 20px;
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        .cta {
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn.primary {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+        }
+
+        .btn.primary:hover {
+            background: #fff;
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn.secondary {
+            background: transparent;
+            color: #fff;
+            border: 2px solid #fff;
+        }
+
+        .btn.secondary:hover {
+            background: #fff;
+            color: var(--dark-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-nav {
+            position: absolute;
+            bottom: 50px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .hero-nav button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hero-nav button:hover {
+            background: var(--primary);
+        }
+
+        /* Features Section */
+        .features {
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            color: var(--dark-blue);
+            margin-bottom: 15px;
+        }
+
+        .section-title .line {
+            width: 80px;
+            height: 3px;
+            background: var(--primary);
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 30px 25px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(31, 191, 214, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .card h4 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--dark-blue);
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--navy);
+            color: var(--text-light);
+            padding: 40px 0;
+        }
+
+        .foot-inner {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-logo span {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hero h1 {
+                font-size: 48px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-bar-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-inner {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links a {
+                margin: 5px 10px;
+            }
+
+            .book-now {
+                margin: 10px 0;
+            }
+
+            .hero-content {
+                text-align: center;
+            }
+
+            .hero-subtitle:before {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .cta {
+                justify-content: center;
+            }
+
+            .foot-inner {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .footer-logo {
+                justify-content: center;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                height: 90vh;
+            }
+
+            .hero-content {
+                padding: 0 10px;
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
+
+            .cta {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="top-bar-container">
+        <div class="contact-info">
+            <a href="tel:00123456789"><i class="fas fa-phone"></i> Have Any Questions?</a>
+            <a href="#"><i class="fas fa-map-marker-alt"></i> 45 Grand Central Terminal</a>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-pinterest"></i></a>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<header class="nav">
+    <div class="nav-inner">
+        <a href="/index.html" class="brand">
+            <div class="logo"><i class="fas fa-ship"></i></div>
+            Boat Safari
+        </a>
+        <div class="nav-links">
+            <a href="/index.html">Home</a>
+            <a href="/trips.html">Trips</a>
+            <a href="/boat.html">Boats</a>
+            <a href="/support.html">Support</a>
+            <a href="/booking-history.html" class="auth-required">My Bookings</a>
+            <!-- User profile will be inserted here by the user-profile.js script -->
+        </div>
+    </div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-content">
+            <div class="hero-subtitle">Premium Boat & Safari Experiences</div>
+            <h1>Boat & Marine Service In Safari</h1>
+            <p>
+                Comfortable boats, certified guides, and effortless online booking. Discover river routes,
+                sunset cruises, and exclusive tours tailored for every traveler.
+            </p>
+            <div class="cta">
+                <a class="btn primary" href="/trips.html">
+                    <i class="fas fa-compass"></i> Explore Trips
+                </a>
+                <a class="btn secondary" href="/boat.html">
+                    <i class="fas fa-ship"></i> Browse Boats
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="hero-nav">
+        <button><i class="fas fa-arrow-left"></i></button>
+        <button><i class="fas fa-arrow-right"></i></button>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="section-title">
+        <h2>Why Choose Us</h2>
+        <div class="line"></div>
+    </div>
+    <div class="grid">
+        <div class="card">
+            <div class="icon">
+                <i class="fas fa-certificate"></i>
+            </div>
+            <h4>Licensed Guides</h4>
+            <p>Experienced, certified, and wildlife-savvy crew for a safe journey.</p>
+        </div>
+        <div class="card">
+            <div class="icon">
+                <i class="fas fa-anchor"></i>
+            </div>
+            <h4>Modern Fleet</h4>
+            <p>Comfortable boats, regularly maintained for safety and comfort.</p>
+        </div>
+        <div class="card">
+            <div class="icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <h4>Flexible Schedules</h4>
+            <p>Morning, mid-day, and sunset trips available every week.</p>
+        </div>
+        <div class="card">
+            <div class="icon">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <h4>Easy Payments</h4>
+            <p>Pay online or on arrival—your choice for maximum convenience.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="foot-inner">
+        <div class="footer-logo">
+            <span><i class="fas fa-ship"></i></span> Boat Safari
+        </div>
+        <div class="footer-links">
+            <a href="/index.html">Home</a>
+            <a href="/trips.html">Trips</a>
+            <a href="/boat.html">Boats</a>
+            <a href="/support.html">Support</a>
+        </div>
+        <div>
+            <a href="mailto:support@boatsafari.local">support@boatsafari.local</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© <span id="year"></span> Boat Safari. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Simple slider functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const prevBtn = document.querySelector('.hero-nav button:first-child');
+        const nextBtn = document.querySelector('.hero-nav button:last-child');
+
+        // This is just a placeholder for slider functionality
+        // In a real implementation, you would have multiple slides
+        prevBtn.addEventListener('click', function() {
+            console.log('Previous slide');
+        });
+
+        nextBtn.addEventListener('click', function() {
+            console.log('Next slide');
+        });
+    });
+</script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/user-profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,751 @@
+<!-- src/main/resources/static/trips.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Boat Safari | Trips</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1fbfd6;
+            --secondary: #f6c453;
+            --dark-blue: #0e3a5b;
+            --navy: #0b1c2c;
+            --light: #f7fbff;
+            --text-light: #d7e6f1;
+            --text-muted: #8fa6b6;
+            --card: #ffffff;
+            --line: #e6eef5;
+            --bg: #f7fbff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
+            background: var(--bg);
+            color: #0b1c2c;
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background-color: var(--dark-blue);
+            color: #fff;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .top-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-info a {
+            margin-right: 20px;
+            color: #fff;
+        }
+
+        .contact-info a i {
+            margin-right: 5px;
+            color: var(--primary);
+        }
+
+        .social-icons a {
+            margin-left: 15px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .social-icons a:hover {
+            color: var(--primary);
+        }
+
+        /* Navigation */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .brand .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            font-weight: 500;
+            color: var(--navy);
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            bottom: 0;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+
+        .book-now {
+            background: var(--primary);
+            color: white !important;
+            padding: 12px 25px !important;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-left: 20px;
+        }
+
+        .book-now:hover {
+            background: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links .active:after {
+            width: 100%;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(rgba(14, 58, 91, 0.9), rgba(11, 28, 44, 0.95)),
+                      url('https://demo.ovatheme.com/yachbat/wp-content/uploads/2023/05/bg-trip-header.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding: 80px 0;
+        }
+
+        .hero-inner {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            margin: 0 0 15px;
+            font-size: 48px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .hero h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+        }
+
+        .hero .muted {
+            color: var(--text-light);
+            font-size: 18px;
+            max-width: 600px;
+        }
+
+        /* Filter Bar */
+        .toolbar {
+            max-width: 1200px;
+            margin: -30px auto 40px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filters input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #e7edf3;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .filters input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(31, 191, 214, 0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            border-radius: 30px;
+            border: 1px solid transparent;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn.outline {
+            background: #fff;
+            border-color: #e7edf3;
+            color: var(--navy);
+        }
+
+        .btn.outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .meta {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        /* Grid */
+        .wrap {
+            max-width: 1200px;
+            margin: 40px auto 60px;
+            padding: 0 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .thumb {
+            height: 200px;
+            background: linear-gradient(rgba(14, 58, 91, 0.6), rgba(11, 28, 44, 0.7)),
+                        url('https://demo.ovatheme.com/yachbat/wp-content/uploads/2023/05/trip-1.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .thumb:before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: var(--primary);
+        }
+
+        .pad {
+            padding: 25px;
+        }
+
+        .title {
+            font-weight: 700;
+            margin: 0 0 15px;
+            font-size: 20px;
+            color: var(--navy);
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .muted2 {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .muted2 i {
+            color: var(--primary);
+            margin-right: 5px;
+            width: 18px;
+            text-align: center;
+        }
+
+        .price {
+            font-weight: 800;
+            font-size: 22px;
+            color: var(--primary);
+        }
+
+        .book {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .book:hover {
+            background: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Pagination */
+        .pager {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 40px 0 20px;
+        }
+
+        .pagebtn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e7edf3;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .pagebtn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pagebtn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .pageinfo {
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        #tripList.loading {
+            text-align: center;
+            padding: 100px 0;
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--navy);
+            color: var(--text-light);
+            padding: 40px 0;
+        }
+
+        .foot-inner {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-logo span {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-bar-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-inner {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links a {
+                margin: 5px 10px;
+            }
+
+            .book-now {
+                margin: 10px 0;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .foot-inner {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .footer-logo {
+                justify-content: center;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="top-bar-container">
+        <div class="contact-info">
+            <a href="tel:00123456789"><i class="fas fa-phone"></i> Have Any Questions?</a>
+            <a href="#"><i class="fas fa-map-marker-alt"></i> 45 Grand Central Terminal</a>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-pinterest"></i></a>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<header class="nav">
+    <div class="nav-inner">
+        <a href="/index.html" class="brand">
+            <div class="logo"><i class="fas fa-ship"></i></div>
+            Boat Safari
+        </a>
+        <div class="nav-links">
+            <a href="/index.html">Home</a>
+            <a href="/trips.html" class="active">Trips</a>
+            <a href="/boat.html">Boats</a>
+            <a href="/support.html">Support</a>
+            <a href="/login.html">Login</a>
+            <a href="/register.html" class="book-now">Book Now</a>
+        </div>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-inner">
+        <h1>Available Trips</h1>
+        <div class="muted">See start time, capacity, and price — pick your perfect ride</div>
+    </div>
+</section>
+
+<!-- Filters -->
+<section class="toolbar">
+    <div class="filters">
+        <input type="number" id="fSeats" min="1" placeholder="Search by minimum capacity..." />
+        <button class="btn" id="btnSearch"><i class="fas fa-search"></i> Search</button>
+        <button class="btn outline" id="btnClear"><i class="fas fa-times"></i> Clear</button>
+    </div>
+    <div class="meta" id="resultMeta"></div>
+</section>
+
+<!-- Trips Grid -->
+<main class="wrap">
+    <div id="tripList" class="loading">Loading...</div>
+    <div class="pager" id="pager" style="display:none"></div>
+    <div class="pageinfo" id="pageinfo"></div>
+</main>
+
+<!-- Footer -->
+<footer>
+    <div class="foot-inner">
+        <div class="footer-logo">
+            <span><i class="fas fa-ship"></i></span> Boat Safari
+        </div>
+        <div class="footer-links">
+            <a href="/index.html">Home</a>
+            <a href="/trips.html">Trips</a>
+            <a href="/boat.html">Boats</a>
+            <a href="/support.html">Support</a>
+        </div>
+        <div>
+            <a href="mailto:support@boatsafari.local">support@boatsafari.local</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© <span id="year"></span> Boat Safari. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+    let loadedOnce = false;
+    let allTrips = [];
+    let filtered = [];
+    let page = 1;
+    const pageSize = 6;
+
+    function fmtTime(t){
+        if(!t) return '-';
+        const parts = String(t).split(':');
+        return parts.length>=2 ? `${parts[0]}:${parts[1]}` : t;
+    }
+
+    async function loadTrips() {
+        if (loadedOnce) return;
+        loadedOnce = true;
+
+        const token = localStorage.getItem('token');
+        if (!token) { alert('Please login'); return window.location.href = '/login.html'; }
+
+        const list = document.getElementById('tripList');
+        list.textContent = 'Loading...';
+
+        try {
+            const resp = await fetch('/api/trips', { headers: { Authorization: `Bearer ${token}` } });
+            if (!resp.ok) {
+                if (resp.status === 401) { localStorage.removeItem('token'); alert('Session expired. Please login again.'); return window.location.href = '/login.html'; }
+                throw new Error('Failed to load trips');
+            }
+            const trips = await resp.json();
+            allTrips = Array.isArray(trips) ? trips : [];
+            applyFilters();
+        } catch (e) {
+            list.textContent = e.message;
+        }
+    }
+
+    function applyFilters() {
+        const fSeats = Number(document.getElementById('fSeats').value) || 0;
+
+        filtered = allTrips.filter(t => {
+            const bySeats = fSeats ? (Number(t.capacity) >= fSeats) : true;
+            return bySeats;
+        });
+
+        page = 1;
+        render();
+    }
+
+    function render() {
+        const list = document.getElementById('tripList');
+        const meta = document.getElementById('resultMeta');
+        const pager = document.getElementById('pager');
+        const pageinfo = document.getElementById('pageinfo');
+
+        list.innerHTML = '';
+        list.classList.remove('loading');
+        const total = filtered.length;
+        meta.textContent = total ? `Showing ${total} trip(s)` : 'No trips found';
+
+        if (!total) { pager.style.display = 'none'; pageinfo.textContent = ''; return; }
+
+        const pages = Math.max(1, Math.ceil(total / pageSize));
+        if (page > pages) page = pages;
+        const start = (page - 1) * pageSize;
+        const items = filtered.slice(start, start + pageSize);
+
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+        list.appendChild(grid);
+
+        // Array of trip background images
+        const tripBackgrounds = [
+            '/img/trip1.jpg',
+            '/img/trip2.jpg',
+            '/img/trip3.webp',
+            '/img/trip4.jpg',
+            '/img/trip5.jpg',
+            '/img/green-river-safari.jpg' // New boat safari image
+        ];
+
+        items.forEach((t, idx) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            const bgImage = tripBackgrounds[idx % tripBackgrounds.length];
+
+            card.innerHTML = `
+                <div class="thumb" style="background: linear-gradient(rgba(14, 58, 91, 0.6), rgba(11, 28, 44, 0.7)), url('${bgImage}'); background-size: cover; background-position: center;"></div>
+                <div class="pad">
+                    <div class="title">${t.route || 'Boat Safari'}</div>
+                    <div class="muted2"><i class="far fa-clock"></i> Start Time: <b>${fmtTime(t.startTime)}</b></div>
+                    <div class="muted2"><i class="fas fa-users"></i> Capacity: <b>${t.capacity}</b></div>
+                    <div class="row">
+                        <div class="price">$${t.price}</div>
+                        <button class="book" onclick="bookTrip(${t.tripId})"><i class="fas fa-ticket-alt"></i> Book Now</button>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        pager.innerHTML = '';
+        if (pages > 1) {
+            pager.style.display = 'flex';
+            for (let i = 1; i <= pages; i++) {
+                const b = document.createElement('button');
+                b.className = 'pagebtn' + (i === page ? ' active' : '');
+                b.textContent = i;
+                b.onclick = () => { page = i; render(); };
+                pager.appendChild(b);
+            }
+        } else {
+            pager.style.display = 'none';
+        }
+        pageinfo.textContent = pages > 1 ? `Page ${page} of ${pages}` : '';
+    }
+
+    function clearFilters() {
+        document.getElementById('fSeats').value = '';
+        applyFilters();
+    }
+
+    function bookTrip(id) {
+        window.location.href = `/booking.html?tripId=${id}`;
+    }
+
+    document.getElementById('btnSearch').addEventListener('click', applyFilters);
+    document.getElementById('btnClear').addEventListener('click', clearFilters);
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTrips();
+        document.getElementById('year').textContent = new Date().getFullYear();
+    });
+</script>
+</body>
+</html>

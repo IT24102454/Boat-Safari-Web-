@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Dashboard - Boat Safari</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        .sidebar {
+            background-color: #052c65;
+            color: white;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 5px;
+        }
+        .sidebar .nav-link:hover {
+            color: #fff;
+        }
+        .sidebar .nav-link.active {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .trip-card {
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .trip-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .badge-corner {
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 10px;
+            border-radius: 0 0.25rem 0 0.25rem;
+        }
+        .trip-details {
+            margin-top: 20px;
+            display: none;
+        }
+        .passenger-table th, .passenger-table td {
+            vertical-align: middle;
+        }
+        .progress-tracker {
+            height: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar py-3 d-flex flex-column">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-ship fa-2x me-2"></i>
+                    <h4 class="mb-0">Boat Safari</h4>
+                </div>
+                <div class="text-center mb-4">
+                    <img src="https://via.placeholder.com/100" alt="Guide Profile" class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
+                    <h6 id="guide-name" class="mb-1">Loading...</h6>
+                    <div class="badge bg-info">Safari Guide</div>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="#upcoming-trips" class="nav-link active" data-bs-toggle="tab" role="tab">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Upcoming Trips
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#past-trips" class="nav-link" data-bs-toggle="tab" role="tab">
+                            <i class="fas fa-history me-2"></i>
+                            Trip History
+                        </a>
+                    </li>
+                </ul>
+                <div class="mt-auto">
+                    <a href="#" id="logout-link" class="nav-link text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 id="page-title">Guide Dashboard</h2>
+                    <span class="text-muted" id="current-date"></span>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Upcoming Trips -->
+                    <div class="tab-pane fade show active" id="upcoming-trips" role="tabpanel">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            View your upcoming trips and manage passenger check-ins.
+                        </div>
+
+                        <div class="row" id="upcoming-trips-container">
+                            <div class="col-12 text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading upcoming trips...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Past Trips -->
+                    <div class="tab-pane fade" id="past-trips" role="tabpanel">
+                        <div class="alert alert-secondary">
+                            <i class="fas fa-history me-2"></i>
+                            Review your past trips and check-in records.
+                        </div>
+
+                        <div class="row" id="past-trips-container">
+                            <div class="col-12 text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading past trips...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trip Details Section -->
+                <div id="trip-details" class="trip-details">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 id="trip-detail-title">Trip Details</h3>
+                        <button id="back-to-trips" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-arrow-left me-2"></i>Back to trips
+                        </button>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Trip Information</h5>
+                                <span id="trip-date-time"></span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Location:</strong> <span id="trip-location"></span></p>
+                                    <p><strong>Route:</strong> <span id="trip-route"></span></p>
+                                    <p><strong>Boat:</strong> <span id="trip-boat"></span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Capacity:</strong> <span id="trip-capacity"></span></p>
+                                    <p><strong>Bookings:</strong> <span id="trip-bookings"></span></p>
+                                    <div>
+                                        <strong>Check-in Progress:</strong>
+                                        <div class="progress progress-tracker mt-1">
+                                            <div id="check-in-progress" class="progress-bar bg-success" role="progressbar"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-1">
+                                            <small id="checked-in-count">0 Checked in</small>
+                                            <small id="total-passengers">of 0 passengers</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Passenger List</h5>
+                            <span class="badge bg-light text-dark" id="passenger-count">0 passengers</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover passenger-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Contact</th>
+                                            <th>Email</th>
+                                            <th>Group Size</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="passenger-list">
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4">Loading passenger list...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Check-in Modal -->
+    <div class="modal fade" id="check-in-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Passenger Check-in</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Confirm check-in for <strong id="checkin-passenger-name"></strong>?</p>
+                    <p>Group size: <span id="checkin-passenger-count"></span> passengers</p>
+                    <div class="mb-3">
+                        <label for="check-in-notes" class="form-label">Notes (optional):</label>
+                        <textarea id="check-in-notes" class="form-control" rows="3" placeholder="Add any notes about the check-in..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="confirm-check-in" class="btn btn-success">Confirm Check-in</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/guide-dashboard.js"></script>
+    <script src="assets/js/auth.js"></script>
+</body>
+</html>

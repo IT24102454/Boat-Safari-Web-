@@ -1,0 +1,869 @@
+<!-- src/main/resources/static/booking-history.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Boat Safari | Booking History</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1fbfd6;
+            --secondary: #f6c453;
+            --dark-blue: #0e3a5b;
+            --navy: #0b1c2c;
+            --light: #f7fbff;
+            --text-light: #d7e6f1;
+            --text-muted: #8fa6b6;
+            --line: #e6eef5;
+            --bg: #f7fbff;
+            --card: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--navy);
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background-color: var(--dark-blue);
+            color: #fff;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .top-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-info a {
+            margin-right: 20px;
+            color: #fff;
+        }
+
+        .contact-info a i {
+            margin-right: 5px;
+            color: var(--primary);
+        }
+
+        .social-icons a {
+            margin-left: 15px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .social-icons a:hover {
+            color: var(--primary);
+        }
+
+        /* Navigation */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .brand .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            font-weight: 500;
+            color: var(--navy);
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            bottom: 0;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+
+        .nav-links .active:after {
+            width: 100%;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(rgba(14, 58, 91, 0.9), rgba(11, 28, 44, 0.95)),
+                      url('https://demo.ovatheme.com/yachbat/wp-content/uploads/2023/05/bg-history-header.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding: 80px 0;
+        }
+
+        .hero-inner {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            margin: 0 0 15px;
+            font-size: 42px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .hero h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+        }
+
+        .hero .muted {
+            color: var(--text-light);
+            font-size: 18px;
+            max-width: 600px;
+            line-height: 1.8;
+        }
+
+        /* Main Content */
+        .wrap {
+            max-width: 1200px;
+            margin: -40px auto 60px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .panel {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 24px;
+            color: var(--dark-blue);
+            position: relative;
+            padding-left: 15px;
+            margin: 0;
+        }
+
+        .panel-title:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .notice {
+            background: rgba(31, 191, 214, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 12px 15px;
+            color: var(--dark-blue);
+            font-size: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .filters input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .filters input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(31, 191, 214, 0.1);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn i {
+            font-size: 16px;
+        }
+
+        .btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn.primary:hover {
+            background: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn.outline {
+            background: transparent;
+            border: 1px solid #cfe8ef;
+            color: var(--dark-blue);
+        }
+
+        .btn.outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .meta {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .table-wrapper {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--line);
+            font-size: 14px;
+            text-align: left;
+        }
+
+        th {
+            background: #f0f6fb;
+            font-weight: 600;
+            color: var(--dark-blue);
+        }
+
+        tbody tr:hover {
+            background: rgba(31, 191, 214, 0.03);
+        }
+
+        td:first-child {
+            font-weight: 600;
+            color: var(--dark-blue);
+        }
+
+        /* Status styles */
+        .status-pill {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-confirmed {
+            background: rgba(46, 213, 115, 0.15);
+            color: #2ed573;
+        }
+
+        .status-provisional {
+            background: rgba(255, 186, 0, 0.15);
+            color: #ffba00;
+        }
+
+        .status-cancelled {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+        }
+
+        /* Pager */
+        .pager {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 30px 0 15px;
+        }
+
+        .pagebtn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .pagebtn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pagebtn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .pageinfo {
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            color: var(--dark-blue);
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--navy);
+            color: var(--text-light);
+            padding: 40px 0;
+        }
+
+        .foot-inner {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-logo span {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        @media (max-width: 1000px) {
+            .filters {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-bar-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-inner {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links a {
+                margin: 5px 10px;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-buttons {
+                flex-direction: column;
+            }
+
+            .foot-inner {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .footer-logo {
+                justify-content: center;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="top-bar-container">
+        <div class="contact-info">
+            <a href="tel:00123456789"><i class="fas fa-phone"></i> Have Any Questions?</a>
+            <a href="#"><i class="fas fa-map-marker-alt"></i> 45 Grand Central Terminal</a>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-pinterest"></i></a>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<header class="nav">
+    <div class="nav-inner">
+        <a href="/index.html" class="brand">
+            <div class="logo"><i class="fas fa-ship"></i></div>
+            Boat Safari
+        </a>
+        <div class="nav-links">
+            <a href="/index.html">Home</a>
+            <a href="/trips.html">Trips</a>
+            <a href="/boat.html">Boats</a>
+            <a href="/support.html">Support</a>
+            <a href="/login.html">Login</a>
+            <a href="/register.html">Register</a>
+        </div>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-inner">
+        <h1>Booking History</h1>
+        <div class="muted">View and manage your bookings. Filter by date, status, or trip to find exactly what you're looking for.</div>
+    </div>
+</section>
+
+<main class="wrap">
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title">Booking Records</h2>
+        </div>
+
+        <div class="notice">
+            <i class="fas fa-info-circle"></i> You must be logged in to view your booking history. This page shows your own bookings by default.
+        </div>
+
+        <div class="filters">
+            <div class="form-group">
+                <i class="far fa-envelope"></i>
+                <input id="f_email" type="email" placeholder="Your email (auto-detected)" />
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-tag"></i>
+                <input id="f_status" type="text" placeholder="Status (PROVISIONAL/CONFIRMED)" />
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-route"></i>
+                <input id="f_trip" type="number" placeholder="Trip ID" />
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-calendar-alt"></i>
+                <input id="f_from" type="date" placeholder="From Date" />
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-calendar-alt"></i>
+                <input id="f_to" type="date" placeholder="To Date" />
+            </div>
+        </div>
+
+        <div class="filter-buttons">
+            <button class="btn primary" id="bh_search">
+                <i class="fas fa-search"></i> Search
+            </button>
+            <button class="btn outline" id="bh_clear">
+                <i class="fas fa-undo"></i> Clear Filters
+            </button>
+        </div>
+
+        <div class="meta" id="meta"></div>
+
+        <div class="table-wrapper">
+            <table id="bh_table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Route</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Passengers</th>
+                        <th>Status</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="fas fa-history"></i>
+                                <h3>No Bookings Yet</h3>
+                                <p>Login and click Search to view your booking history</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pager" id="pager" style="display:none"></div>
+        <div class="pageinfo" id="pageinfo"></div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer>
+    <div class="foot-inner">
+        <div class="footer-logo">
+            <span><i class="fas fa-ship"></i></span> Boat Safari
+        </div>
+        <div class="footer-links">
+            <a href="/index.html">Home</a>
+            <a href="/trips.html">Trips</a>
+            <a href="/boat.html">Boats</a>
+            <a href="/support.html">Support</a>
+        </div>
+        <div>
+            <a href="mailto:support@boatsafari.local">support@boatsafari.local</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© <span id="year"></span> Boat Safari. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+    const token = localStorage.getItem('token');
+    const pageSize = 10;
+    let rows = [];
+    let page = 1;
+
+    function fmtTime(t){ if(!t) return '-'; const p = String(t).split(':'); return p.length>=2?`${p[0]}:${p[1]}`:t; }
+
+    async function getMyEmail() {
+        // Uses optional /api/debug/me if present. If not, keep field empty.
+        if (!token) return '';
+        try {
+            const r = await fetch('/api/debug/me', { headers: { Authorization:`Bearer ${token}` } });
+            if (r.ok) {
+                const data = await r.json();
+                return data && data.email ? data.email : '';
+            }
+        } catch (_) {}
+        return '';
+    }
+
+    async function loadDefaultEmail() {
+        if (!token) return;
+        const email = await getMyEmail();
+        if (email) document.getElementById('f_email').value = email;
+    }
+
+    function render() {
+        const tbody = document.querySelector('#bh_table tbody');
+        const meta = document.getElementById('meta');
+        const pager = document.getElementById('pager');
+        const pageinfo = document.getElementById('pageinfo');
+
+        tbody.innerHTML = '';
+        meta.textContent = rows.length ? `Found ${rows.length} booking(s)` : 'No bookings found.';
+
+        if (!rows.length) {
+            pager.style.display='none';
+            pageinfo.textContent='';
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <h3>No Bookings Found</h3>
+                            <p>Try adjusting your search filters or make a new booking</p>
+                        </div>
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        // Pagination
+        const pages = Math.max(1, Math.ceil(rows.length / pageSize));
+        if (page > pages) page = pages;
+        const start = (page - 1) * pageSize;
+        const slice = rows.slice(start, start + pageSize);
+
+        slice.forEach(b => {
+            const tr = document.createElement('tr');
+            const trip = b.trip || {};
+            const time = (trip.startTime || '') + (trip.endTime ? ` - ${trip.endTime}` : '');
+
+            // Determine status class for styling
+            let statusClass = '';
+            if (b.status) {
+                const status = b.status.toLowerCase();
+                if (status.includes('confirm')) statusClass = 'status-confirmed';
+                else if (status.includes('provision')) statusClass = 'status-provisional';
+                else if (status.includes('cancel')) statusClass = 'status-cancelled';
+            }
+
+            tr.innerHTML = `
+                <td>${b.bookingId}</td>
+                <td>${trip.route || '-'}</td>
+                <td>${trip.date || '-'}</td>
+                <td>${fmtTime(trip.startTime)}${trip.endTime?` - ${fmtTime(trip.endTime)}`:''}</td>
+                <td><i class="fas fa-users"></i> ${b.passengers}</td>
+                <td><span class="status-pill ${statusClass}">${b.status || '-'}</span></td>
+                <td><strong>$${b.totalCost != null ? b.totalCost : '-'}</strong></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Pager
+        pager.innerHTML = '';
+        if (pages > 1) {
+            pager.style.display = 'flex';
+            for (let i=1; i<=pages; i++) {
+                const b = document.createElement('button');
+                b.className = 'pagebtn' + (i===page ? ' active' : '');
+                b.textContent = i;
+                b.onclick = () => { page = i; render(); };
+                pager.appendChild(b);
+            }
+        } else {
+            pager.style.display = 'none';
+        }
+        pageinfo.textContent = pages > 1 ? `Page ${page} of ${pages}` : '';
+    }
+
+    async function search() {
+        const tbody = document.querySelector('#bh_table tbody');
+        if (!token) { alert('Please login to view booking history.'); window.location.href='/login.html'; return; }
+
+        const email = document.getElementById('f_email').value.trim();
+        const status = document.getElementById('f_status').value.trim();
+        const tripId = document.getElementById('f_trip').value.trim();
+        const fromDate = document.getElementById('f_from').value;
+        const toDate = document.getElementById('f_to').value;
+
+        const params = new URLSearchParams();
+        if (email) params.append('email', email);
+        if (status) params.append('status', status);
+        if (tripId) params.append('tripId', tripId);
+        if (fromDate) params.append('fromDate', fromDate);
+        if (toDate) params.append('toDate', toDate);
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 30px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--primary); margin-bottom: 10px;"></i>
+                    <p>Loading your bookings...</p>
+                </td>
+            </tr>`;
+
+        try {
+            // Reuse existing backend endpoint that returns filtered booking list (requires auth)
+            const resp = await fetch(`/api/support/bookings?${params.toString()}`, { headers: { Authorization:`Bearer ${token}` } });
+            if (!resp.ok) {
+                if (resp.status === 401) { localStorage.removeItem('token'); location.href='/login.html'; return; }
+                throw new Error('Failed to load bookings');
+            }
+            rows = await resp.json();
+            page = 1;
+            render();
+        } catch (e) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <h3>Error</h3>
+                            <p>${e.message}</p>
+                        </div>
+                    </td>
+                </tr>`;
+        }
+    }
+
+    document.getElementById('bh_search').addEventListener('click', search);
+    document.getElementById('bh_clear').addEventListener('click', async ()=>{
+        document.getElementById('f_status').value='';
+        document.getElementById('f_trip').value='';
+        document.getElementById('f_from').value='';
+        document.getElementById('f_to').value='';
+        // Keep user's email prefilled for convenience
+        await loadDefaultEmail();
+        rows = [];
+        render();
+    });
+
+    // Set year in footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // init
+    loadDefaultEmail();
+</script>
+</body>
+</html>

@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Boat Safari | Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1fbfd6;
+            --secondary: #f6c453;
+            --dark-blue: #0e3a5b;
+            --navy: #0b1c2c;
+            --light: #f7fbff;
+            --text-light: #d7e6f1;
+            --text-muted: #8fa6b6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, 'Helvetica Neue', Arial, sans-serif;
+            color: #333;
+            background: #ffffff;
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background-color: var(--dark-blue);
+            color: #fff;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .top-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-info a {
+            margin-right: 20px;
+            color: #fff;
+        }
+
+        .contact-info a i {
+            margin-right: 5px;
+            color: var(--primary);
+        }
+
+        .social-icons a {
+            margin-left: 15px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .social-icons a:hover {
+            color: var(--primary);
+        }
+
+        /* Navigation */
+        .nav {
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-blue);
+        }
+
+        .brand .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            font-weight: 500;
+            color: var(--dark-blue);
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            bottom: 0;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+
+        .nav-links .active:after {
+            width: 100%;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            color: var(--dark-blue);
+            margin-bottom: 30px;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .dashboard-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-buttons button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .dashboard-buttons button i {
+            margin-right: 8px;
+        }
+
+        .dashboard-buttons button:hover {
+            background-color: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: var(--dark-blue);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        th, td {
+            border: 1px solid #eaeaea;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--light);
+            color: var(--dark-blue);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: rgba(31, 191, 214, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-buttons button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .action-buttons button:first-child {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .action-buttons button:last-child {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            animation: modalopen 0.3s;
+        }
+
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-20px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: var(--dark-blue);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-blue);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(31, 191, 214, 0.1);
+        }
+
+        form button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        form button:hover {
+            background-color: var(--dark-blue);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--navy);
+            color: var(--text-light);
+            padding: 30px 0;
+            margin-top: auto;
+        }
+
+        .foot-inner {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .top-bar-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-inner {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links a {
+                margin: 5px 10px;
+            }
+
+            .dashboard-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .foot-inner {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+                margin-top: 10px;
+            }
+        }
+
+        /* Analytics Dashboard */
+        .analytics-cards {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .analytics-card {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            flex: 1;
+            min-width: 250px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .analytics-icon {
+            font-size: 28px;
+            color: var(--primary);
+            margin-right: 15px;
+        }
+
+        .analytics-info h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: var(--dark-blue);
+        }
+
+        .analytics-info p {
+            font-size: 16px;
+            margin: 0;
+            color: #555;
+        }
+
+        .analytics-charts {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .chart-container {
+            flex: 1;
+            min-width: 300px;
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--dark-blue);
+        }
+
+        /* User Management */
+        .user-status-badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: white;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .user-status-active {
+            background-color: #2ecc71;
+        }
+
+        .user-status-inactive {
+            background-color: #f39c12;
+        }
+
+        .user-status-suspended {
+            background-color: #e74c3c;
+        }
+
+        /* Hide elements initially for animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+<!-- Top Bar -->
+<div class="top-bar">
+    <div class="top-bar-container">
+        <div class="contact-info">
+            <a href="tel:00123456789"><i class="fas fa-phone"></i> Have Any Questions?</a>
+            <a href="#"><i class="fas fa-map-marker-alt"></i> 45 Grand Central Terminal</a>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-pinterest"></i></a>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<header class="nav">
+    <div class="nav-inner">
+        <a href="/index.html" class="brand">
+            <div class="logo"><i class="fas fa-ship"></i></div>
+            Boat Safari
+        </a>
+        <div class="nav-links">
+            <a href="/index.html">Home</a>
+            <a href="/trips.html">Trips</a>
+            <a href="/boat.html">Boats</a>
+            <a href="/support.html">Support</a>
+            <a href="/admin.html" class="active">Admin</a>
+            <a href="#" id="logoutBtn">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+    <div class="dashboard-buttons">
+        <button onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i> Analytics Dashboard</button>
+        <button onclick="showSection('users')"><i class="fas fa-users-cog"></i> User Management</button>
+        <button onclick="showSection('trips')"><i class="fas fa-route"></i> Trip Management</button>
+        <button onclick="showSection('bookings')"><i class="fas fa-calendar-check"></i> Booking Management</button>
+        <button onclick="showSection('staff')"><i class="fas fa-users"></i> Staff Assignment</button>
+        <button onclick="showSection('staff-management')"><i class="fas fa-user-cog"></i> Staff Management</button>
+        <button onclick="showSection('system')"><i class="fas fa-cogs"></i> System Settings</button>
+    </div>
+
+    <!-- Analytics Dashboard Section -->
+    <div id="dashboard-section" class="section">
+        <h2>System Analytics</h2>
+        <div class="analytics-cards">
+            <div class="analytics-card">
+                <div class="analytics-icon"><i class="fas fa-users"></i></div>
+                <div class="analytics-info">
+                    <h3>Total Users</h3>
+                    <p id="total-users">Loading...</p>
+                </div>
+            </div>
+            <div class="analytics-card">
+                <div class="analytics-icon"><i class="fas fa-ship"></i></div>
+                <div class="analytics-info">
+                    <h3>Active Trips</h3>
+                    <p id="active-trips">Loading...</p>
+                </div>
+            </div>
+            <div class="analytics-card">
+                <div class="analytics-icon"><i class="fas fa-ticket-alt"></i></div>
+                <div class="analytics-info">
+                    <h3>Bookings (Month)</h3>
+                    <p id="monthly-bookings">Loading...</p>
+                </div>
+            </div>
+            <div class="analytics-card">
+                <div class="analytics-icon"><i class="fas fa-dollar-sign"></i></div>
+                <div class="analytics-info">
+                    <h3>Revenue (Month)</h3>
+                    <p id="monthly-revenue">Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="analytics-charts">
+            <div class="chart-container">
+                <h3>Booking Trends</h3>
+                <canvas id="bookings-chart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Revenue Distribution</h3>
+                <canvas id="revenue-chart"></canvas>
+            </div>
+        </div>
+
+        <div class="analytics-tables">
+            <div class="table-container">
+                <h3>Top Performing Trips</h3>
+                <table id="top-trips-table">
+                    <thead>
+                        <tr>
+                            <th>Trip</th>
+                            <th>Bookings</th>
+                            <th>Revenue</th>
+                            <th>Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top-trips-tbody">
+                        <!-- Data will be loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <h3>Recent System Activity</h3>
+                <table id="system-activity-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="system-activity-tbody">
+                        <!-- Data will be loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Management Section -->
+    <div id="users-section" class="section" style="display: none;">
+        <h2>User Management</h2>
+        <button onclick="openAddUserModal()"><i class="fas fa-user-plus"></i> Add New User</button>
+        <div class="filters" style="margin: 20px 0; display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+            <div>
+                <label for="user-role-filter">Filter by Role:</label>
+                <select id="user-role-filter" style="width: 150px;">
+                    <option value="">All Roles</option>
+                    <option value="ADMIN">Administrator</option>
+                    <option value="CUSTOMER">Customer</option>
+                    <option value="GUIDE">Safari Guide</option>
+                    <option value="CAPTAIN">Boat Captain</option>
+                    <option value="STAFF">General Staff</option>
+                </select>
+            </div>
+            <div>
+                <label for="user-status-filter">Filter by Status:</label>
+                <select id="user-status-filter" style="width: 150px;">
+                    <option value="">All Statuses</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                    <option value="SUSPENDED">Suspended</option>
+                </select>
+            </div>
+            <button onclick="applyUserFilters()"><i class="fas fa-filter"></i> Apply Filters</button>
+            <button onclick="clearUserFilters()" style="background-color: #95a5a6;"><i class="fas fa-undo"></i> Clear Filters</button>
+        </div>
+        <div id="users-table-container" style="overflow-x: auto;">
+            <table id="users-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-tbody">
+                    <!-- User data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Trips Management Section -->
+    <div id="trips-section" class="section">
+        <h2>Trip Management</h2>
+        <button onclick="openAddTripModal()"><i class="fas fa-plus-circle"></i> Add New Trip</button>
+        <div id="trips-table-container" style="margin-top: 20px; overflow-x: auto;">
+            <table id="trips-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Capacity</th>
+                        <th>Price</th>
+                        <th>Route</th>
+                        <th>Boat</th>
+                        <th>Guide</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="trips-tbody">
+                    <!-- Trip data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bookings Management Section -->
+    <div id="bookings-section" class="section" style="display: none;">
+        <h2>Bookings Management</h2>
+        <button onclick="openAddBookingModal()"><i class="fas fa-plus-circle"></i> Create New Booking</button>
+        <div class="filters" style="margin: 20px 0; display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+            <div>
+                <label for="booking-status-filter">Filter by Status:</label>
+                <select id="booking-status-filter" style="width: 150px;">
+                    <option value="">All Statuses</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="CONFIRMED">Confirmed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                    <option value="COMPLETED">Completed</option>
+                </select>
+            </div>
+            <div>
+                <label for="booking-date-filter">Filter by Date:</label>
+                <input type="date" id="booking-date-filter">
+            </div>
+            <div>
+                <label for="booking-trip-filter">Filter by Trip:</label>
+                <select id="booking-trip-filter" style="width: 200px;">
+                    <option value="">All Trips</option>
+                    <!-- Trip options will be loaded dynamically -->
+                </select>
+            </div>
+            <button onclick="applyBookingFilters()"><i class="fas fa-filter"></i> Apply Filters</button>
+            <button onclick="clearBookingFilters()" style="background-color: #95a5a6;"><i class="fas fa-undo"></i> Clear Filters</button>
+        </div>
+        <div id="bookings-table-container" style="overflow-x: auto;">
+            <table id="bookings-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Trip</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Passengers</th>
+                        <th>Total Price</th>
+                        <th>Payment Status</th>
+                        <th>Booking Status</th>
+                        <th>Created On</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bookings-tbody">
+                    <!-- Booking data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Staff Assignment Section -->
+    <div id="staff-section" class="section" style="display: none;">
+        <h2>Staff Assignment</h2>
+        <div class="filters" style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+            <div>
+                <label for="staff-date-filter">Filter by Date:</label>
+                <input type="date" id="staff-date-filter">
+            </div>
+            <div>
+                <label for="staff-type-filter">Staff Type:</label>
+                <select id="staff-type-filter">
+                    <option value="">All Staff</option>
+                    <option value="GUIDE">Guides</option>
+                    <option value="CAPTAIN">Captains</option>
+                </select>
+            </div>
+            <button onclick="applyStaffFilters()"><i class="fas fa-filter"></i> Apply Filters</button>
+            <button onclick="clearStaffFilters()" style="background-color: #95a5a6;"><i class="fas fa-undo"></i> Clear Filters</button>
+        </div>
+
+        <!-- Unassigned Staff Section -->
+        <div class="staff-container">
+            <h3>Available Staff</h3>
+            <div id="available-staff-container" style="overflow-x: auto;">
+                <table id="available-staff-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Experience</th>
+                            <th>Contact</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="available-staff-tbody">
+                        <!-- Available staff data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Upcoming Trips Requiring Staff -->
+        <div class="staff-container" style="margin-top: 30px;">
+            <h3>Upcoming Trips</h3>
+            <div id="staff-trips-container" style="overflow-x: auto;">
+                <table id="staff-trips-table">
+                    <thead>
+                        <tr>
+                            <th>Trip ID</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Route</th>
+                            <th>Boat</th>
+                            <th>Assigned Guide</th>
+                            <th>Assigned Captain</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staff-trips-tbody">
+                        <!-- Trip data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Management Section -->
+    <div id="staff-management-section" class="section" style="display: none;">
+        <h2>Staff Management</h2>
+        <button onclick="openAddStaffModal()"><i class="fas fa-user-plus"></i> Add New Staff Member</button>
+        <div class="filters" style="margin: 20px 0; display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+            <div>
+                <label for="staff-role-filter">Filter by Role:</label>
+                <select id="staff-role-filter" style="width: 150px;">
+                    <option value="">All Roles</option>
+                    <option value="ADMIN">Administrator</option>
+                    <option value="GUIDE">Safari Guide</option>
+                    <option value="CAPTAIN">Boat Captain</option>
+                    <option value="STAFF">General Staff</option>
+                </select>
+            </div>
+            <button onclick="applyStaffManagementFilters()"><i class="fas fa-filter"></i> Apply Filters</button>
+            <button onclick="clearStaffManagementFilters()" style="background-color: #95a5a6;"><i class="fas fa-undo"></i> Clear Filters</button>
+        </div>
+        <div id="staff-management-table-container" style="overflow-x: auto;">
+            <table id="staff-management-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Contact</th>
+                        <th>Role</th>
+                        <th>Experience</th>
+                        <th>Join Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="staff-management-tbody">
+                    <!-- Staff data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Trip Modal -->
+<div id="add-trip-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('add-trip-modal')">&times;</span>
+        <h2>Add New Trip</h2>
+        <form id="add-trip-form">
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" required>
+            </div>
+            <div class="form-group">
+                <label for="start-time">Start Time:</label>
+                <input type="time" id="start-time" required>
+            </div>
+            <div class="form-group">
+                <label for="end-time">End Time:</label>
+                <input type="time" id="end-time" required>
+            </div>
+            <div class="form-group">
+                <label for="capacity">Capacity:</label>
+                <input type="number" id="capacity" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" id="price" step="0.01" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="route">Route:</label>
+                <input type="text" id="route" required>
+            </div>
+            <div class="form-group">
+                <label for="boat">Boat:</label>
+                <select id="boat">
+                    <option value="">Select a boat</option>
+                    <!-- Boat options will be loaded dynamically -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="guide">Safari Guide:</label>
+                <select id="guide">
+                    <option value="">Select a guide</option>
+                    <!-- Guide options will be loaded dynamically -->
+                </select>
+            </div>
+            <button type="submit"><i class="fas fa-save"></i> Add Trip</button>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Trip Modal -->
+<div id="edit-trip-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('edit-trip-modal')">&times;</span>
+        <h2>Edit Trip</h2>
+        <form id="edit-trip-form">
+            <input type="hidden" id="edit-trip-id">
+            <div class="form-group">
+                <label for="edit-date">Date:</label>
+                <input type="date" id="edit-date" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-start-time">Start Time:</label>
+                <input type="time" id="edit-start-time" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-end-time">End Time:</label>
+                <input type="time" id="edit-end-time" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-capacity">Capacity:</label>
+                <input type="number" id="edit-capacity" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-price">Price:</label>
+                <input type="number" id="edit-price" step="0.01" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-route">Route:</label>
+                <input type="text" id="edit-route" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-boat">Boat:</label>
+                <select id="edit-boat">
+                    <option value="">Select a boat</option>
+                    <!-- Boat options will be loaded dynamically -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-guide">Safari Guide:</label>
+                <select id="edit-guide">
+                    <option value="">Select a guide</option>
+                    <!-- Guide options will be loaded dynamically -->
+                </select>
+            </div>
+            <button type="submit"><i class="fas fa-save"></i> Update Trip</button>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-confirmation-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('delete-confirmation-modal')">&times;</span>
+        <h2>Confirm Delete</h2>
+        <p>Are you sure you want to delete this trip? This action cannot be undone.</p>
+        <input type="hidden" id="delete-trip-id">
+        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+            <button onclick="closeModal('delete-confirmation-modal')" style="background-color: #95a5a6;">Cancel</button>
+            <button onclick="confirmDeleteTrip()" style="background-color: #e74c3c;">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Booking Modal -->
+<div id="edit-booking-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('edit-booking-modal')">&times;</span>
+        <h2>Edit Booking</h2>
+        <form id="edit-booking-form">
+            <input type="hidden" id="edit-booking-id">
+            <div class="form-group">
+                <label for="edit-booking-customer">Customer Name:</label>
+                <input type="text" id="edit-booking-customer" readonly>
+            </div>
+            <div class="form-group">
+                <label for="edit-booking-trip">Trip:</label>
+                <select id="edit-booking-trip">
+                    <option value="">Select a trip</option>
+                    <!-- Trip options will be loaded dynamically -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-booking-passengers">Number of Passengers:</label>
+                <input type="number" id="edit-booking-passengers" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-booking-status">Booking Status:</label>
+                <select id="edit-booking-status">
+                    <option value="PENDING">Pending</option>
+                    <option value="CONFIRMED">Confirmed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                    <option value="COMPLETED">Completed</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-payment-status">Payment Status:</label>
+                <select id="edit-payment-status">
+                    <option value="UNPAID">Unpaid</option>
+                    <option value="PAID">Paid</option>
+                    <option value="REFUNDED">Refunded</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-booking-notes">Notes:</label>
+                <textarea id="edit-booking-notes" rows="3" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+            </div>
+            <button type="submit"><i class="fas fa-save"></i> Update Booking</button>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Booking Confirmation Modal -->
+<div id="delete-booking-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('delete-booking-modal')">&times;</span>
+        <h2>Confirm Delete</h2>
+        <p>Are you sure you want to delete this booking? This action cannot be undone.</p>
+        <input type="hidden" id="delete-booking-id">
+        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+            <button onclick="closeModal('delete-booking-modal')" style="background-color: #95a5a6;">Cancel</button>
+            <button onclick="confirmDeleteBooking()" style="background-color: #e74c3c;">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Trip Staff Modal -->
+<div id="edit-trip-staff-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('edit-trip-staff-modal')">&times;</span>
+        <h2>Edit Trip Staff</h2>
+        <form id="edit-trip-staff-form">
+            <input type="hidden" id="edit-staff-trip-id">
+            <div class="form-group">
+                <label for="trip-details">Trip Details:</label>
+                <div id="trip-details" style="padding: 10px; background-color: var(--light); border-radius: 5px; margin-bottom: 10px;"></div>
+            </div>
+            <div class="form-group">
+                <label for="edit-staff-guide">Safari Guide:</label>
+                <select id="edit-staff-guide">
+                    <option value="">None</option>
+                    <!-- Guide options will be loaded dynamically -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-staff-captain">Boat Captain:</label>
+                <select id="edit-staff-captain">
+                    <option value="">None</option>
+                    <!-- Captain options will be loaded dynamically -->
+                </select>
+            </div>
+            <button type="submit"><i class="fas fa-save"></i> Update Staff Assignment</button>
+        </form>
+    </div>
+</div>
+
+<!-- Add Staff Modal -->
+<div id="add-staff-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('add-staff-modal')">&times;</span>
+        <h2>Add New Staff Member</h2>
+        <form id="add-staff-form">
+            <div class="form-group">
+                <label for="staff-first-name">First Name:</label>
+                <input type="text" id="staff-first-name" required>
+            </div>
+            <div class="form-group">
+                <label for="staff-last-name">Last Name:</label>
+                <input type="text" id="staff-last-name" required>
+            </div>
+            <div class="form-group">
+                <label for="staff-email">Email:</label>
+                <input type="email" id="staff-email" required>
+            </div>
+            <div class="form-group">
+                <label for="staff-password">Password:</label>
+                <input type="password" id="staff-password" required>
+            </div>
+            <div class="form-group">
+                <label for="staff-role">Role:</label>
+                <select id="staff-role" required>
+                    <option value="STAFF">General Staff</option>
+                    <option value="GUIDE">Safari Guide</option>
+                    <option value="CAPTAIN">Boat Captain</option>
+                    <option value="SUPPORT">IT Support</option>
+                    <option value="ASSISTANT">IT Assistant</option>
+                    <option value="ADMIN">Administrator</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="staff-experience">Experience (years):</label>
+                <input type="number" id="staff-experience" min="0" value="0">
+            </div>
+            <div class="form-group">
+                <label for="staff-contact">Contact Number:</label>
+                <input type="text" id="staff-contact" required>
+            </div>
+            <div class="form-group">
+                <label for="staff-address">Address:</label>
+                <input type="text" id="staff-address">
+            </div>
+            <div class="form-group">
+                <label for="staff-city">City:</label>
+                <input type="text" id="staff-city">
+            </div>
+            <div class="form-group">
+                <label for="staff-street">Street:</label>
+                <input type="text" id="staff-street">
+            </div>
+            <div class="form-group">
+                <label for="staff-postal-code">Postal Code:</label>
+                <input type="text" id="staff-postal-code">
+            </div>
+            <div class="form-group">
+                <label for="staff-hire-date">Hire Date:</label>
+                <input type="date" id="staff-hire-date">
+            </div>
+            <button type="submit"><i class="fas fa-user-plus"></i> Add Staff Member</button>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Staff Modal -->
+<div id="edit-staff-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('edit-staff-modal')">&times;</span>
+        <h2>Edit Staff Member</h2>
+        <form id="edit-staff-form">
+            <input type="hidden" id="edit-staff-id">
+            <div class="form-group">
+                <label for="edit-staff-first-name">First Name:</label>
+                <input type="text" id="edit-staff-first-name" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-staff-last-name">Last Name:</label>
+                <input type="text" id="edit-staff-last-name" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-staff-email">Email:</label>
+                <input type="email" id="edit-staff-email" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-staff-password">Password:</label>
+                <input type="password" id="edit-staff-password">
+                <small>(Leave empty to keep current password)</small>
+            </div>
+            <div class="form-group">
+                <label for="edit-staff-role">Role:</label>
+                <select id="edit-staff-role" required>
+                    <option value="STAFF">General Staff</option>
+                    <option value="GUIDE">Safari Guide</option>
+                    <option value="CAPTAIN">Boat Captain</option>
+                    <option value="SUPPORT">IT Support</option>
+                    <option value="ASSISTANT">IT Assistant</option>
+                    <option value="ADMIN">Administrator</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-staff-contact">Contact Number:</label>
+                <input type="text" id="edit-staff-contact" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-staff-address">Address:</label>
+                <input type="text" id="edit-staff-address">
+            </div>
+            <div class="form-group">
+                <label for="edit-staff-city">City:</label>
+                <input type="text" id="edit-staff-city">
+            </div>
+            <div class="form-group">
+                <label for="edit-staff-street">Street:</label>
+                <input type="text" id="edit-staff-street">
+            </div>
+            <div class="form-group">
+                <label for="edit-staff-postal-code">Postal Code:</label>
+                <input type="text" id="edit-staff-postal-code">
+            </div>
+            <div class="form-group">
+                <label for="edit-staff-hire-date">Hire Date:</label>
+                <input type="date" id="edit-staff-hire-date">
+            </div>
+            <button type="submit"><i class="fas fa-save"></i> Update Staff Member</button>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Staff Confirmation Modal -->
+<div id="delete-staff-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('delete-staff-modal')">&times;</span>
+        <h2>Confirm Delete</h2>
+        <p>Are you sure you want to delete this staff member? This action cannot be undone.</p>
+        <input type="hidden" id="delete-staff-id">
+        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+            <button onclick="closeModal('delete-staff-modal')" style="background-color: #95a5a6;">Cancel</button>
+            <button onclick="confirmDeleteStaff()" style="background-color: #e74c3c;">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Booking Modal -->
+<div id="add-booking-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('add-booking-modal')">&times;</span>
+        <h2>Create New Booking</h2>
+        <form id="add-booking-form">
+            <div class="form-group">
+                <label for="customer-name">Customer Name:</label>
+                <input type="text" id="customer-name" required>
+            </div>
+            <div class="form-group">
+                <label for="trip-select">Select Trip:</label>
+                <select id="trip-select" required>
+                    <option value="">Select a trip</option>
+                    <!-- Trip options will be loaded dynamically -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="passenger-count">Number of Passengers:</label>
+                <input type="number" id="passenger-count" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="booking-status">Booking Status:</label>
+                <select id="booking-status" required>
+                    <option value="PENDING">Pending</option>
+                    <option value="CONFIRMED">Confirmed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                    <option value="COMPLETED">Completed</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="payment-status">Payment Status:</label>
+                <select id="payment-status" required>
+                    <option value="UNPAID">Unpaid</option>
+                    <option value="PAID">Paid</option>
+                    <option value="REFUNDED">Refunded</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="notes">Notes:</label>
+                <textarea id="notes" rows="3" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+            </div>
+            <button type="submit"><i class="fas fa-plus-circle"></i> Create Booking</button>
+        </form>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="foot-inner">
+        <div>© <span id="year"></span> Boat Safari. All Rights Reserved.</div>
+        <div class="footer-links">
+            <a href="/index.html">Home</a>
+            <a href="/trips.html">Trips</a>
+            <a href="/boat.html">Boats</a>
+            <a href="/support.html">Support</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Set year in footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Authentication check
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if user is logged in and has admin role
+        const token = localStorage.getItem('token');
+        const userRole = localStorage.getItem('userRole');
+
+        if (!token || userRole !== 'ADMIN') {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // Load initial trips data
+        loadTrips();
+        loadBoats();
+        loadGuides();
+        loadBookings();
+        loadStaff();
+
+        // Show staff management section if coming from direct link
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('section') === 'staff') {
+            showSection('staff-management');
+            loadStaffMembers(); // Load staff members immediately
+        }
+    });
+
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        window.location.href = 'login.html';
+    });
+
+    function showSection(section) {
+        document.getElementById('trips-section').style.display = 'none';
+        document.getElementById('bookings-section').style.display = 'none';
+        document.getElementById('staff-section').style.display = 'none';
+        document.getElementById('staff-management-section').style.display = 'none';
+        document.getElementById('dashboard-section').style.display = 'none';
+        document.getElementById('users-section').style.display = 'none';
+
+        document.getElementById(section + '-section').style.display = 'block';
+
+        if (section === 'trips') {
+            loadTrips();
+        } else if (section === 'bookings') {
+            loadBookings();
+        } else if (section === 'staff') {
+            loadStaff();
+        } else if (section === 'staff-management') {
+            loadStaffManagement();
+        } else if (section === 'dashboard') {
+            loadAnalyticsData();
+        } else if (section === 'users') {
+            loadUsers();
+        }
+    }
+
+    async function loadTrips() {
+        try {
+            document.getElementById('trips-tbody').innerHTML = '<tr><td colspan="10" style="text-align: center;">Loading trips...</td></tr>';
+
+            // Use mock data in development if API is not available
+            const useMockData = true;  // Set to false when connecting to real API
+
+            if (!useMockData) {
+                const response = await fetch('/api/trips', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch trips');
+                }
+
+                const trips = await response.json();
+                currentTrips = trips;
+                displayTrips(trips);
+            } else {
+                // Mock data for development
+                setTimeout(() => {
+                    const mockTrips = [
+                        {
+                            tripId: 1,
+                            date: '2025-10-15',
+                            startTime: '09:00',
+                            endTime: '12:00',
+                            capacity: 10,
+                            price: 150.00,
+                            route: 'Coastal Safari',
+                            boat: { boatId: 1, boatName: 'Sea Explorer' },
+                            guide: { userId: 1, firstName: 'John', secondName: 'Doe' }
+                        },
+                        {
+                            tripId: 2,
+                            date: '2025-10-16',
+                            startTime: '14:00',
+                            endTime: '17:00',
+                            capacity: 8,
+                            price: 120.00,
+                            route: 'Dolphin Watching',
+                            boat: { boatId: 2, boatName: 'Ocean Voyager' },
+                            guide: { userId: 2, firstName: 'Jane', secondName: 'Smith' }
+                        },
+                        {
+                            tripId: 3,
+                            date: '2025-10-17',
+                            startTime: '10:00',
+                            endTime: '15:00',
+                            capacity: 12,
+                            price: 200.00,
+                            route: 'Deep Sea Adventure',
+                            boat: { boatId: 3, boatName: 'Wave Rider' },
+                            guide: { userId: 3, firstName: 'Mike', secondName: 'Johnson' }
+                        }
+                    ];
+
+                    currentTrips = mockTrips;
+                    displayTrips(mockTrips);
+                }, 500);
+            }
+        } catch (error) {
+            console.error('Error loading trips:', error);
+            document.getElementById('trips-tbody').innerHTML =
+                '<tr><td colspan="10" style="text-align: center; color: #e74c3c;">Failed to load trips. Please try again later.</td></tr>';
+        }
+    }
+
+    async function loadBookings() {
+        try {
+            document.getElementById('bookings-tbody').innerHTML = '<tr><td colspan="11" style="text-align: center;">Loading bookings...</td></tr>';
+
+            // Use mock data in development if API is not available
+            const useMockData = true;  // Set to false when connecting to real API
+
+            if (!useMockData) {
+                const response = await fetch('/api/bookings', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch bookings');
+                }
+
+                const bookings = await response.json();
+                currentBookings = bookings;
+                displayBookings(bookings);
+            } else {
+                // Mock data for development
+                setTimeout(() => {
+                    const mockBookings = [
+                        {
+                            bookingId: 1,
+                            customerName: 'Alice Johnson',
+                            trip: {
+                                tripId: 1,
+                                route: 'Coastal Safari',
+                                date: '2025-10-15'
+                            },
+                            date: '2025-10-15',
+                            time: '2025-10-15T09:00:00',
+                            passengers: 3,
+                            totalPrice: 450.00,
+                            paymentStatus: 'PAID',
+                            bookingStatus: 'CONFIRMED',
+                            createdOn: '2025-09-30T14:25:00'
+                        },
+                        {
+                            bookingId: 2,
+                            customerName: 'Bob Wilson',
+                            trip: {
+                                tripId: 2,
+                                route: 'Dolphin Watching',
+                                date: '2025-10-16'
+                            },
+                            date: '2025-10-16',
+                            time: '2025-10-16T14:00:00',
+                            passengers: 2,
+                            totalPrice: 240.00,
+                            paymentStatus: 'UNPAID',
+                            bookingStatus: 'PENDING',
+                            createdOn: '2025-10-01T09:15:00'
+                        },
+                        {
+                            bookingId: 3,
+                            customerName: 'Carol Martinez',
+                            trip: {
+                                tripId: 3,
+                                route: 'Deep Sea Adventure',
+                                date: '2025-10-17'
+                            },
+                            date: '2025-10-17',
+                            time: '2025-10-17T10:00:00',
+                            passengers: 4,
+                            totalPrice: 800.00,
+                            paymentStatus: 'PAID',
+                            bookingStatus: 'COMPLETED',
+                            createdOn: '2025-09-25T16:30:00'
+                        }
+                    ];
+
+                    currentBookings = mockBookings;
+                    displayBookings(mockBookings);
+                }, 500);
+            }
+        } catch (error) {
+            console.error('Error loading bookings:', error);
+            document.getElementById('bookings-tbody').innerHTML =
+                '<tr><td colspan="11" style="text-align: center; color: #e74c3c;">Failed to load bookings. Please try again later.</td></tr>';
+        }
+    }
+
+    async function loadUsers() {
+        try {
+            document.getElementById('users-tbody').innerHTML = '<tr><td colspan="7" style="text-align: center;">Loading users...</td></tr>';
+
+            // Use mock data in development if API is not available
+            const useMockData = true;  // Set to false when connecting to real API
+
+            if (!useMockData) {
+                const response = await fetch('/api/users', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+
+                const users = await response.json();
+                displayUsers(users);
+            } else {
+                // Mock data for development
+                setTimeout(() => {
+                    const mockUsers = [
+                        {
+                            userId: 1,
+                            firstName: 'John',
+                            lastName: 'Admin',
+                            email: 'admin@boatsafari.com',
+                            role: 'ADMIN',
+                            status: 'ACTIVE',
+                            joined: '2025-01-01'
+                        },
+                        {
+                            userId: 2,
+                            firstName: 'Alice',
+                            lastName: 'Johnson',
+                            email: 'alice@example.com',
+                            role: 'CUSTOMER',
+                            status: 'ACTIVE',
+                            joined: '2025-08-15'
+                        },
+                        {
+                            userId: 3,
+                            firstName: 'Bob',
+                            lastName: 'Wilson',
+                            email: 'bob@example.com',
+                            role: 'CUSTOMER',
+                            status: 'INACTIVE',
+                            joined: '2025-09-01'
+                        },
+                        {
+                            userId: 4,
+                            firstName: 'Mike',
+                            lastName: 'Guide',
+                            email: 'mike@boatsafari.com',
+                            role: 'GUIDE',
+                            status: 'ACTIVE',
+                            joined: '2025-03-15'
+                        },
+                        {
+                            userId: 5,
+                            firstName: 'Sarah',
+                            lastName: 'Captain',
+                            email: 'sarah@boatsafari.com',
+                            role: 'CAPTAIN',
+                            status: 'ACTIVE',
+                            joined: '2025-02-10'
+                        },
+                        {
+                            userId: 6,
+                            firstName: 'David',
+                            lastName: 'Smith',
+                            email: 'david@example.com',
+                            role: 'CUSTOMER',
+                            status: 'SUSPENDED',
+                            joined: '2025-07-22'
+                        }
+                    ];
+
+                    displayUsers(mockUsers);
+                }, 500);
+            }
+        } catch (error) {
+            console.error('Error loading users:', error);
+            document.getElementById('users-tbody').innerHTML =
+                '<tr><td colspan="7" style="text-align: center; color: #e74c3c;">Failed to load users. Please try again later.</td></tr>';
+        }
+    }
+
+    async function loadStaff() {
+        try {
+            document.getElementById('available-staff-tbody').innerHTML = '<tr><td colspan="6" style="text-align: center;">Loading staff...</td></tr>';
+            document.getElementById('staff-trips-tbody').innerHTML = '<tr><td colspan="8" style="text-align: center;">Loading trips...</td></tr>';
+
+            // Use mock data in development if API is not available
+            const useMockData = true;  // Set to false when connecting to real API
+
+            if (!useMockData) {
+                const response = await fetch('/api/staff', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch staff');
+                }
+
+                const staff = await response.json();
+                availableStaff = staff;
+                displayAvailableStaff(staff);
+                displayStaffTrips(staff);
+            } else {
+                // Mock data for development
+                setTimeout(() => {
+                    const mockStaff = [
+                        {
+                            userId: 4,
+                            firstName: 'Mike',
+                            secondName: 'Guide',
+                            position: 'Safari Guide',
+                            experience: '5 years',
+                            contact: '555-1234',
+                            upcomingTrips: [
+                                {
+                                    tripId: 1,
+                                    date: '2025-10-15',
+                                    startTime: '09:00',
+                                    route: 'Coastal Safari',
+                                    boat: { boatId: 1, name: 'Sea Explorer' },
+                                    assignedGuide: { userId: 4, firstName: 'Mike', secondName: 'Guide' },
+                                    assignedCaptain: null
+                                }
+                            ]
+                        },
+                        {
+                            userId: 5,
+                            firstName: 'Sarah',
+                            secondName: 'Captain',
+                            position: 'Boat Captain',
+                            experience: '7 years',
+                            contact: '555-5678',
+                            upcomingTrips: [
+                                {
+                                    tripId: 2,
+                                    date: '2025-10-16',
+                                    startTime: '14:00',
+                                    route: 'Dolphin Watching',
+                                    boat: { boatId: 2, name: 'Ocean Voyager' },
+                                    assignedGuide: null,
+                                    assignedCaptain: { userId: 5, firstName: 'Sarah', secondName: 'Captain' }
+                                }
+                            ]
+                        },
+                        {
+                            userId: 7,
+                            firstName: 'Tom',
+                            secondName: 'Jones',
+                            position: 'Safari Guide',
+                            experience: '3 years',
+                            contact: '555-9012',
+                            upcomingTrips: []
+                        },
+                        {
+                            userId: 8,
+                            firstName: 'Laura',
+                            secondName: 'Miller',
+                            position: 'Boat Captain',
+                            experience: '4 years',
+                            contact: '555-3456',
+                            upcomingTrips: []
+                        }
+                    ];
+
+                    availableStaff = mockStaff;
+                    displayAvailableStaff(mockStaff);
+                    displayStaffTrips(mockStaff);
+                }, 500);
+            }
+        } catch (error) {
+            console.error('Error loading staff:', error);
+            document.getElementById('available-staff-tbody').innerHTML =
+                '<tr><td colspan="6" style="text-align: center; color: #e74c3c;">Failed to load staff. Please try again later.</td></tr>';
+        }
+    }
+
+    async function loadStaffManagement() {
+        try {
+            document.getElementById('staff-management-tbody').innerHTML = '<tr><td colspan="9" style="text-align: center;">Loading staff...</td></tr>';
+
+            // Use mock data in development if API is not available
+            const useMockData = true;  // Set to false when connecting to real API
+
+            if (!useMockData) {
+                const response = await fetch('/api/staff/all', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch staff members');
+                }
+
+                const staffMembers = await response.json();
+                displayStaffManagement(staffMembers);
+            } else {
+                // Mock data for development
+                setTimeout(() => {
+                    const mockStaffMembers = [
+                        {
+                            userId: 4,
+                            firstName: 'Mike',
+                            secondName: 'Guide',
+                            email: 'mike@boatsafari.com',
+                            contact: '555-1234',
+                            role: 'GUIDE',
+                            experience: 5,
+                            joinDate: '2025-03-15',
+                            status: 'ACTIVE'
+                        },
+                        {
+                            userId: 5,
+                            firstName: 'Sarah',
+                            secondName: 'Captain',
+                            email: 'sarah@boatsafari.com',
+                            contact: '555-5678',
+                            role: 'CAPTAIN',
+                            experience: 7,
+                            joinDate: '2025-02-10',
+                            status: 'ACTIVE'
+                        },
+                        {
+                            userId: 7,
+                            firstName: 'Tom',
+                            secondName: 'Jones',
+                            email: 'tom@boatsafari.com',
+                            contact: '555-9012',
+                            role: 'GUIDE',
+                            experience: 3,
+                            joinDate: '2025-05-20',
+                            status: 'ACTIVE'
+                        },
+                        {
+                            userId: 8,
+                            firstName: 'Laura',
+                            secondName: 'Miller',
+                            email: 'laura@boatsafari.com',
+                            contact: '555-3456',
+                            role: 'CAPTAIN',
+                            experience: 4,
+                            joinDate: '2025-04-05',
+                            status: 'ACTIVE'
+                        }
+                    ];
+
+                    displayStaffManagement(mockStaffMembers);
+                }, 500);
+            }
+        } catch (error) {
+            console.error('Error loading staff members:', error);
+            document.getElementById('staff-management-tbody').innerHTML =
+                '<tr><td colspan="9" style="text-align: center; color: #e74c3c;">Failed to load staff members. Please try again later.</td></tr>';
+        }
+    }
+
+    async function loadBoats() {
+        try {
+            // Use mock data in development if API is not available
+            const useMockData = true;  // Set to false when connecting to real API
+
+            if (!useMockData) {
+                const response = await fetch('/api/boats', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch boats');
+                }
+
+                const boats = await response.json();
+                availableBoats = boats;
+                populateBoatDropdowns(boats);
+            } else {
+                // Mock data for development
+                setTimeout(() => {
+                    const mockBoats = [
+                        {
+                            boatId: 1,
+                            boatName: 'Sea Explorer',
+                            capacity: 15
+                        },
+                        {
+                            boatId: 2,
+                            boatName: 'Ocean Voyager',
+                            capacity: 12
+                        },
+                        {
+                            boatId: 3,
+                            boatName: 'Wave Rider',
+                            capacity: 20
+                        }
+                    ];
+
+                    availableBoats = mockBoats;
+                    populateBoatDropdowns(mockBoats);
+                }, 300);
+            }
+        } catch (error) {
+            console.error('Error loading boats:', error);
+            // Continue without boat data
+        }
+    }
+
+    async function loadGuides() {
+        try {
+            // Use mock data in development if API is not available
+            const useMockData = true;  // Set to false when connecting to real API
+
+            if (!useMockData) {
+                const response = await fetch('/api/guides', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch guides');
+                }
+
+                const guides = await response.json();
+                populateGuideDropdowns(guides);
+            } else {
+                // Mock data for development
+                setTimeout(() => {
+                    const mockGuides = [
+                        {
+                            userId: 4,
+                            firstName: 'Mike',
+                            secondName: 'Guide'
+                        },
+                        {
+                            userId: 7,
+                            firstName: 'Tom',
+                            secondName: 'Jones'
+                        }
+                    ];
+
+                    populateGuideDropdowns(mockGuides);
+                }, 300);
+            }
+        } catch (error) {
+            console.error('Error loading guides:', error);
+            // Continue without guide data
+        }
+    }
+
+    function populateBoatDropdowns(boats) {
+        const addBoatSelect = document.getElementById('boat');
+        const editBoatSelect = document.getElementById('edit-boat');
+
+        // Clear existing options
+        addBoatSelect.innerHTML = '<option value="">Select a boat</option>';
+        editBoatSelect.innerHTML = '<option value="">Select a boat</option>';
+
+        // Add boat options
+        boats.forEach(boat => {
+            const addOption = document.createElement('option');
+            addOption.value = boat.boatId;
+            // Fix property name based on your Boat model
+            const boatName = boat.boatName || boat.name;
+            const boatCapacity = boat.capacity || '?';
+            addOption.textContent = `${boatName} (Capacity: ${boatCapacity})`;
+            addBoatSelect.appendChild(addOption);
+
+            const editOption = document.createElement('option');
+            editOption.value = boat.boatId;
+            editOption.textContent = `${boatName} (Capacity: ${boatCapacity})`;
+            editBoatSelect.appendChild(editOption);
+        });
+    }
+
+    function populateGuideDropdowns(guides) {
+        const addGuideSelect = document.getElementById('guide');
+        const editGuideSelect = document.getElementById('edit-guide');
+
+        // Clear existing options
+        addGuideSelect.innerHTML = '<option value="">Select a guide</option>';
+        editGuideSelect.innerHTML = '<option value="">Select a guide</option>';
+
+        // Add guide options
+        guides.forEach(guide => {
+            const addOption = document.createElement('option');
+            // Make sure to use the correct property based on the Guide model
+            addOption.value = guide.userId;
+            const guideName = `${guide.firstName} ${guide.secondName}`;
+            addOption.textContent = guideName;
+            addGuideSelect.appendChild(addOption);
+
+            const editOption = document.createElement('option');
+            editOption.value = guide.userId;
+            editOption.textContent = guideName;
+            editGuideSelect.appendChild(editOption);
+        });
+    }
+
+    function displayTrips(trips) {
+        const tbody = document.getElementById('trips-tbody');
+        tbody.innerHTML = '';
+
+        if (trips.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">No trips found</td></tr>';
+            return;
+        }
+
+        trips.forEach(trip => {
+            const row = document.createElement('tr');
+
+            // Format the date for display
+            const formattedDate = trip.date ? new Date(trip.date).toLocaleDateString() : 'N/A';
+
+            // Get boat and guide names safely
+            const boatName = trip.boat ? (trip.boat.boatName || trip.boat.name || 'N/A') : 'N/A';
+            let guideName = 'N/A';
+            if (trip.guide) {
+                guideName = trip.guide.firstName && trip.guide.secondName ?
+                    `${trip.guide.firstName} ${trip.guide.secondName}` :
+                    (trip.guide.name || 'N/A');
+            }
+
+            row.innerHTML = `
+                <td>${trip.tripId}</td>
+                <td>${formattedDate}</td>
+                <td>${trip.startTime || 'N/A'}</td>
+                <td>${trip.endTime || 'N/A'}</td>
+                <td>${trip.capacity || 0}</td>
+                <td>$${(trip.price || 0).toFixed(2)}</td>
+                <td>${trip.route || 'N/A'}</td>
+                <td>${boatName}</td>
+                <td>${guideName}</td>
+                <td class="action-buttons">
+                    <button onclick="openEditTripModal(${trip.tripId})"><i class="fas fa-edit"></i> Edit</button>
+                    <button onclick="openDeleteConfirmation(${trip.tripId})"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    function displayBookings(bookings) {
+        const tbody = document.getElementById('bookings-tbody');
+        tbody.innerHTML = '';
+
+        if (bookings.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="11" style="text-align: center;">No bookings found</td></tr>';
+            return;
+        }
+
+        bookings.forEach(booking => {
+            const row = document.createElement('tr');
+
+            // Format the date and time for display
+            const bookingDate = booking.date ? new Date(booking.date).toLocaleDateString() : 'N/A';
+            const bookingTime = booking.time ? new Date(booking.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A';
+
+            // Get trip details
+            const tripDetails = booking.trip ? `${booking.trip.route} (${booking.trip.date})` : 'N/A';
+
+            row.innerHTML = `
+                <td>${booking.bookingId}</td>
+                <td>${booking.customerName || 'N/A'}</td>
+                <td>${tripDetails}</td>
+                <td>${bookingDate}</td>
+                <td>${bookingTime}</td>
+                <td>${booking.passengers || 0}</td>
+                <td>$${(booking.totalPrice || 0).toFixed(2)}</td>
+                <td>${booking.paymentStatus || 'N/A'}</td>
+                <td>${booking.bookingStatus || 'N/A'}</td>
+                <td>${new Date(booking.createdOn).toLocaleString() || 'N/A'}</td>
+                <td class="action-buttons">
+                    <button onclick="openEditBookingModal(${booking.bookingId})"><i class="fas fa-edit"></i> Edit</button>
+                    <button onclick="openDeleteBookingConfirmation(${booking.bookingId})"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    function displayAvailableStaff(staff) {
+        const tbody = document.getElementById('available-staff-tbody');
+        tbody.innerHTML = '';
+
+        if (staff.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No staff available</td></tr>';
+            return;
+        }
+
+        staff.forEach(member => {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${member.userId}</td>
+                <td>${member.firstName} ${member.secondName}</td>
+                <td>${member.position || 'N/A'}</td>
+                <td>${member.experience || 'N/A'}</td>
+                <td>${member.contact || 'N/A'}</td>
+                <td class="action-buttons">
+                    <button onclick="assignStaffToTrip(${member.userId}, 'GUIDE')"><i class="fas fa-user-plus"></i> Assign as Guide</button>
+                    <button onclick="assignStaffToTrip(${member.userId}, 'CAPTAIN')"><i class="fas fa-user-plus"></i> Assign as Captain</button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    function displayStaffTrips(staff) {
+        const tbody = document.getElementById('staff-trips-tbody');
+        tbody.innerHTML = '';
+
+        if (staff.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No upcoming trips requiring staff</td></tr>';
+            return;
+        }
+
+        staff.forEach(member => {
+            if (member.upcomingTrips && member.upcomingTrips.length > 0) {
+                member.upcomingTrips.forEach(trip => {
+                    const row = document.createElement('tr');
+
+                    // Get boat name safely
+                    const boatName = trip.boat ? (trip.boat.boatName || trip.boat.name || 'N/A') : 'N/A';
+
+                    row.innerHTML = `
+                        <td>${trip.tripId}</td>
+                        <td>${new Date(trip.date).toLocaleDateString() || 'N/A'}</td>
+                        <td>${trip.startTime || 'N/A'}</td>
+                        <td>${trip.route || 'N/A'}</td>
+                        <td>${boatName}</td>
+                        <td>${trip.assignedGuide ? trip.assignedGuide.firstName + ' ' + trip.assignedGuide.secondName : 'N/A'}</td>
+                        <td>${trip.assignedCaptain ? trip.assignedCaptain.firstName + ' ' + trip.assignedCaptain.secondName : 'N/A'}</td>
+                        <td class="action-buttons">
+                            <button onclick="editTripStaff(${trip.tripId})"><i class="fas fa-edit"></i> Edit Staff</button>
+                        </td>
+                    `;
+
+                    tbody.appendChild(row);
+                });
+            }
+        });
+    }
+
+    function displayStaffManagement(staff) {
+        const tbody = document.getElementById('staff-management-tbody');
+        tbody.innerHTML = '';
+
+        if (staff.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No staff members found</td></tr>';
+            return;
+        }
+
+        staff.forEach(member => {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${member.userId}</td>
+                <td>${member.firstName} ${member.secondName}</td>
+                <td>${member.email || 'N/A'}</td>
+                <td>${member.contact || 'N/A'}</td>
+                <td>${member.role || 'N/A'}</td>
+                <td>${member.experience || 0}</td>
+                <td>${member.joinDate ? new Date(member.joinDate).toLocaleDateString() : 'N/A'}</td>
+                <td>${member.status || 'N/A'}</td>
+                <td class="action-buttons">
+                    <button onclick="openEditStaffModal(${member.userId})"><i class="fas fa-edit"></i> Edit</button>
+                    <button onclick="openDeleteStaffConfirmation(${member.userId})"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    function displayUsers(users) {
+        const tbody = document.getElementById('users-tbody');
+        tbody.innerHTML = '';
+
+        if (users.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No users found</td></tr>';
+            return;
+        }
+
+        users.forEach(user => {
+            const row = document.createElement('tr');
+
+            // Format the joined date
+            const joinedDate = user.joined ? new Date(user.joined).toLocaleDateString() : 'N/A';
+
+            // Determine user status class
+            let statusClass = '';
+            if (user.status === 'ACTIVE') {
+                statusClass = 'user-status-active';
+            } else if (user.status === 'INACTIVE') {
+                statusClass = 'user-status-inactive';
+            } else if (user.status === 'SUSPENDED') {
+                statusClass = 'user-status-suspended';
+            }
+
+            row.innerHTML = `
+                <td>${user.userId}</td>
+                <td>${user.firstName} ${user.lastName}</td>
+                <td>${user.email}</td>
+                <td>${user.role}</td>
+                <td class="user-status-badge ${statusClass}">${user.status}</td>
+                <td>${joinedDate}</td>
+                <td class="action-buttons">
+                    <button onclick="openEditUserModal(${user.userId})"><i class="fas fa-edit"></i> Edit</button>
+                    <button onclick="openDeleteUserConfirmation(${user.userId})"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    function openAddTripModal() {
+        document.getElementById('add-trip-form').reset();
+        document.getElementById('add-trip-modal').style.display = 'block';
+    }
+
+    async function openEditTripModal(tripId) {
+        try {
+            const response = await fetch(`/api/trips/${tripId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch trip details');
+            }
+
+            const trip = await response.json();
+
+            // Populate form fields
+            document.getElementById('edit-trip-id').value = trip.tripId;
+
+            // Handle date format - convert to YYYY-MM-DD for input
+            if (trip.date) {
+                const dateObj = new Date(trip.date);
+                const formattedDate = dateObj.toISOString().split('T')[0];
+                document.getElementById('edit-date').value = formattedDate;
+            }
+
+            document.getElementById('edit-start-time').value = trip.startTime || '';
+            document.getElementById('edit-end-time').value = trip.endTime || '';
+            document.getElementById('edit-capacity').value = trip.capacity || '';
+            document.getElementById('edit-price').value = trip.price || '';
+            document.getElementById('edit-route').value = trip.route || '';
+
+            if (trip.boat) {
+                document.getElementById('edit-boat').value = trip.boat.boatId || '';
+            }
+
+            if (trip.guide) {
+                document.getElementById('edit-guide').value = trip.guide.userId || '';
+            }
+
+            document.getElementById('edit-trip-modal').style.display = 'block';
+        } catch (error) {
+            console.error('Error loading trip details:', error);
+            alert('Failed to load trip details. Please try again.');
+        }
+    }
+
+    function openDeleteConfirmation(tripId) {
+        document.getElementById('delete-trip-id').value = tripId;
+        document.getElementById('delete-confirmation-modal').style.display = 'block';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Event listeners for forms
+    document.getElementById('add-trip-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const boatId = document.getElementById('boat').value;
+        const guideId = document.getElementById('guide').value;
+
+        const tripData = {
+            date: document.getElementById('date').value,
+            startTime: document.getElementById('start-time').value,
+            endTime: document.getElementById('end-time').value,
+            capacity: parseInt(document.getElementById('capacity').value),
+            price: parseFloat(document.getElementById('price').value),
+            route: document.getElementById('route').value
+        };
+
+        // Only add boat and guide if they were selected
+        if (boatId) {
+            tripData.boat = { boatId: boatId };
+        }
+
+        if (guideId) {
+            tripData.guide = { userId: guideId };
+        }
+
+        try {
+            const response = await fetch('/api/trips', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                body: JSON.stringify(tripData)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to create trip');
+            }
+
+            closeModal('add-trip-modal');
+            loadTrips();
+        } catch (error) {
+            console.error('Error creating trip:', error);
+            alert('Failed to create trip: ' + error.message);
+        }
+    });
+
+    document.getElementById('edit-trip-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const tripId = document.getElementById('edit-trip-id').value;
+        const boatId = document.getElementById('edit-boat').value;
+        const guideId = document.getElementById('edit-guide').value;
+
+        const tripData = {
+            date: document.getElementById('edit-date').value,
+            startTime: document.getElementById('edit-start-time').value,
+            endTime: document.getElementById('edit-end-time').value,
+            capacity: parseInt(document.getElementById('edit-capacity').value),
+            price: parseFloat(document.getElementById('edit-price').value),
+            route: document.getElementById('edit-route').value
+        };
+
+        // Only add boat and guide if they were selected
+        if (boatId) {
+            tripData.boat = { boatId: boatId };
+        }
+
+        if (guideId) {
+            tripData.guide = { userId: guideId };
+        }
+
+        try {
+            const response = await fetch(`/api/trips/${tripId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                body: JSON.stringify(tripData)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to update trip');
+            }
+
+            closeModal('edit-trip-modal');
+            loadTrips();
+        } catch (error) {
+            console.error('Error updating trip:', error);
+            alert('Failed to update trip: ' + error.message);
+        }
+    });
+
+    async function confirmDeleteTrip() {
+        const tripId = document.getElementById('delete-trip-id').value;
+
+        try {
+            const response = await fetch(`/api/trips/${tripId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to delete trip');
+            }
+
+            closeModal('delete-confirmation-modal');
+            loadTrips();
+        } catch (error) {
+            console.error('Error deleting trip:', error);
+            alert('Failed to delete trip: ' + error.message);
+        }
+    }
+
+    document.getElementById('add-staff-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const staffData = {
+            firstName: document.getElementById('staff-first-name').value,
+            lastName: document.getElementById('staff-last-name').value,
+            email: document.getElementById('staff-email').value,
+            password: document.getElementById('staff-password').value,
+            role: document.getElementById('staff-role').value,
+            experience: parseInt(document.getElementById('staff-experience').value),
+            contact: document.getElementById('staff-contact').value
+        };
+
+        try {
+            const response = await fetch('/api/staff', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                body: JSON.stringify(staffData)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to add staff member');
+            }
+
+            closeModal('add-staff-modal');
+            loadStaffManagement();
+        } catch (error) {
+            console.error('Error adding staff member:', error);
+            alert('Failed to add staff member: ' + error.message);
+        }
+    });
+
+    async function openEditStaffModal(userId) {
+        try {
+            const response = await fetch(`/api/staff/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch staff details');
+            }
+
+            const staff = await response.json();
+
+            // Populate form fields
+            document.getElementById('edit-staff-id').value = staff.userId;
+            document.getElementById('edit-staff-first-name').value = staff.firstName;
+            document.getElementById('edit-staff-last-name').value = staff.lastName;
+            document.getElementById('edit-staff-email').value = staff.email;
+            document.getElementById('edit-staff-role').value = staff.role;
+            document.getElementById('edit-staff-contact').value = staff.contact;
+
+            document.getElementById('edit-staff-modal').style.display = 'block';
+        } catch (error) {
+            console.error('Error loading staff details:', error);
+            alert('Failed to load staff details. Please try again.');
+        }
+    }
+
+    async function confirmDeleteStaff() {
+        const userId = document.getElementById('delete-staff-id').value;
+
+        try {
+            const response = await fetch(`/api/staff/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to delete staff member');
+            }
+
+            closeModal('delete-staff-modal');
+            loadStaffManagement();
+        } catch (error) {
+            console.error('Error deleting staff member:', error);
+            alert('Failed to delete staff member: ' + error.message);
+        }
+    }
+
+    function applyBookingFilters() {
+        const statusFilter = document.getElementById('booking-status-filter').value;
+        const dateFilter = document.getElementById('booking-date-filter').value;
+        const tripFilter = document.getElementById('booking-trip-filter').value;
+
+        // TODO: Implement filtering logic for bookings
+        console.log('Applying filters:', { statusFilter, dateFilter, tripFilter });
+    }
+
+    function clearBookingFilters() {
+        document.getElementById('booking-status-filter').value = '';
+        document.getElementById('booking-date-filter').value = '';
+        document.getElementById('booking-trip-filter').value = '';
+
+        // TODO: Implement logic to reload all bookings
+        loadBookings();
+    }
+
+    function applyStaffFilters() {
+        const dateFilter = document.getElementById('staff-date-filter').value;
+        const typeFilter = document.getElementById('staff-type-filter').value;
+
+        // TODO: Implement filtering logic for staff
+        console.log('Applying staff filters:', { dateFilter, typeFilter });
+    }
+
+    function clearStaffFilters() {
+        document.getElementById('staff-date-filter').value = '';
+        document.getElementById('staff-type-filter').value = '';
+
+        // TODO: Implement logic to reload all staff
+        loadStaff();
+    }
+
+    function applyStaffManagementFilters() {
+        const roleFilter = document.getElementById('staff-role-filter').value;
+
+        // TODO: Implement filtering logic for staff management
+        console.log('Applying staff management filters:', { roleFilter });
+    }
+
+    function clearStaffManagementFilters() {
+        document.getElementById('staff-role-filter').value = '';
+
+        // TODO: Implement logic to reload all staff in management
+        loadStaffManagement();
+    }
+
+    function applyUserFilters() {
+        const roleFilter = document.getElementById('user-role-filter').value;
+        const statusFilter = document.getElementById('user-status-filter').value;
+
+        // TODO: Implement filtering logic for users
+        console.log('Applying user filters:', { roleFilter, statusFilter });
+    }
+
+    function clearUserFilters() {
+        document.getElementById('user-role-filter').value = '';
+        document.getElementById('user-status-filter').value = '';
+
+        // TODO: Implement logic to reload all users
+        loadUsers();
+    }
+
+    // Window click event to close modal when clicking outside
+    window.onclick = function(event) {
+        const modals = document.getElementsByClassName('modal');
+        for (let i = 0; i < modals.length; i++) {
+            if (event.target === modals[i]) {
+                modals[i].style.display = 'none';
+            }
+        }
+    }
+
+    // Add Booking Modal functionality
+    document.getElementById('add-booking-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const tripId = document.getElementById('trip-select').value;
+
+        const bookingData = {
+            customerName: document.getElementById('customer-name').value,
+            trip: { tripId: tripId },
+            passengers: parseInt(document.getElementById('passenger-count').value),
+            bookingStatus: document.getElementById('booking-status').value,
+            paymentStatus: document.getElementById('payment-status').value,
+            notes: document.getElementById('notes').value
+        };
+
+        try {
+            const response = await fetch('/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                body: JSON.stringify(bookingData)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to create booking');
+            }
+
+            closeModal('add-booking-modal');
+            loadBookings();
+        } catch (error) {
+            console.error('Error creating booking:', error);
+            alert('Failed to create booking: ' + error.message);
+        }
+    });
+
+    // Populate trip options in Add Booking modal
+    async function openAddBookingModal() {
+        document.getElementById('add-booking-form').reset();
+        document.getElementById('add-booking-modal').style.display = 'block';
+
+        // Load trips for selection
+        try {
+            const response = await fetch('/api/trips', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch trips');
+            }
+
+            const trips = await response.json();
+            const tripSelect = document.getElementById('trip-select');
+            tripSelect.innerHTML = '<option value="">Select a trip</option>'; // Reset options
+
+            trips.forEach(trip => {
+                const option = document.createElement('option');
+                option.value = trip.tripId;
+                option.textContent = `${trip.route} on ${new Date(trip.date).toLocaleDateString()}`;
+                tripSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading trips:', error);
+            alert('Failed to load trips for booking. Please try again.');
+        }
+    }
+</script>
+<script src="/assets/js/staff-management.js"></script>
+<script src="/assets/js/admin-dashboard.js"></script>
+</body>
+</html>
