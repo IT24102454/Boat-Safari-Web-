@@ -32,14 +32,14 @@ public class SecurityConfig {
                         // Admin-only endpoints
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
                         // Guide dashboard endpoints
-                        .requestMatchers("/api/guide/**").hasAnyRole("GUIDE", "SAFARI_GUIDE", "ADMIN")
-                        // Staff management endpoints - allow all operations for ADMIN
-                        .requestMatchers(HttpMethod.GET, "/api/staff/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/staff/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/staff/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/staff/**").hasRole("ADMIN")
+                        .requestMatchers("/api/guide/**").hasAnyRole("SAFARIGUIDE", "ADMIN")
+                        // Staff management endpoints - allow all operations for ADMIN and staff members
+                        .requestMatchers(HttpMethod.GET, "/api/staff/**").hasAnyRole("ADMIN", "STAFFMEMBER", "SAFARIGUIDE", "ITSUPPORT", "ITASSISTANT")
+                        .requestMatchers(HttpMethod.POST, "/api/staff/**").hasAnyRole("ADMIN", "STAFFMEMBER", "SAFARIGUIDE", "ITSUPPORT", "ITASSISTANT")
+                        .requestMatchers(HttpMethod.PUT, "/api/staff/**").hasAnyRole("ADMIN", "STAFFMEMBER", "SAFARIGUIDE", "ITSUPPORT", "ITASSISTANT")
+                        .requestMatchers(HttpMethod.DELETE, "/api/staff/**").hasAnyRole("ADMIN", "STAFFMEMBER", "SAFARIGUIDE", "ITSUPPORT", "ITASSISTANT")
                         // Safari guide specific endpoints
-                        .requestMatchers("/api/guides/**").hasAnyRole("ADMIN", "GUIDE", "SAFARI_GUIDE")
+                        .requestMatchers("/api/guides/**").hasAnyRole("ADMIN", "SAFARIGUIDE")
                         // Support booking history requires login
                         .requestMatchers("/api/support/bookings/**").authenticated()
                         // Bookings & payments must be logged in

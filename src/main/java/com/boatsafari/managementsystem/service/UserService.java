@@ -241,4 +241,28 @@ public class UserService {
             throw new RuntimeException("Failed to update user role: " + e.getMessage(), e);
         }
     }
+
+    /**
+     * Get all safari guides
+     * @return List of all SafariGuide users
+     */
+    public List<SafariGuide> getAllGuides() {
+        return userRepository.findAll().stream()
+            .filter(user -> user instanceof SafariGuide)
+            .map(user -> (SafariGuide) user)
+            .toList();
+    }
+
+    /**
+     * Get a safari guide by ID
+     * @param guideId The ID of the guide
+     * @return The SafariGuide or null if not found
+     */
+    public SafariGuide getGuideById(Long guideId) {
+        Optional<User> userOpt = userRepository.findById(guideId);
+        if (userOpt.isPresent() && userOpt.get() instanceof SafariGuide) {
+            return (SafariGuide) userOpt.get();
+        }
+        return null;
+    }
 }

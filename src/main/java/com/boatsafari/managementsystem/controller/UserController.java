@@ -3,6 +3,10 @@ package com.boatsafari.managementsystem.controller;
 import com.boatsafari.managementsystem.model.User;
 import com.boatsafari.managementsystem.model.SafariGuide;
 import com.boatsafari.managementsystem.model.StaffMember;
+import com.boatsafari.managementsystem.model.Admin;
+import com.boatsafari.managementsystem.model.Customer;
+import com.boatsafari.managementsystem.model.ITSupport;
+import com.boatsafari.managementsystem.model.ITAssistant;
 import com.boatsafari.managementsystem.service.UserService;
 import com.boatsafari.managementsystem.util.JwtUtils;
 import lombok.Data;
@@ -46,19 +50,23 @@ public class UserController {
      * Normalize role to handle legacy data and ensure consistency
      */
     private String normalizeRole(User user) {
-        String role = user.getRole();
-        
-        // Handle legacy 'GUIDE' role - convert to 'SAFARI_GUIDE' if user is actually a SafariGuide
-        if ("GUIDE".equals(role) && user instanceof SafariGuide) {
+        // Return the actual discriminator value used in the database
+        if (user instanceof Admin) {
+            return "ADMIN";
+        } else if (user instanceof SafariGuide) {
             return "SAFARI_GUIDE";
+        } else if (user instanceof ITSupport) {
+            return "IT_SUPPORT";
+        } else if (user instanceof ITAssistant) {
+            return "IT_ASSISTANT";
+        } else if (user instanceof StaffMember) {
+            return "STAFF";
+        } else if (user instanceof Customer) {
+            return "CUSTOMER";
         }
         
-        // Handle other legacy roles if needed
-        if ("STAFF".equals(role) && user instanceof StaffMember) {
-            return "STAFFMEMBER";
-        }
-        
-        return role;
+        // Fallback to the role field value
+        return user.getRole();
     }
 
     /**
