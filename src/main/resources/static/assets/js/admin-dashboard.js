@@ -141,8 +141,8 @@ async function loadDashboardStats() {
         const bookings = bookingsResponse.ok ? await bookingsResponse.json() : [];
         const staff = staffResponse.ok ? await staffResponse.json() : [];
 
-        // Calculate revenue
-        const totalRevenue = bookings.reduce((sum, booking) => sum + (booking.totalAmount || 0), 0);
+        // Calculate revenue - fix field name
+        const totalRevenue = bookings.reduce((sum, booking) => sum + (booking.totalCost || booking.totalAmount || 0), 0);
 
         // Update stat cards
         document.getElementById('totalUsers').textContent = users.length || 0;
@@ -418,12 +418,12 @@ async function updateRevenueChart() {
                 monthlyRevenue[monthKey] = 0;
             }
             
-            // Calculate revenue for each month
+            // Calculate revenue for each month - fix field name
             bookings.forEach(booking => {
-                if (booking.totalAmount && booking.bookingDate) {
-                    const bookingMonth = booking.bookingDate.slice(0, 7);
+                if ((booking.totalCost || booking.totalAmount) && (booking.holdTimer || booking.bookingDate)) {
+                    const bookingMonth = (booking.holdTimer || booking.bookingDate).slice(0, 7);
                     if (monthlyRevenue.hasOwnProperty(bookingMonth)) {
-                        monthlyRevenue[bookingMonth] += booking.totalAmount;
+                        monthlyRevenue[bookingMonth] += (booking.totalCost || booking.totalAmount);
                     }
                 }
             });
@@ -735,13 +735,13 @@ function displayBookings(bookings) {
     tableBody.innerHTML = bookings.map(booking => `
         <tr>
             <td>${booking.bookingId || 'N/A'}</td>
-            <td>${booking.customer?.firstName || ''} ${booking.customer?.lastName || ''}</td>
-            <td>${booking.trip?.route || 'N/A'}</td>
+            <td>${booking.name || booking.customer?.firstName || ''} ${booking.customer?.lastName || ''}</td>
+            <td>${booking.trip?.route || booking.trip?.name || 'N/A'}</td>
             <td>${booking.trip?.date || 'N/A'}</td>
             <td>${booking.passengers || 'N/A'}</td>
-            <td>$${booking.totalAmount || '0.00'}</td>
-            <td><span class="status-badge status-${(booking.bookingStatus || 'confirmed').toLowerCase()}">${booking.bookingStatus || 'Confirmed'}</span></td>
-            <td>${booking.bookingDate ? new Date(booking.bookingDate).toLocaleDateString() : 'N/A'}</td>
+            <td>$${(booking.totalCost || booking.totalAmount || 0).toFixed(2)}</td>
+            <td><span class="status-badge status-${(booking.status || booking.bookingStatus || 'confirmed').toLowerCase()}">${booking.status || booking.bookingStatus || 'Confirmed'}</span></td>
+            <td>${booking.holdTimer ? new Date(booking.holdTimer).toLocaleDateString() : 'N/A'}</td>
             <td>
                 <div class="action-buttons">
                     <button class="btn btn-warning btn-sm" onclick="editBooking(${booking.bookingId})">
@@ -754,6 +754,127 @@ function displayBookings(bookings) {
             </td>
         </tr>
     `).join('');
+}
+
+// Open edit booking modal
+async function openEditBookingModal(bookingId) {
+    try {
+        const response = await fetch(`/api/bookings/${bookingId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch booking details');
+        }
+
+        const booking = await response.json();
+
+        // Create modal HTML with enhanced styling
+        const modalHTML = `
+            <div id="editBookingModal" class="modal" style="display: block;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">
+                            <i class="fas fa-edit"></i>
+                            Edit Booking #${booking.bookingId}
+                        </h3>
+                        <button class="close" onclick="closeEditBookingModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editBookingForm">
+                            <div class="form-group">
+                                <label class="form-label" for="edit-customer-name">Customer Name:</label>
+                                <input type="text" class="form-control" id="edit-customer-name" value="${booking.name || ''}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-contact">Contact:</label>
+                                <input type="text" class="form-control" id="edit-contact" value="${booking.contact || ''}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-email">Email:</label>
+                                <input type="email" class="form-control" id="edit-email" value="${booking.email || ''}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-passengers">Number of Passengers:</label>
+                                <input type="number" class="form-control" id="edit-passengers" value="${booking.passengers || 1}" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-booking-status">Booking Status:</label>
+                                <select class="form-control" id="edit-booking-status" required>
+                                    <option value="PROVISIONAL" ${booking.status === 'PROVISIONAL' ? 'selected' : ''}>Provisional</option>
+                                    <option value="CONFIRMED" ${booking.status === 'CONFIRMED' ? 'selected' : ''}>Confirmed</option>
+                                    <option value="CANCELLED" ${booking.status === 'CANCELLED' ? 'selected' : ''}>Cancelled</option>
+                                    <option value="COMPLETED" ${booking.status === 'COMPLETED' ? 'selected' : ''}>Completed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-total-cost">Total Cost:</label>
+                                <input type="number" class="form-control" id="edit-total-cost" value="${booking.totalCost || 0}" step="0.01" min="0" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-modal btn-cancel" onclick="closeEditBookingModal()">Cancel</button>
+                        <button type="button" class="btn-modal btn-primary" onclick="saveBookingChanges(${bookingId})">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add modal to page
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    } catch (error) {
+        console.error('Error opening edit booking modal:', error);
+        showNotification('Failed to open booking details: ' + error.message, 'error');
+    }
+}
+
+// Close edit booking modal
+function closeEditBookingModal() {
+    const modal = document.getElementById('editBookingModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Save booking changes
+async function saveBookingChanges(bookingId) {
+    try {
+        const bookingData = {
+            name: document.getElementById('edit-customer-name').value,
+            contact: document.getElementById('edit-contact').value,
+            email: document.getElementById('edit-email').value,
+            passengers: parseInt(document.getElementById('edit-passengers').value),
+            status: document.getElementById('edit-booking-status').value,
+            totalCost: parseFloat(document.getElementById('edit-total-cost').value)
+        };
+
+        const response = await fetch(`/api/bookings/${bookingId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            body: JSON.stringify(bookingData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update booking');
+        }
+
+        closeEditBookingModal();
+        loadBookings();
+        loadDashboardStats();
+        showNotification('Booking updated successfully', 'success');
+
+    } catch (error) {
+        console.error('Error saving booking changes:', error);
+        showNotification('Failed to update booking: ' + error.message, 'error');
+    }
 }
 
 // Load staff members data
@@ -848,6 +969,15 @@ async function loadGuides() {
         }
     } catch (error) {
         console.error('Error loading guides:', error);
+    }
+}
+
+// Load both boats and guides for trip forms
+async function loadBoatsAndGuides() {
+    try {
+        await Promise.all([loadBoats(), loadGuides()]);
+    } catch (error) {
+        console.error('Error loading boats and guides:', error);
     }
 }
 
@@ -1151,6 +1281,14 @@ function loadRecentExports() {
 
 // Modal functions
 function openAddUserModal() {
+    // Reset form
+    const form = document.getElementById('addUserForm');
+    if (form) {
+        form.reset();
+        delete form.dataset.mode;
+        delete form.dataset.userId;
+    }
+    
     // Reset the password field to required for new users
     const passwordField = document.getElementById('password');
     if (passwordField) {
@@ -1159,19 +1297,43 @@ function openAddUserModal() {
         passwordField.value = '';
     }
     
-    // Reset form mode
-    const form = document.getElementById('addUserForm');
-    delete form.dataset.mode;
-    delete form.dataset.userId;
-    
     // Reset modal title and button text
-    document.querySelector('#addUserModal h2').textContent = 'Add New User';
-    document.querySelector('#addUserForm button[type="submit"]').textContent = 'Save User';
+    const modalTitle = document.querySelector('#addUserModal .modal-title');
+    if (modalTitle) {
+        modalTitle.innerHTML = '<i class="fas fa-user-plus"></i> Add New User';
+    }
+    
+    const submitButton = document.querySelector('#addUserForm button[type="submit"], button[form="addUserForm"]');
+    if (submitButton) {
+        submitButton.innerHTML = '<i class="fas fa-save"></i> Save User';
+    }
     
     document.getElementById('addUserModal').style.display = 'block';
 }
 
 function openAddTripModal() {
+    // Reset form and modal state
+    const form = document.getElementById('addTripForm');
+    if (form) {
+        form.reset();
+        delete form.dataset.mode;
+        delete form.dataset.tripId;
+    }
+    
+    // Reset modal title and button text
+    const modalTitle = document.querySelector('#addTripModal .modal-title');
+    if (modalTitle) {
+        modalTitle.innerHTML = '<i class="fas fa-route"></i> Add New Trip';
+    }
+    
+    const submitButton = document.querySelector('#addTripForm button[type="submit"], button[form="addTripForm"]');
+    if (submitButton) {
+        submitButton.innerHTML = '<i class="fas fa-save"></i> Save Trip';
+    }
+    
+    // Load boats and guides for the dropdowns
+    loadBoatsAndGuides();
+    
     document.getElementById('addTripModal').style.display = 'block';
 }
 
@@ -1325,8 +1487,24 @@ function setupFormHandlers() {
                 // Reset form mode
                 delete addUserForm.dataset.mode;
                 delete addUserForm.dataset.userId;
-                document.querySelector('#addUserModal h2').textContent = 'Add New User';
-                document.querySelector('#addUserForm button[type="submit"]').textContent = 'Save User';
+                
+                // Reset modal title and button text
+                const modalTitle = document.querySelector('#addUserModal .modal-title');
+                if (modalTitle) {
+                    modalTitle.innerHTML = '<i class="fas fa-user-plus"></i> Add New User';
+                }
+                
+                const submitButton = document.querySelector('#addUserForm button[type="submit"], button[form="addUserForm"]');
+                if (submitButton) {
+                    submitButton.innerHTML = '<i class="fas fa-save"></i> Save User';
+                }
+                
+                // Reset password field to required
+                const passwordField = document.getElementById('password');
+                if (passwordField) {
+                    passwordField.setAttribute('required', 'required');
+                    passwordField.placeholder = '';
+                }
             } catch (error) {
                 console.error(`Error ${isEditMode ? 'updating' : 'creating'} user:`, error);
                 showNotification(`Failed to ${isEditMode ? 'update' : 'create'} user: ` + error.message, 'error');
@@ -1390,8 +1568,17 @@ function setupFormHandlers() {
                 // Reset form mode
                 delete addTripForm.dataset.mode;
                 delete addTripForm.dataset.tripId;
-                document.querySelector('#addTripModal h2').textContent = 'Add New Trip';
-                document.querySelector('#addTripForm button[type="submit"]').textContent = 'Save Trip';
+                
+                // Reset modal title and button text
+                const modalTitle = document.querySelector('#addTripModal .modal-title');
+                if (modalTitle) {
+                    modalTitle.innerHTML = '<i class="fas fa-route"></i> Add New Trip';
+                }
+                
+                const submitButton = document.querySelector('#addTripForm button[type="submit"], button[form="addTripForm"]');
+                if (submitButton) {
+                    submitButton.innerHTML = '<i class="fas fa-save"></i> Save Trip';
+                }
             } catch (error) {
                 console.error(`Error ${isEditMode ? 'updating' : 'creating'} trip:`, error);
                 showNotification(`Failed to ${isEditMode ? 'update' : 'create'} trip: ` + error.message, 'error');
@@ -1446,8 +1633,14 @@ function setupFormHandlers() {
                 // Reset form mode
                 delete addStaffForm.dataset.mode;
                 delete addStaffForm.dataset.staffId;
-                document.querySelector('#addStaffModal h2').textContent = 'Add New Staff Member';
-                document.querySelector('#addStaffForm button[type="submit"]').textContent = 'Save Staff Member';
+                const modalTitle = document.querySelector('#addStaffModal .modal-title');
+                if (modalTitle) {
+                    modalTitle.innerHTML = '<i class="fas fa-user-plus"></i> Add New Staff Member';
+                }
+                const submitButton = document.querySelector('#addStaffForm button[type="submit"], button[form="addStaffForm"]');
+                if (submitButton) {
+                    submitButton.textContent = 'Save Staff Member';
+                }
             } catch (error) {
                 console.error(`Error ${isEditMode ? 'updating' : 'creating'} staff member:`, error);
                 showNotification(`Failed to ${isEditMode ? 'update' : 'create'} staff member: ` + error.message, 'error');
@@ -1458,12 +1651,18 @@ function setupFormHandlers() {
 
 // CRUD operation functions
 async function editUser(userId) {
+    console.log('Editing user:', userId);
+    console.log('Available users:', currentUsersData);
+    
     // Find user in the currently loaded data
     const user = currentUsersData.find(u => u.userId === userId);
     if (!user) {
+        console.error('User not found with ID:', userId);
         showNotification('User not found', 'error');
         return;
     }
+    
+    console.log('Found user:', user);
     
     // Populate edit modal with user data
     document.getElementById('firstName').value = user.firstName || '';
@@ -1486,8 +1685,15 @@ async function editUser(userId) {
     form.dataset.userId = userId;
     
     // Change modal title and button text
-    document.querySelector('#addUserModal h2').textContent = 'Edit User';
-    document.querySelector('#addUserForm button[type="submit"]').textContent = 'Update User';
+    const modalTitle = document.querySelector('#addUserModal .modal-title');
+    if (modalTitle) {
+        modalTitle.innerHTML = '<i class="fas fa-user-edit"></i> Edit User';
+    }
+    
+    const submitButton = document.querySelector('#addUserForm button[type="submit"], button[form="addUserForm"]');
+    if (submitButton) {
+        submitButton.innerHTML = '<i class="fas fa-save"></i> Update User';
+    }
     
     // Show modal
     document.getElementById('addUserModal').style.display = 'block';
@@ -1519,12 +1725,18 @@ async function deleteUser(userId) {
 }
 
 async function editTrip(tripId) {
+    console.log('Editing trip:', tripId);
+    console.log('Available trips:', currentTripsData);
+    
     // Find trip in the currently loaded data
     const trip = currentTripsData.find(t => t.tripId === tripId);
     if (!trip) {
+        console.error('Trip not found with ID:', tripId);
         showNotification('Trip not found', 'error');
         return;
     }
+    
+    console.log('Found trip:', trip);
     
     // Populate edit modal with trip data
     document.getElementById('tripDate').value = trip.date || '';
@@ -1534,14 +1746,34 @@ async function editTrip(tripId) {
     document.getElementById('capacity').value = trip.capacity || '';
     document.getElementById('price').value = trip.price || '';
     
+    // Load boats and guides for the dropdowns
+    await loadBoatsAndGuides();
+    
+    // Set selected boat and guide if available
+    if (trip.boat && trip.boat.boatId) {
+        document.getElementById('boat').value = trip.boat.boatId;
+        console.log('Set boat ID:', trip.boat.boatId);
+    }
+    if (trip.guide && trip.guide.userId) {
+        document.getElementById('guide').value = trip.guide.userId;
+        console.log('Set guide ID:', trip.guide.userId);
+    }
+    
     // Set form to edit mode
     const form = document.getElementById('addTripForm');
     form.dataset.mode = 'edit';
     form.dataset.tripId = tripId;
     
     // Change modal title and button text
-    document.querySelector('#addTripModal h2').textContent = 'Edit Trip';
-    document.querySelector('#addTripForm button[type="submit"]').textContent = 'Update Trip';
+    const modalTitle = document.querySelector('#addTripModal .modal-title');
+    if (modalTitle) {
+        modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Trip';
+    }
+    
+    const submitButton = document.querySelector('#addTripForm button[type="submit"], button[form="addTripForm"]');
+    if (submitButton) {
+        submitButton.innerHTML = '<i class="fas fa-save"></i> Update Trip';
+    }
     
     // Show modal
     document.getElementById('addTripModal').style.display = 'block';
@@ -1573,42 +1805,21 @@ async function deleteTrip(tripId) {
 }
 
 function editBooking(bookingId) {
-    const booking = currentBookingsData.find(b => b.id === bookingId);
+    // Find booking from current bookings data (fix variable name)
+    const booking = currentBookings.find(b => b.bookingId === bookingId);
     if (!booking) {
         showNotification('Booking not found', 'error');
         return;
     }
 
-    // For now, we'll allow changing booking status and notes
-    const newStatus = prompt(`Change booking status for ${booking.customerName}\nCurrent: ${booking.status}\nOptions: CONFIRMED, CANCELLED, COMPLETED`, booking.status);
-    
-    if (newStatus && ['CONFIRMED', 'CANCELLED', 'COMPLETED'].includes(newStatus.toUpperCase())) {
-        fetch(`/api/bookings/${bookingId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-            },
-            body: JSON.stringify({ status: newStatus.toUpperCase() })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to update booking');
-            }
-            loadBookings();
-            loadDashboardStats();
-            showNotification('Booking updated successfully', 'success');
-        })
-        .catch(error => {
-            console.error('Error updating booking:', error);
-            showNotification('Failed to update booking: ' + error.message, 'error');
-        });
-    }
+    // Open edit booking modal 
+    openEditBookingModal(bookingId);
 }
 
 function cancelBooking(bookingId) {
-    const booking = currentBookingsData.find(b => b.id === bookingId);
-    const customerName = booking ? booking.customerName : 'Unknown Customer';
+    // Find booking from current bookings data (fix variable name)
+    const booking = currentBookings.find(b => b.bookingId === bookingId);
+    const customerName = booking ? (booking.name || booking.customerName) : 'Unknown Customer';
     
     if (confirm(`Are you sure you want to cancel the booking for ${customerName}? This action cannot be undone.`)) {
         fetch(`/api/bookings/${bookingId}`, {
@@ -1658,8 +1869,14 @@ function editStaffMember(userId) {
         staffForm.dataset.staffId = userId;
         
         // Update modal title and button text
-        document.querySelector('#addStaffModal h2').textContent = 'Edit Staff Member';
-        document.querySelector('#addStaffForm button[type="submit"]').textContent = 'Update Staff Member';
+        const modalTitle = document.querySelector('#addStaffModal .modal-title');
+        if (modalTitle) {
+            modalTitle.innerHTML = '<i class="fas fa-user-edit"></i> Edit Staff Member';
+        }
+        const submitButton = document.querySelector('#addStaffForm button[type="submit"], button[form="addStaffForm"]');
+        if (submitButton) {
+            submitButton.textContent = 'Update Staff Member';
+        }
         
         openModal('addStaffModal');
     } else {
@@ -1676,8 +1893,14 @@ function editStaffMember(userId) {
         form.dataset.userId = userId;
         
         // Update modal title and button text
-        document.querySelector('#addUserModal h2').textContent = 'Edit Staff Member';
-        document.querySelector('#addUserForm button[type="submit"]').textContent = 'Update Staff';
+        const modalTitle = document.querySelector('#addUserModal .modal-title');
+        if (modalTitle) {
+            modalTitle.innerHTML = '<i class="fas fa-user-edit"></i> Edit Staff Member';
+        }
+        const submitButton = document.querySelector('#addUserForm button[type="submit"], button[form="addUserForm"]');
+        if (submitButton) {
+            submitButton.textContent = 'Update Staff';
+        }
         
         openModal('addUserModal');
     }
