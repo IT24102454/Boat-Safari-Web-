@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "paymentId")
+    @Column(name = "payment_id")
     private Long paymentId;
 
-    @Column(name = "paymentMethod")
+    @Column(name = "payment_method")
     private String paymentMethod;
 
-    @Column(name = "paymentDate")
+    @Column(name = "payment_date")
     private LocalDateTime paymentDate;
 
     @Column(name = "amount")
@@ -27,15 +27,15 @@ public class Payment {
     private String status;
 
     // Added via ALTER
-    @Column(name = "cardNumber")
+    @Column(name = "card_number")
     private String cardNumber;
 
-    @Column(name = "cardExpiry")
+    @Column(name = "card_expiry")
     private String cardExpiry;
 
-    @Column(name = "cardCvv")
+    @Column(name = "card_cvv")
     private String cardCvv;
 
-    @Column(name = "cardHolderName")
+    @Column(name = "card_holder_name")
     private String cardHolderName;
 }

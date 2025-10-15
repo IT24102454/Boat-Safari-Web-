@@ -3,6 +3,7 @@ package com.boatsafari.managementsystem.config;
 import com.boatsafari.managementsystem.model.SafariGuide;
 import com.boatsafari.managementsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -16,8 +17,14 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Value("${app.init.enabled:false}")
+    private boolean initEnabled;
+
     @Override
     public void run(String... args) {
+        if (!initEnabled) {
+            return; // Initialization disabled by default
+        }
         initializeGuideUser();
     }
 

@@ -9,10 +9,10 @@ import lombok.Data;
 public class Boat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "boatId")
+    @Column(name = "boat_id")
     private Long boatId;
 
-    @Column(name = "boatName")
+    @Column(name = "boat_name")
     private String boatName;
 
     @Column(name = "model")
@@ -21,7 +21,7 @@ public class Boat {
     @Column(name = "features")
     private String features; // TEXT in DB, but String works for JPA
 
-    @Column(name = "registrationNumber")
+    @Column(name = "registration_number")
     private String registrationNumber;
 
     @Column(name = "status")

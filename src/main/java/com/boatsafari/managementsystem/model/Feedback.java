@@ -3,22 +3,71 @@ package com.boatsafari.managementsystem.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @Table(name = "Feedbacks")
 public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "feedbackId")
+    @Column(name = "feedback_id")
     private Long feedbackId;
 
-    @Column(name = "rating")
-    private int rating;
+    @Column(name = "title", length = 255)
+    private String title;
 
-    @Column(name = "comments")
+    @Column(name = "rating")
+    private Integer rating; // 1-5 stars, nullable for general feedback
+
+    @Column(name = "comments", length = 2000)
     private String comments;
 
-    @ManyToOne
-    @JoinColumn(name = "bookingId")
+    @Column(name = "experience", length = 2000)
+    private String experience; // User's detailed experience
+
+    @Column(name = "category", length = 50)
+    private String category; // "GENERAL", "SERVICE", "BOOKING", "WEBSITE", "TRIP", "STAFF"
+
+    @Column(name = "is_visible", nullable = false)
+    private Boolean isVisible = true; // IT Support can hide feedbacks
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    // IT Support reply
+    @Column(name = "reply", length = 2000)
+    private String reply;
+
+    @Column(name = "replied_at")
+    private LocalDateTime repliedAt;
+
+    // Relationships
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "user_id", nullable = true) // User who submitted feedback - nullable for anonymous feedback
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "booking_id") // Optional - can be related to a booking
     private Booking booking;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "replied_by") // IT Support who replied
+    private User repliedBy;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        if (isVisible == null) {
+            isVisible = true;
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

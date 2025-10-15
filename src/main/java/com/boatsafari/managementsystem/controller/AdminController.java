@@ -1,9 +1,11 @@
 package com.boatsafari.managementsystem.controller;
 
 import com.boatsafari.managementsystem.model.User;
+import com.boatsafari.managementsystem.model.Boat;
 import com.boatsafari.managementsystem.service.UserService;
 import com.boatsafari.managementsystem.service.TripService;
 import com.boatsafari.managementsystem.service.BookingService;
+import com.boatsafari.managementsystem.service.BoatService;
 import com.boatsafari.managementsystem.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,9 @@ public class AdminController {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+    private BoatService boatService;
 
     /**
      * Get all users for admin management
@@ -213,6 +218,140 @@ public class AdminController {
             defaultAnalytics.put("monthlyBookings", 0);
             defaultAnalytics.put("monthlyRevenue", 0.0);
             return ResponseEntity.ok(defaultAnalytics);
+        }
+    }
+
+    // ========================
+    // BOAT MANAGEMENT ENDPOINTS
+    // ========================
+
+    /**
+     * Get all boats (admin only)
+     */
+    @GetMapping("/boats")
+    public ResponseEntity<List<Boat>> getAllBoats() {
+        try {
+            List<Boat> boats = boatService.getAllBoats();
+            return ResponseEntity.ok(boats);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Get boat by ID (admin only)
+     */
+    @GetMapping("/boats/{id}")
+    public ResponseEntity<Boat> getBoatById(@PathVariable Long id) {
+        try {
+            Optional<Boat> boatOpt = boatService.getBoatById(id);
+            if (boatOpt.isPresent()) {
+                return ResponseEntity.ok(boatOpt.get());
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Create new boat (admin only)
+     */
+    @PostMapping("/boats")
+    public ResponseEntity<?> createBoat(@RequestBody Boat boat) {
+        try {
+            // Set default status if not provided
+            if (boat.getStatus() == null || boat.getStatus().isEmpty()) {
+                boat.setStatus("AVAILABLE");
+            }
+            Boat createdBoat = boatService.saveBoat(boat);
+            return ResponseEntity.ok(createdBoat);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to create boat: " + e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
+     * Update boat (admin only)
+     */
+    @PutMapping("/boats/{id}")
+    public ResponseEntity<?> updateBoat(@PathVariable Long id, @RequestBody Boat boatDetails) {
+        try {
+            boatDetails.setBoatId(id);
+            Boat updatedBoat = boatService.updateBoat(boatDetails);
+            if (updatedBoat != null) {
+                return ResponseEntity.ok(updatedBoat);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to update boat: " + e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
+     * Update boat status (admin only)
+     */
+    @PutMapping("/boats/{id}/status")
+    public ResponseEntity<?> updateBoatStatus(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        try {
+            String newStatus = request.get("status");
+            if (newStatus == null || newStatus.trim().isEmpty()) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Status is required");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            Optional<Boat> boatOpt = boatService.getBoatById(id);
+            if (boatOpt.isPresent()) {
+                Boat boat = boatOpt.get();
+                boat.setStatus(newStatus);
+                Boat updatedBoat = boatService.updateBoat(boat);
+                
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Boat status updated successfully");
+                response.put("newStatus", updatedBoat.getStatus());
+                return ResponseEntity.ok(response);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to update boat status: " + e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
+     * Delete boat (admin only)
+     */
+    @DeleteMapping("/boats/{id}")
+    public ResponseEntity<?> deleteBoat(@PathVariable Long id) {
+        try {
+            if (boatService.existsById(id)) {
+                boatService.deleteBoat(id);
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to delete boat: " + e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
+     * Get boats by status (admin only)
+     */
+    @GetMapping("/boats/status/{status}")
+    public ResponseEntity<List<Boat>> getBoatsByStatus(@PathVariable String status) {
+        try {
+            List<Boat> boats = boatService.getBoatsByStatus(status);
+            return ResponseEntity.ok(boats);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

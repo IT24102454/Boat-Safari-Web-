@@ -101,6 +101,9 @@ function showTab(tabName) {
         case 'bookings':
             loadBookings();
             break;
+        case 'boats':
+            loadBoats();
+            break;
         case 'staff-management':
             loadStaffMembers();
             break;
@@ -113,7 +116,7 @@ function showTab(tabName) {
 // Load dashboard statistics
 async function loadDashboardStats() {
     try {
-        const [usersResponse, tripsResponse, bookingsResponse, staffResponse] = await Promise.all([
+        const [usersResponse, tripsResponse, bookingsResponse, staffResponse, boatsResponse] = await Promise.all([
             fetch('/api/admin/users', {
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -133,6 +136,11 @@ async function loadDashboardStats() {
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token')
                 }
+            }),
+            fetch('/api/admin/boats', {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
             })
         ]);
 
@@ -140,6 +148,7 @@ async function loadDashboardStats() {
         const trips = tripsResponse.ok ? await tripsResponse.json() : [];
         const bookings = bookingsResponse.ok ? await bookingsResponse.json() : [];
         const staff = staffResponse.ok ? await staffResponse.json() : [];
+        const boats = boatsResponse.ok ? await boatsResponse.json() : [];
 
         // Calculate revenue - fix field name
         const totalRevenue = bookings.reduce((sum, booking) => sum + (booking.totalCost || booking.totalAmount || 0), 0);
@@ -149,6 +158,10 @@ async function loadDashboardStats() {
         document.getElementById('totalTrips').textContent = trips.length || 0;
         document.getElementById('totalBookings').textContent = bookings.length || 0;
         document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+        const totalBoatsElement = document.getElementById('totalBoats');
+        if (totalBoatsElement) {
+            totalBoatsElement.textContent = boats.length || 0;
+        }
         document.getElementById('totalStaff').textContent = staff.length || 0;
 
     } catch (error) {
@@ -1341,6 +1354,10 @@ function openAddStaffModal() {
     document.getElementById('addStaffModal').style.display = 'block';
 }
 
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
+}
+
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
@@ -1647,6 +1664,9 @@ function setupFormHandlers() {
             }
         });
     }
+    
+    // Setup boat form handlers
+    setupBoatFormHandlers();
 }
 
 // CRUD operation functions
@@ -1988,4 +2008,363 @@ window.onclick = function(event) {
             modals[i].style.display = 'none';
         }
     }
+}
+
+// ========================
+// BOAT MANAGEMENT FUNCTIONS
+// ========================
+
+let currentBoatsData = [];
+let selectedBoatId = null;
+
+// Load boats data
+async function loadBoats() {
+    try {
+        const tableBody = document.getElementById('boatTableBody');
+        if (tableBody) {
+            tableBody.innerHTML = '<tr><td colspan="8" class="loading"><i class="fas fa-spinner"></i><div>Loading boats...</div></td></tr>';
+        }
+        
+        const response = await fetch('/api/admin/boats', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch boats');
+        }
+
+        const boats = await response.json();
+        currentBoatsData = boats;
+        displayBoats(boats);
+        
+        console.log('Loaded boats:', boats);
+    } catch (error) {
+        console.error('Error loading boats:', error);
+        const tableBody = document.getElementById('boatTableBody');
+        if (tableBody) {
+            tableBody.innerHTML = 
+                '<tr><td colspan="8" style="text-align: center; color: #e74c3c;">Error loading boats</td></tr>';
+        }
+        showNotification('Failed to load boats: ' + error.message, 'error');
+    }
+}
+
+// Display boats in table
+function displayBoats(boats) {
+    const tbody = document.getElementById('boatTableBody');
+    
+    if (!boats || boats.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No boats found</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = boats.map(boat => `
+        <tr>
+            <td>${boat.boatId || 'N/A'}</td>
+            <td>${boat.boatName || 'N/A'}</td>
+            <td>${boat.model || 'N/A'}</td>
+            <td>${boat.type || 'N/A'}</td>
+            <td>${boat.capacity || 'N/A'}</td>
+            <td>${boat.registrationNumber || 'N/A'}</td>
+            <td>
+                <span class="status-badge status-${getStatusClass(boat.status)}">
+                    ${formatStatus(boat.status)}
+                </span>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-small btn-primary" onclick="openEditBoatModal(${boat.boatId})" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-small btn-warning" onclick="openStatusModal(${boat.boatId}, '${boat.boatName}', '${boat.status}')" title="Change Status">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="btn-small btn-danger" onclick="deleteBoat(${boat.boatId}, '${boat.boatName}')" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Get status class for styling
+function getStatusClass(status) {
+    switch(status) {
+        case 'AVAILABLE': return 'available';
+        case 'MAINTENANCE': return 'maintenance';
+        case 'OUT_OF_SERVICE': return 'out-of-service';
+        default: return 'unknown';
+    }
+}
+
+// Format status for display
+function formatStatus(status) {
+    switch(status) {
+        case 'AVAILABLE': return 'Available';
+        case 'MAINTENANCE': return 'Maintenance';
+        case 'OUT_OF_SERVICE': return 'Out of Service';
+        default: return status || 'Unknown';
+    }
+}
+
+// Open add boat modal
+function openAddBoatModal() {
+    document.getElementById('addBoatForm').reset();
+    document.getElementById('addBoatModal').style.display = 'block';
+}
+
+// Open edit boat modal
+async function openEditBoatModal(boatId) {
+    try {
+        const response = await fetch(`/api/admin/boats/${boatId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch boat details');
+        }
+
+        const boat = await response.json();
+        
+        // Populate edit form
+        document.getElementById('editBoatId').value = boat.boatId;
+        document.getElementById('editBoatName').value = boat.boatName || '';
+        document.getElementById('editBoatModel').value = boat.model || '';
+        document.getElementById('editBoatType').value = boat.type || '';
+        document.getElementById('editBoatCapacity').value = boat.capacity || '';
+        document.getElementById('editRegistrationNumber').value = boat.registrationNumber || '';
+        document.getElementById('editBoatStatus').value = boat.status || '';
+        document.getElementById('editBoatFeatures').value = boat.features || '';
+        document.getElementById('editBoatDescription').value = boat.description || '';
+        
+        document.getElementById('editBoatModal').style.display = 'block';
+    } catch (error) {
+        console.error('Error loading boat details:', error);
+        showNotification('Failed to load boat details: ' + error.message, 'error');
+    }
+}
+
+// Open status update modal
+function openStatusModal(boatId, boatName, currentStatus) {
+    selectedBoatId = boatId;
+    document.getElementById('statusBoatName').textContent = boatName;
+    document.getElementById('newStatus').value = currentStatus;
+    openModal('statusModal');
+}
+
+// Confirm status update
+async function confirmStatusUpdate() {
+    if (!selectedBoatId) return;
+    
+    const newStatus = document.getElementById('newStatus').value;
+    if (!newStatus) {
+        showNotification('Please select a status', 'error');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/admin/boats/${selectedBoatId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: newStatus })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update boat status');
+        }
+
+        const result = await response.json();
+        showNotification('Boat status updated successfully', 'success');
+        closeModal('statusModal');
+        loadBoats(); // Refresh the boats list
+        
+    } catch (error) {
+        console.error('Error updating boat status:', error);
+        showNotification('Failed to update boat status: ' + error.message, 'error');
+    }
+}
+
+// Delete boat
+async function deleteBoat(boatId, boatName) {
+    if (!confirm(`Are you sure you want to delete boat "${boatName}"? This action cannot be undone.`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/admin/boats/${boatId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to delete boat');
+        }
+
+        showNotification('Boat deleted successfully', 'success');
+        loadBoats(); // Refresh the boats list
+        loadDashboardStats(); // Update stats
+        
+    } catch (error) {
+        console.error('Error deleting boat:', error);
+        showNotification('Failed to delete boat: ' + error.message, 'error');
+    }
+}
+
+// Filter boats
+function filterBoats() {
+    const searchTerm = document.getElementById('boatSearchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('boatStatusFilter').value;
+    const typeFilter = document.getElementById('boatTypeFilter').value;
+
+    const filteredBoats = currentBoatsData.filter(boat => {
+        const matchesSearch = !searchTerm || 
+            (boat.boatName && boat.boatName.toLowerCase().includes(searchTerm)) ||
+            (boat.model && boat.model.toLowerCase().includes(searchTerm)) ||
+            (boat.registrationNumber && boat.registrationNumber.toLowerCase().includes(searchTerm));
+        
+        const matchesStatus = !statusFilter || boat.status === statusFilter;
+        const matchesType = !typeFilter || boat.type === typeFilter;
+
+        return matchesSearch && matchesStatus && matchesType;
+    });
+
+    displayBoats(filteredBoats);
+}
+
+// Clear boat filters
+function clearBoatFilters() {
+    document.getElementById('boatSearchInput').value = '';
+    document.getElementById('boatStatusFilter').value = '';
+    document.getElementById('boatTypeFilter').value = '';
+    displayBoats(currentBoatsData);
+}
+
+// Export boats
+function exportBoats() {
+    try {
+        // Create workbook and worksheet
+        const ws = XLSX.utils.json_to_sheet(currentBoatsData.map(boat => ({
+            'Boat ID': boat.boatId,
+            'Boat Name': boat.boatName,
+            'Model': boat.model,
+            'Type': boat.type,
+            'Capacity': boat.capacity,
+            'Registration Number': boat.registrationNumber,
+            'Status': boat.status,
+            'Features': boat.features,
+            'Description': boat.description
+        })));
+        
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Boats');
+        
+        // Save file
+        XLSX.writeFile(wb, `boats_${new Date().toISOString().split('T')[0]}.xlsx`);
+        
+        showNotification('Boats exported successfully', 'success');
+    } catch (error) {
+        console.error('Error exporting boats:', error);
+        showNotification('Failed to export boats: ' + error.message, 'error');
+    }
+}
+
+// Setup boat form handlers
+function setupBoatFormHandlers() {
+    // Add boat form
+    document.getElementById('addBoatForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            boatName: document.getElementById('boatName').value,
+            model: document.getElementById('boatModel').value,
+            type: document.getElementById('boatType').value,
+            capacity: parseInt(document.getElementById('boatCapacity').value),
+            registrationNumber: document.getElementById('registrationNumber').value,
+            status: document.getElementById('boatStatus').value,
+            features: document.getElementById('boatFeatures').value,
+            description: document.getElementById('boatDescription').value
+        };
+
+        try {
+            const response = await fetch('/api/admin/boats', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create boat');
+            }
+
+            const result = await response.json();
+            showNotification('Boat created successfully', 'success');
+            closeModal('addBoatModal');
+            loadBoats(); // Refresh the boats list
+            loadDashboardStats(); // Update stats
+            
+        } catch (error) {
+            console.error('Error creating boat:', error);
+            showNotification('Failed to create boat: ' + error.message, 'error');
+        }
+    });
+
+    // Edit boat form
+    document.getElementById('editBoatForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const boatId = document.getElementById('editBoatId').value;
+        const formData = {
+            boatName: document.getElementById('editBoatName').value,
+            model: document.getElementById('editBoatModel').value,
+            type: document.getElementById('editBoatType').value,
+            capacity: parseInt(document.getElementById('editBoatCapacity').value),
+            registrationNumber: document.getElementById('editRegistrationNumber').value,
+            status: document.getElementById('editBoatStatus').value,
+            features: document.getElementById('editBoatFeatures').value,
+            description: document.getElementById('editBoatDescription').value
+        };
+
+        try {
+            const response = await fetch(`/api/admin/boats/${boatId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update boat');
+            }
+
+            const result = await response.json();
+            showNotification('Boat updated successfully', 'success');
+            closeModal('editBoatModal');
+            loadBoats(); // Refresh the boats list
+            loadDashboardStats(); // Update stats
+            
+        } catch (error) {
+            console.error('Error updating boat:', error);
+            showNotification('Failed to update boat: ' + error.message, 'error');
+        }
+    });
 }

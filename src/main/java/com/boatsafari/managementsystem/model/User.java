@@ -8,18 +8,18 @@ import lombok.Data;
 @Data
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
-@Table(name = "Users")
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userId")
+    @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "firstName")
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "secondName")
+    @Column(name = "second_name")
     private String secondName;
 
     @Column(name = "password")
@@ -28,7 +28,7 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "contactNo")
+    @Column(name = "contact_no")
     private String contactNo;
 
     @Column(name = "address")
@@ -40,18 +40,17 @@ public class User {
     @Column(name = "street")
     private String street;
 
-    @Column(name = "postalCode")
+    @Column(name = "postal_code")
     private String postalCode;
 
-    @Column(name = "hireDate")
+    @Column(name = "hire_date")
     private String hireDate;
 
     @Column(name = "certification")
     private String certification;
 
-    // TODO: Add status field after database migration
-    // @Column(name = "status")
-    // private String status = "AVAILABLE"; // Default status
+    @Column(name = "status")
+    private String status = "AVAILABLE"; // Default status
 
     // The role column is already in the database as a discriminator column
     @Column(name = "role", insertable = false, updatable = false)

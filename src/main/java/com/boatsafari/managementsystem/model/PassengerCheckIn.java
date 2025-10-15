@@ -11,23 +11,23 @@ import java.time.LocalDateTime;
 public class PassengerCheckIn {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "checkInId")
+    @Column(name = "check_in_id")
     private Long checkInId;
 
     @ManyToOne
-    @JoinColumn(name = "bookingId", nullable = false)
+    @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
 
-    @Column(name = "checkedIn", nullable = false)
+    @Column(name = "checked_in", nullable = false)
     private Boolean checkedIn = false;
 
-    @Column(name = "checkInTime")
+    @Column(name = "check_in_time")
     private LocalDateTime checkInTime;
 
     @Column(name = "notes", length = 500)
     private String notes;
 
     @ManyToOne
-    @JoinColumn(name = "checkedInBy")
+    @JoinColumn(name = "checked_in_by")
     private SafariGuide checkedInBy;
 }

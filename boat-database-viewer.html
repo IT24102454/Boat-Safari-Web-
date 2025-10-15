@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boat Database Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .boat-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .boat-table th, .boat-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .boat-table th {
+            background-color: #3498db;
+            color: white;
+        }
+        .boat-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-available {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-maintenance {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-out-of-service {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .error {
+            color: #e74c3c;
+            background: #fdf2f2;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #27ae60;
+            background: #eafaf1;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚤 Boat Database Viewer</h1>
+        <p>This page retrieves and displays all boat details from the database's boats table.</p>
+        
+        <div>
+            <button class="btn" onclick="loadBoats()">🔄 Load Boats from Database</button>
+            <button class="btn" onclick="loadBoatsWithAuth()">🔐 Load with Authentication</button>
+        </div>
+        
+        <div id="message"></div>
+        <div id="boat-container">
+            <div class="loading">Click "Load Boats" to retrieve data from database</div>
+        </div>
+    </div>
+
+    <script>
+        async function loadBoats() {
+            const container = document.getElementById('boat-container');
+            const messageDiv = document.getElementById('message');
+            
+            try {
+                container.innerHTML = '<div class="loading">Loading boats from database...</div>';
+                messageDiv.innerHTML = '';
+                
+                const response = await fetch('/api/boats/test', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const boats = await response.json();
+                displayBoats(boats);
+                
+                messageDiv.innerHTML = `<div class="success">✅ Successfully loaded ${boats.length} boats from database</div>`;
+                
+            } catch (error) {
+                container.innerHTML = '<div class="error">Failed to load boats</div>';
+                messageDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                console.error('Error loading boats:', error);
+            }
+        }
+
+        async function loadBoatsWithAuth() {
+            const container = document.getElementById('boat-container');
+            const messageDiv = document.getElementById('message');
+            
+            try {
+                container.innerHTML = '<div class="loading">Loading boats with authentication...</div>';
+                messageDiv.innerHTML = '';
+                
+                // Try with mock authentication
+                const response = await fetch('/api/boats', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer test-token' // Mock token
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const boats = await response.json();
+                displayBoats(boats);
+                
+                messageDiv.innerHTML = `<div class="success">✅ Successfully loaded ${boats.length} boats with authentication</div>`;
+                
+            } catch (error) {
+                container.innerHTML = '<div class="error">Failed to load boats with authentication</div>';
+                messageDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                console.error('Error loading boats:', error);
+            }
+        }
+
+        function displayBoats(boats) {
+            const container = document.getElementById('boat-container');
+            
+            if (!boats || boats.length === 0) {
+                container.innerHTML = '<div class="error">No boats found in database</div>';
+                return;
+            }
+
+            let html = `
+                <h2>📊 Boat Database Records (${boats.length} boats)</h2>
+                <table class="boat-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Boat Name</th>
+                            <th>Model</th>
+                            <th>Type</th>
+                            <th>Capacity</th>
+                            <th>Registration</th>
+                            <th>Status</th>
+                            <th>Features</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            boats.forEach(boat => {
+                const statusClass = getStatusClass(boat.status);
+                html += `
+                    <tr>
+                        <td>${boat.boatId || 'N/A'}</td>
+                        <td><strong>${boat.boatName || 'N/A'}</strong></td>
+                        <td>${boat.model || 'N/A'}</td>
+                        <td>${boat.type || 'N/A'}</td>
+                        <td>${boat.capacity || 'N/A'}</td>
+                        <td>${boat.registrationNumber || 'N/A'}</td>
+                        <td>
+                            <span class="status-badge ${statusClass}">
+                                ${formatStatus(boat.status)}
+                            </span>
+                        </td>
+                        <td>${boat.features || 'N/A'}</td>
+                        <td>${boat.description || 'N/A'}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'AVAILABLE': return 'status-available';
+                case 'MAINTENANCE': return 'status-maintenance';
+                case 'OUT_OF_SERVICE': return 'status-out-of-service';
+                default: return '';
+            }
+        }
+
+        function formatStatus(status) {
+            switch(status) {
+                case 'AVAILABLE': return 'Available';
+                case 'MAINTENANCE': return 'Maintenance';
+                case 'OUT_OF_SERVICE': return 'Out of Service';
+                default: return status || 'Unknown';
+            }
+        }
+
+        // Auto-load boats when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBoats();
+        });
+    </script>
+</body>
+</html>

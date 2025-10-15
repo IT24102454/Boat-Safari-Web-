@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boat Safari | Feedback</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1fbfd6;
+            --secondary: #f6c453;
+            --dark-blue: #0e3a5b;
+            --navy: #0b1c2c;
+            --light: #f7fbff;
+            --text-light: #d7e6f1;
+            --text-muted: #8fa6b6;
+            --card: #ffffff;
+            --line: #e6eef5;
+            --bg: #f7fbff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
+            background: var(--bg);
+            color: #0b1c2c;
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background-color: var(--dark-blue);
+            color: #fff;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .top-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-info a {
+            margin-right: 20px;
+            color: #fff;
+        }
+
+        .contact-info a i {
+            margin-right: 5px;
+            color: var(--primary);
+        }
+
+        .social-icons a {
+            margin-left: 15px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .social-icons a:hover {
+            color: var(--primary);
+        }
+
+        /* Navigation */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .brand .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            font-weight: 500;
+            color: var(--navy);
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            bottom: 0;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+
+        .book-now {
+            background: var(--primary);
+            color: white !important;
+            padding: 12px 25px !important;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-left: 20px;
+        }
+
+        .book-now:hover {
+            background: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links .active:after {
+            width: 100%;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(rgba(14, 58, 91, 0.9), rgba(11, 28, 44, 0.95)),
+                      url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&h=1080&fit=crop&crop=center');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding: 80px 0;
+        }
+
+        .hero-inner {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            margin: 0 0 15px;
+            font-size: 48px;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 15px;
+        }
+
+        .hero h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+        }
+
+        .hero .muted {
+            color: var(--text-light);
+            font-size: 18px;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 900px;
+            margin: -50px auto 40px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Reviews list */
+        .reviews-section {
+            margin-top: 40px;
+        }
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .reviews-header h2 {
+            margin: 0;
+            font-size: 26px;
+            color: var(--dark-blue);
+        }
+        .filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .filter-chip {
+            padding: 6px 12px;
+            border: 1px solid var(--line);
+            background: var(--light);
+            border-radius: 999px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .filter-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .review-card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .review-top { display: flex; justify-content: space-between; align-items: start; gap: 8px; }
+        .review-title { font-weight: 700; color: var(--dark-blue); }
+        .badge { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; border-radius: 999px; padding: 2px 10px; font-size: 12px; }
+        .stars-sm { color: #ffc107; }
+        .review-text { color: #444; margin-top: 8px; }
+        .review-meta { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 13px; margin-top: 10px; }
+        .reply-box { background: #e8f5e8; border-left: 4px solid #28a745; padding: 10px; border-radius: 8px; margin-top: 10px; }
+
+        .card:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary);
+        }
+
+        .form-section h2 {
+            margin: 0 0 10px;
+            font-size: 32px;
+            color: var(--dark-blue);
+        }
+
+        .form-section .muted {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            z-index: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-blue);
+            font-size: 1rem;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 1px solid #e7edf3;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(31, 191, 214, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            padding-top: 15px;
+        }
+
+        .rating-section {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .rating-section h3 {
+            color: var(--dark-blue);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .rating-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 8px;
+        }
+
+        .star {
+            font-size: 2rem;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .star:hover,
+        .star.active {
+            color: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        .rating-text {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .submit-btn {
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+        }
+
+        .nav-link {
+            color: var(--dark-blue);
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background: var(--light);
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d1f2eb;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--navy);
+            color: var(--text-light);
+            padding: 40px 0 20px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .top-bar-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-inner {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links a {
+                margin: 5px 10px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .container {
+                margin: -30px auto 20px;
+            }
+
+            .card {
+                padding: 30px 20px;
+                border-radius: 10px;
+            }
+
+            .form-section h2 {
+                font-size: 28px;
+            }
+
+            .rating-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .navigation {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <div class="top-bar-container">
+            <div class="contact-info">
+                <a href="tel:+1234567890"><i class="fas fa-phone"></i> +1 (234) 567-890</a>
+                <a href="mailto:info@boatsafari.com"><i class="fas fa-envelope"></i> info@boatsafari.com</a>
+            </div>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="index.html" class="brand">
+                <i class="fas fa-anchor logo"></i>
+                Boat Safari
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="trips.html">Trips</a>
+                <a href="boat.html">Boats</a>
+                <a href="booking.html">Booking</a>
+                <a href="feedback.html" class="active">Feedback</a>
+                <a href="support.html">Support</a>
+                <a href="profile.html">Profile</a>
+                <a href="booking.html" class="book-now">Book Now</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-inner">
+            <h1>Share Your Experience</h1>
+            <p class="muted">Help us improve our service by sharing your feedback and rating your experience</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="card">
+            <div class="form-section">
+                <h2>Your Feedback Matters</h2>
+                <p class="muted">Tell us about your experience so we can continue to provide excellent service</p>
+                
+                <div id="alertContainer"></div>
+                
+                <form id="feedbackForm">
+                    <div class="form-group">
+                        <label for="title"><i class="fas fa-heading"></i> Feedback Title</label>
+                        <input type="text" id="title" name="title" required placeholder="Brief title for your feedback">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category"><i class="fas fa-tags"></i> Category</label>
+                        <select id="category" name="category" required>
+                            <option value="">Select a category</option>
+                            <option value="SERVICE">Service Quality</option>
+                            <option value="BOAT">Boat Experience</option>
+                            <option value="BOOKING">Booking Process</option>
+                            <option value="STAFF">Staff Behavior</option>
+                            <option value="SAFETY">Safety Measures</option>
+                            <option value="VALUE">Value for Money</option>
+                            <option value="GENERAL">General Feedback</option>
+                        </select>
+                    </div>
+                    
+                    <div class="rating-section">
+                        <h3><i class="fas fa-star"></i> Rate Your Experience</h3>
+                        <div class="rating-group">
+                            <div class="stars" id="starRating">
+                                <span class="star" data-rating="1">★</span>
+                                <span class="star" data-rating="2">★</span>
+                                <span class="star" data-rating="3">★</span>
+                                <span class="star" data-rating="4">★</span>
+                                <span class="star" data-rating="5">★</span>
+                            </div>
+                            <span class="rating-text" id="ratingText">Click to rate</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="comments"><i class="fas fa-comment-dots"></i> Your Comments</label>
+                        <textarea id="comments" name="comments" required placeholder="Share your detailed feedback here..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Submit Feedback
+                    </button>
+                </form>
+
+                <!-- Public Reviews Section -->
+                <div class="reviews-section" id="publicReviews">
+                    <div class="reviews-header">
+                        <h2><i class="fas fa-star" style="color: var(--secondary);"></i> Recent Customer Reviews</h2>
+                        <div class="filters" id="reviewFilters">
+                            <button class="filter-chip active" data-category="">All</button>
+                            <button class="filter-chip" data-category="TRIP">Trip</button>
+                            <button class="filter-chip" data-category="SERVICE">Service</button>
+                            <button class="filter-chip" data-category="STAFF">Staff</button>
+                            <button class="filter-chip" data-category="BOOKING">Booking</button>
+                            <button class="filter-chip" data-category="GENERAL">General</button>
+                        </div>
+                    </div>
+                    <div id="reviewsContainer">
+                        <div style="text-align:center; padding: 24px; color: var(--text-muted);">
+                            <i class="fas fa-spinner fa-spin"></i> Loading reviews...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="navigation">
+                    <a href="index.html" class="nav-link">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="trips.html">Trips</a>
+                <a href="booking.html">Booking</a>
+                <a href="support.html">Support</a>
+                <a href="feedback.html">Feedback</a>
+            </div>
+            <p>&copy; 2024 Boat Safari. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let selectedRating = 0;
+        let allReviews = [];
+        let currentFilter = '';
+        
+        // Star rating functionality
+        const stars = document.querySelectorAll('.star');
+        const ratingText = document.getElementById('ratingText');
+        const ratingTexts = ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+        
+        stars.forEach((star, index) => {
+            star.addEventListener('mouseover', () => {
+                highlightStars(index + 1);
+                ratingText.textContent = ratingTexts[index];
+            });
+            
+            star.addEventListener('mouseout', () => {
+                highlightStars(selectedRating);
+                ratingText.textContent = selectedRating > 0 ? ratingTexts[selectedRating - 1] : 'Click to rate';
+            });
+            
+            star.addEventListener('click', () => {
+                selectedRating = index + 1;
+                highlightStars(selectedRating);
+                ratingText.textContent = ratingTexts[selectedRating - 1];
+            });
+        });
+        
+        function highlightStars(rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+        
+    // Form submission
+        document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (selectedRating === 0) {
+                showAlert('Please select a rating before submitting your feedback.', 'error');
+                return;
+            }
+            
+            const formData = {
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                rating: selectedRating,
+                comments: document.getElementById('comments').value
+            };
+            
+            try {
+                const response = await fetch('/api/feedback/public', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response.ok) {
+                    showAlert('Thank you for your feedback! Your submission has been received.', 'success');
+                    document.getElementById('feedbackForm').reset();
+                    selectedRating = 0;
+                    highlightStars(0);
+                    ratingText.textContent = 'Click to rate';
+                    // Refresh reviews after successful submit
+                    loadReviews();
+                } else {
+                    const errorData = await response.json();
+                    showAlert(errorData.message || 'Error submitting feedback. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Network error. Please check your connection and try again.', 'error');
+            }
+        });
+        
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Reviews: load + render + filter
+        document.addEventListener('DOMContentLoaded', () => {
+            initFilters();
+            loadReviews();
+        });
+
+        function initFilters() {
+            const chips = document.querySelectorAll('#reviewFilters .filter-chip');
+            chips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    chips.forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentFilter = chip.dataset.category || '';
+                    renderReviews();
+                });
+            });
+        }
+
+        async function loadReviews() {
+            const container = document.getElementById('reviewsContainer');
+            container.innerHTML = '<div style="text-align:center; padding: 24px; color: var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading reviews...</div>';
+            try {
+                const res = await fetch('/api/feedback/public');
+                if (!res.ok) throw new Error('Failed to fetch');
+                allReviews = await res.json();
+                renderReviews();
+            } catch (err) {
+                console.error('Failed loading reviews', err);
+                // Show error state when API is unavailable
+                container.innerHTML = '<div style="text-align:center; padding: 32px; color: #c0392b;">\n                    <i class="fas fa-circle-exclamation"></i> Unable to load reviews right now.\n                </div>';
+            }
+        }
+
+        function renderReviews() {
+            const container = document.getElementById('reviewsContainer');
+            let items = allReviews;
+            if (currentFilter) items = items.filter(r => r.category === currentFilter);
+
+            if (!items.length) {
+                container.innerHTML = '<div style="text-align:center; padding: 32px; color: var(--text-muted);"><i class="fas fa-comments"></i> No reviews yet.</div>';
+                return;
+            }
+
+            const html = items.map(r => `
+                <div class="review-card">
+                    <div class="review-top">
+                        <div class="review-title">${escapeHtml(r.title || 'Customer Review')}</div>
+                        <span class="badge">${escapeHtml(formatCategory(r.category || 'GENERAL'))}</span>
+                    </div>
+                    ${r.rating ? `<div class="stars-sm">${'★'.repeat(Math.round(r.rating))}${'☆'.repeat(5-Math.round(r.rating))}</div>` : ''}
+                    <div class="review-text">${escapeHtml(r.comments || '')}</div>
+                    ${r.reply ? `<div class="reply-box"><strong><i class="fas fa-reply"></i> Response:</strong> ${escapeHtml(r.reply)}</div>` : ''}
+                    <div class="review-meta">
+                        <span><i class="fas fa-user"></i> ${escapeHtml(r.userName || r.user?.firstName || 'Customer')}</span>
+                        <span><i class="fas fa-calendar"></i> ${formatDate(r.createdAt)}</span>
+                    </div>
+                </div>
+            `).join('');
+            container.innerHTML = `<div class="reviews-grid">${html}</div>`;
+        }
+
+        // Removed sample reviews; we now show only real data or empty/error states.
+
+        function formatCategory(category) { return category.charAt(0) + category.slice(1).toLowerCase(); }
+        function formatDate(dateString) {
+            if (!dateString) return 'Recently';
+            const d = new Date(dateString);
+            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text || ''; return div.innerHTML; }
+    </script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .result { margin: 10px 0; padding: 10px; background: #f5f5f5; }
+        .error { background: #ffe6e6; color: #cc0000; }
+        .success { background: #e6ffe6; color: #006600; }
+    </style>
+</head>
+<body>
+    <h1>Boat Safari Login System Test</h1>
+    
+    <div class="test-section">
+        <h3>1. Create Test Users</h3>
+        <button onclick="createUsers()">Create Test Users</button>
+        <div id="createResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. List All Users</h3>
+        <button onclick="listUsers()">List Users</button>
+        <div id="listResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Test Login</h3>
+        <input type="email" id="testEmail" placeholder="Email" value="admin@gmail.com">
+        <input type="password" id="testPassword" placeholder="Password" value="admin123">
+        <button onclick="testLogin()">Test Login</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>4. Test Direct Login API</h3>
+        <button onclick="testLoginDirect()">Test Direct Login</button>
+        <div id="directResult" class="result"></div>
+    </div>
+
+    <script>
+        async function createUsers() {
+            const resultDiv = document.getElementById('createResult');
+            resultDiv.innerHTML = 'Creating users...';
+            
+            try {
+                const response = await fetch('/api/setup/create-users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.text();
+                resultDiv.innerHTML = response.ok ? 
+                    `<div class="success">Success: ${result}</div>` : 
+                    `<div class="error">Error: ${result}</div>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function listUsers() {
+            const resultDiv = document.getElementById('listResult');
+            resultDiv.innerHTML = 'Loading users...';
+            
+            try {
+                const response = await fetch('/api/setup/users');
+                const users = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">
+                        <h4>Users Found: ${users.length}</h4>
+                        <pre>${JSON.stringify(users, null, 2)}</pre>
+                    </div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">Error loading users</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testLogin() {
+            const resultDiv = document.getElementById('loginResult');
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            resultDiv.innerHTML = 'Testing login...';
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const result = await response.text();
+                
+                if (response.ok) {
+                    const data = JSON.parse(result);
+                    resultDiv.innerHTML = `<div class="success">
+                        <h4>Login Successful!</h4>
+                        <p>Token: ${data.token}</p>
+                        <p>Role: ${data.role}</p>
+                    </div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">Login Failed: ${result}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testLoginDirect() {
+            const resultDiv = document.getElementById('directResult');
+            resultDiv.innerHTML = 'Testing direct login...';
+            
+            try {
+                const response = await fetch('/api/setup/test-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">
+                        <h4>Direct Login Test Successful!</h4>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    </div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">
+                        <h4>Direct Login Test Failed</h4>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    </div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

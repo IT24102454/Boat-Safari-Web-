@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Boats API</title>
+</head>
+<body>
+    <h1>Test Boats Management</h1>
+    
+    <div>
+        <h2>Get All Boats</h2>
+        <button onclick="testGetBoats()">Get Boats</button>
+        <pre id="boats-result"></pre>
+    </div>
+
+    <div>
+        <h2>Create Boat</h2>
+        <form id="boat-form">
+            <input type="text" id="boatName" placeholder="Boat Name" required><br>
+            <input type="text" id="model" placeholder="Model" required><br>
+            <input type="text" id="type" placeholder="Type" required><br>
+            <input type="number" id="capacity" placeholder="Capacity" required><br>
+            <input type="text" id="registrationNumber" placeholder="Registration Number" required><br>
+            <select id="status" required>
+                <option value="AVAILABLE">Available</option>
+                <option value="MAINTENANCE">Maintenance</option>
+                <option value="OUT_OF_SERVICE">Out of Service</option>
+            </select><br>
+            <textarea id="features" placeholder="Features"></textarea><br>
+            <textarea id="description" placeholder="Description"></textarea><br>
+            <button type="submit">Create Boat</button>
+        </form>
+        <pre id="create-result"></pre>
+    </div>
+
+    <script>
+        // Mock authentication for testing
+        const mockToken = "test-token";
+        localStorage.setItem('token', mockToken);
+        localStorage.setItem('userRole', 'ADMIN');
+
+        async function testGetBoats() {
+            try {
+                const response = await fetch('/api/boats', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const boats = await response.json();
+                document.getElementById('boats-result').textContent = JSON.stringify(boats, null, 2);
+            } catch (error) {
+                document.getElementById('boats-result').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        document.getElementById('boat-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const boatData = {
+                boatName: document.getElementById('boatName').value,
+                model: document.getElementById('model').value,
+                type: document.getElementById('type').value,
+                capacity: parseInt(document.getElementById('capacity').value),
+                registrationNumber: document.getElementById('registrationNumber').value,
+                status: document.getElementById('status').value,
+                features: document.getElementById('features').value,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                const response = await fetch('/api/boats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(boatData)
+                });
+                
+                const result = await response.json();
+                document.getElementById('create-result').textContent = JSON.stringify(result, null, 2);
+                
+                if (response.ok) {
+                    document.getElementById('boat-form').reset();
+                }
+            } catch (error) {
+                document.getElementById('create-result').textContent = 'Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

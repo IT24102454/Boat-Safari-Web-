@@ -648,7 +648,7 @@
         <i class="fas fa-lock"></i> Pay Now
       </button>
 
-      <div id="error" class="error"></div>
+      <div id="error" class="error" style="display: none;"></div>
 
       <div class="secure-badge">
         <i class="fas fa-shield-alt"></i> Secure Payment - Your data is protected
@@ -781,15 +781,56 @@
   function onlyDigits(s){ return (s||'').replace(/\D/g,''); }
 
   async function loadBooking(){
-    if(!bookingId){ bookingInfo.textContent='Invalid booking.'; return; }
-    if(!token){ bookingInfo.textContent='Please login.'; return; }
+    // Clear any existing errors
+    errorBox.style.display = 'none';
+    errorBox.textContent = '';
+    
+    if(!bookingId){ 
+      bookingInfo.textContent='Invalid booking ID. Please check the URL.'; 
+      errorBox.textContent = 'No booking ID provided in URL';
+      errorBox.style.display = 'block';
+      return; 
+    }
+    if(!token){ 
+      bookingInfo.textContent='Please login to view booking details.'; 
+      errorBox.textContent = 'Authentication required - please login';
+      errorBox.style.display = 'block';
+      return; 
+    }
     try{
+      console.log('Loading booking ID:', bookingId);
+      console.log('Using token:', token ? 'Token present' : 'No token');
+      
       const resp = await fetch(`/api/bookings/${bookingId}`,{ headers:{ Authorization:`Bearer ${token}` }});
+      console.log('Booking API response status:', resp.status);
+      
       if(!resp.ok){
-        if(resp.status===401){ localStorage.removeItem('token'); window.location.href='/login.html'; return; }
-        throw new Error('Failed to load booking');
+        if(resp.status===401){ 
+          localStorage.removeItem('token'); 
+          bookingInfo.textContent='Session expired. Redirecting to login...';
+          errorBox.textContent = 'Authentication failed - session expired';
+          errorBox.style.display = 'block';
+          setTimeout(() => window.location.href='/login.html', 2000);
+          return; 
+        }
+        if(resp.status===404){
+          bookingInfo.textContent='Booking not found.';
+          errorBox.textContent = `Booking with ID ${bookingId} does not exist`;
+          errorBox.style.display = 'block';
+          return;
+        }
+        if(resp.status===403){
+          bookingInfo.textContent='Access denied.';
+          errorBox.textContent = 'You do not have permission to view this booking';
+          errorBox.style.display = 'block';
+          return;
+        }
+        const errorText = await resp.text();
+        console.error('Booking API error:', errorText);
+        throw new Error(`Failed to load booking (${resp.status}): ${errorText || 'Unknown error'}`);
       }
       const b = await resp.json();
+      console.log('Booking data loaded:', b);
 
       // Update header info
       bookingInfo.innerHTML = `
@@ -805,12 +846,16 @@
       document.getElementById('summaryAmount').textContent = `$${b.totalCost}`;
 
     } catch(e){
-      bookingInfo.textContent = e.message;
+      console.error('Error loading booking:', e);
+      bookingInfo.textContent = 'Failed to load booking details.';
+      errorBox.textContent = `Error: ${e.message}`;
+      errorBox.style.display = 'block';
     }
   }
 
   document.getElementById('payBtn').addEventListener('click', async ()=>{
     errorBox.textContent='';
+    errorBox.style.display = 'none';
     if(!token){ alert('Please login'); window.location.href='/login.html'; return; }
 
     const method = document.querySelector('input[name="method"]:checked').value;
@@ -822,10 +867,26 @@
       body.cardExpiry = document.getElementById('cardExpiry').value.trim();
       body.cardCvv = document.getElementById('cardCvv').value.trim();
 
-      if(!body.cardHolderName){ errorBox.textContent='Cardholder name required'; return; }
-      if(!body.cardNumber || body.cardNumber.length!==16){ errorBox.textContent='Card number must be 16 digits'; return; }
-      if(!/^(0[1-9]|1[0-2])\/\d{2}$/.test(body.cardExpiry)){ errorBox.textContent='Expiry must be MM/YY'; return; }
-      if(!/^\d{3}$/.test(body.cardCvv)){ errorBox.textContent='CVV must be 3 digits'; return; }
+      if(!body.cardHolderName){ 
+        errorBox.textContent='Cardholder name required'; 
+        errorBox.style.display = 'block';
+        return; 
+      }
+      if(!body.cardNumber || body.cardNumber.length!==16){ 
+        errorBox.textContent='Card number must be 16 digits'; 
+        errorBox.style.display = 'block';
+        return; 
+      }
+      if(!/^(0[1-9]|1[0-2])\/\d{2}$/.test(body.cardExpiry)){ 
+        errorBox.textContent='Expiry must be MM/YY'; 
+        errorBox.style.display = 'block';
+        return; 
+      }
+      if(!/^\d{3}$/.test(body.cardCvv)){ 
+        errorBox.textContent='CVV must be 3 digits'; 
+        errorBox.style.display = 'block';
+        return; 
+      }
     }
 
     try{
@@ -833,24 +894,41 @@
       const originalBtnText = payBtn.innerHTML;
       payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
+      console.log('Processing payment with data:', body);
+      
       const resp = await fetch('/api/payments',{
         method:'POST',
         headers:{ 'Content-Type':'application/json', Accept:'application/json', Authorization:`Bearer ${token}` },
         body: JSON.stringify(body)
       });
 
+      console.log('Payment API response status:', resp.status);
+      
       if(!resp.ok){
-        let msg='Payment failed. Try again.';
-        try{ const data = await resp.json(); if(data && data.message) msg = data.message; }
-        catch(_){ try{ const t = await resp.text(); if(t) msg = t; }catch(__){} }
+        let msg='Payment failed. Please try again.';
+        try{ 
+          const data = await resp.json(); 
+          console.error('Payment API error response:', data);
+          if(data && data.message) msg = data.message; 
+        }
+        catch(_){ 
+          try{ 
+            const t = await resp.text(); 
+            console.error('Payment API error text:', t);
+            if(t) msg = t; 
+          }catch(__){} 
+        }
         throw new Error(msg);
       }
 
       const data = await resp.json();
+      console.log('Payment successful:', data);
       alert(data.message || 'Payment processed successfully!');
       window.location.href = '/trips.html';
     }catch(e){
+      console.error('Payment processing error:', e);
       errorBox.textContent = e.message;
+      errorBox.style.display = 'block';
     }finally{
       payBtn.disabled = false;
       payBtn.innerHTML = method === 'CARD' ? '<i class="fas fa-lock"></i> Pay Now' : '<i class="fas fa-check-circle"></i> Confirm Booking';

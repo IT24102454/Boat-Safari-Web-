@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        .result { margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 3px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        button { margin: 5px; padding: 10px 15px; border: none; border-radius: 3px; cursor: pointer; }
+        .test-btn { background: #1976d2; color: white; }
+        .test-btn:hover { background: #1565c0; }
+    </style>
+</head>
+<body>
+    <h1>API Endpoint Test</h1>
+    
+    <div class="section">
+        <h2>Trips API</h2>
+        <button class="test-btn" onclick="testTrips()">Test /api/trips</button>
+        <div id="trips-result" class="result"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Bookings API</h2>
+        <button class="test-btn" onclick="testBookings()">Test /api/bookings</button>
+        <div id="bookings-result" class="result"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Boats API</h2>
+        <button class="test-btn" onclick="testBoats()">Test /api/boats</button>
+        <div id="boats-result" class="result"></div>
+    </div>
+
+    <script>
+        async function testTrips() {
+            const result = document.getElementById('trips-result');
+            result.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch('/api/trips');
+                if (response.ok) {
+                    const data = await response.json();
+                    result.className = 'result success';
+                    result.innerHTML = `✅ SUCCESS: Got ${data.length} trips<br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    result.className = 'result error';
+                    result.innerHTML = `❌ ERROR: ${response.status} - ${response.statusText}`;
+                }
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `❌ ERROR: ${error.message}`;
+            }
+        }
+
+        async function testBookings() {
+            const result = document.getElementById('bookings-result');
+            result.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch('/api/bookings');
+                if (response.ok) {
+                    const data = await response.json();
+                    result.className = 'result success';
+                    result.innerHTML = `✅ SUCCESS: Got ${data.length} bookings<br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    result.className = 'result error';
+                    result.innerHTML = `❌ ERROR: ${response.status} - ${response.statusText}`;
+                }
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `❌ ERROR: ${error.message}`;
+            }
+        }
+
+        async function testBoats() {
+            const result = document.getElementById('boats-result');
+            result.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch('/api/boats');
+                if (response.ok) {
+                    const data = await response.json();
+                    result.className = 'result success';
+                    result.innerHTML = `✅ SUCCESS: Got ${data.length} boats<br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    result.className = 'result error';
+                    result.innerHTML = `❌ ERROR: ${response.status} - ${response.statusText}`;
+                }
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `❌ ERROR: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
