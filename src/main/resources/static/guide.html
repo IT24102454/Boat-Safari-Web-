@@ -7,52 +7,506 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            background-color: #f5f5f5;
+        :root {
+            --primary-gradient: linear-gradient(135deg, #0f3460 0%, #0c2847 50%, #1e5799 100%);
+            --secondary-gradient: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            --box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --backdrop-filter: blur(8px);
         }
-        .sidebar {
-            background-color: #052c65;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--primary-gradient);
+            background-attachment: fixed;
             color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .sidebar {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-filter);
+            border-right: 1px solid var(--glass-border);
             height: 100vh;
             position: sticky;
             top: 0;
+            box-shadow: var(--box-shadow);
+            animation: slideInLeft 0.8s ease-out;
         }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .logo {
+            animation: pulse 2s infinite;
+        }
+
         .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 5px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent;
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
         }
+
+        .sidebar .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .sidebar .nav-link:hover::before {
+            left: 100%;
+        }
+
         .sidebar .nav-link:hover {
             color: #fff;
+            background: var(--glass-bg);
+            border-color: var(--glass-border);
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
+
         .sidebar .nav-link.active {
             color: #fff;
-            background-color: rgba(255, 255, 255, 0.1);
+            background: var(--secondary-gradient);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
-        .main-content {
+
+        .profile-section {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-filter);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
             padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
         }
-        .trip-card {
-            transition: all 0.3s;
-            cursor: pointer;
+
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--glass-border);
+            animation: pulse 3s infinite;
+            margin-bottom: 15px;
         }
-        .trip-card:hover {
+
+        .main-content {
+            padding: 30px;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .glassmorphism-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-filter);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glassmorphism-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
         }
-        .badge-corner {
+
+        .trip-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-filter);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trip-card::before {
+            content: '';
             position: absolute;
-            right: 0;
             top: 0;
-            padding: 10px;
-            border-radius: 0 0.25rem 0 0.25rem;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
         }
-        .trip-details {
-            margin-top: 20px;
+
+        .trip-card:hover::before {
+            left: 100%;
+        }
+
+        .trip-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 50px rgba(31, 38, 135, 0.6);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .trip-status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .status-upcoming {
+            background: var(--success-gradient);
+        }
+
+        .status-completed {
+            background: var(--secondary-gradient);
+        }
+
+        .status-cancelled {
+            background: var(--warning-gradient);
+        }
+
+        .progress-ring {
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+        }
+
+        .progress-ring__circle {
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 4;
+            fill: transparent;
+            r: 40;
+            cx: 50;
+            cy: 50;
+        }
+
+        .progress-ring__progress {
+            stroke: #38ef7d;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            fill: transparent;
+            r: 40;
+            cx: 50;
+            cy: 50;
+            transition: stroke-dashoffset 1s ease-in-out;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-filter);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .btn-glass {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-filter);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-success-glass {
+            background: var(--success-gradient);
+            border: none;
+        }
+
+        .btn-warning-glass {
+            background: var(--warning-gradient);
+            border: none;
+        }
+
+        .table-glass {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-filter);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        .table-glass th {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 15px;
+        }
+
+        .table-glass td {
+            border: none;
+            color: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-filter);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .modal-header {
+            background: var(--secondary-gradient);
+            border-bottom: 1px solid var(--glass-border);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .alert-glass {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-filter);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .performance-chart {
+            height: 300px;
+            background: var(--glass-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .passenger-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .check-in-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .check-in-timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--secondary-gradient);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            background: var(--glass-bg);
+            padding: 15px;
+            border-radius: 10px;
+            margin-left: 15px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success-gradient);
+            transform: translateY(-50%);
+            border: 2px solid var(--glass-border);
+        }
+
+        .floating-action-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--success-gradient);
+            border: none;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-action-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .floating-action-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+        .content-section {
             display: none;
         }
+        
         .passenger-table th, .passenger-table td {
             vertical-align: middle;
         }
+        
         .progress-tracker {
             height: 10px;
             border-radius: 5px;
@@ -62,31 +516,56 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
+            <!-- Enhanced Sidebar -->
             <div class="col-md-3 col-lg-2 sidebar py-3 d-flex flex-column">
-                <div class="d-flex align-items-center mb-3">
-                    <i class="fas fa-ship fa-2x me-2"></i>
+                <div class="d-flex align-items-center mb-4 logo">
+                    <i class="fas fa-compass fa-2x me-2"></i>
                     <h4 class="mb-0">Boat Safari</h4>
                 </div>
-                <div class="text-center mb-4">
-                    <img src="https://via.placeholder.com/100" alt="Guide Profile" class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
-                    <h6 id="guide-name" class="mb-1">Loading...</h6>
-                    <div class="badge bg-info">Safari Guide</div>
+                
+                <div class="profile-section">
+                    <img src="https://via.placeholder.com/100" alt="Guide Profile" class="profile-img" id="guide-avatar">
+                    <h6 id="guide-name" class="mb-2">Loading...</h6>
+                    <div class="badge bg-success">Safari Guide</div>
+                    <div class="mt-2 small">
+                        <i class="fas fa-calendar-check me-1"></i>
+                        <span id="total-trips">0</span> Total Trips
+                    </div>
                 </div>
+                
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a href="#upcoming-trips" class="nav-link active" data-bs-toggle="tab" role="tab">
+                        <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#upcoming-trips" class="nav-link" data-section="upcoming-trips">
                             <i class="fas fa-calendar-alt me-2"></i>
                             Upcoming Trips
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#past-trips" class="nav-link" data-bs-toggle="tab" role="tab">
+                        <a href="#trip-history" class="nav-link" data-section="trip-history">
                             <i class="fas fa-history me-2"></i>
                             Trip History
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="#passengers" class="nav-link" data-section="passengers">
+                            <i class="fas fa-users me-2"></i>
+                            Passenger Management
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#performance" class="nav-link" data-section="performance">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Performance
+                        </a>
+                    </li>
                 </ul>
+                
                 <div class="mt-auto">
                     <a href="#" id="logout-link" class="nav-link text-danger">
                         <i class="fas fa-sign-out-alt me-2"></i>
@@ -95,146 +574,397 @@
                 </div>
             </div>
 
-            <!-- Main Content -->
+            <!-- Enhanced Main Content -->
             <div class="col-md-9 col-lg-10 main-content">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 id="page-title">Guide Dashboard</h2>
-                    <span class="text-muted" id="current-date"></span>
-                </div>
-
-                <!-- Tab Content -->
-                <div class="tab-content">
-                    <!-- Upcoming Trips -->
-                    <div class="tab-pane fade show active" id="upcoming-trips" role="tabpanel">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            View your upcoming trips and manage passenger check-ins.
-                        </div>
-
-                        <div class="row" id="upcoming-trips-container">
-                            <div class="col-12 text-center py-5">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p class="mt-2">Loading upcoming trips...</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Past Trips -->
-                    <div class="tab-pane fade" id="past-trips" role="tabpanel">
-                        <div class="alert alert-secondary">
-                            <i class="fas fa-history me-2"></i>
-                            Review your past trips and check-in records.
-                        </div>
-
-                        <div class="row" id="past-trips-container">
-                            <div class="col-12 text-center py-5">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p class="mt-2">Loading past trips...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Trip Details Section -->
-                <div id="trip-details" class="trip-details">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 id="trip-detail-title">Trip Details</h3>
-                        <button id="back-to-trips" class="btn btn-outline-secondary btn-sm">
-                            <i class="fas fa-arrow-left me-2"></i>Back to trips
+                    <div class="d-flex align-items-center">
+                        <span class="text-muted me-3" id="current-date"></span>
+                        <button class="btn btn-glass btn-sm" id="refresh-data">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh
                         </button>
                     </div>
+                </div>
 
-                    <div class="card mb-4">
-                        <div class="card-header bg-primary text-white">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Trip Information</h5>
-                                <span id="trip-date-time"></span>
+                <!-- Dashboard Overview -->
+                <div id="dashboard-section" class="content-section">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="upcoming-count">0</div>
+                            <div class="stat-label">Upcoming Trips</div>
+                            <small class="text-muted">Next 30 days</small>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-passengers">0</div>
+                            <div class="stat-label">Total Passengers</div>
+                            <small class="text-muted">This month</small>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="completion-rate">0%</div>
+                            <div class="stat-label">Success Rate</div>
+                            <small class="text-muted">Last 6 months</small>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="checked-in-today">0</div>
+                            <div class="stat-label">Check-ins Today</div>
+                            <small class="text-muted">Current day</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="glassmorphism-card">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-calendar-week me-2"></i>
+                                    This Week's Schedule
+                                </h5>
+                                <div id="weekly-schedule">
+                                    <div class="text-center py-4">
+                                        <div class="loading-spinner"></div>
+                                        <p class="mt-2">Loading schedule...</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Location:</strong> <span id="trip-location"></span></p>
-                                    <p><strong>Route:</strong> <span id="trip-route"></span></p>
-                                    <p><strong>Boat:</strong> <span id="trip-boat"></span></p>
+                        <div class="col-lg-4">
+                            <div class="glassmorphism-card">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-clock me-2"></i>
+                                    Next Trip
+                                </h5>
+                                <div id="next-trip-info">
+                                    <div class="text-center py-4">
+                                        <div class="loading-spinner"></div>
+                                        <p class="mt-2">Loading...</p>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <p><strong>Capacity:</strong> <span id="trip-capacity"></span></p>
-                                    <p><strong>Bookings:</strong> <span id="trip-bookings"></span></p>
-                                    <div>
-                                        <strong>Check-in Progress:</strong>
-                                        <div class="progress progress-tracker mt-1">
-                                            <div id="check-in-progress" class="progress-bar bg-success" role="progressbar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Trips Section -->
+                <div id="upcoming-trips-section" class="content-section" style="display: none;">
+                    <div class="alert alert-glass">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Manage your upcoming trips and passenger check-ins. Click on any trip to view detailed passenger information.
+                    </div>
+
+                    <div class="row" id="upcoming-trips-container">
+                        <div class="col-12 text-center py-5">
+                            <div class="loading-spinner"></div>
+                            <p class="mt-2">Loading upcoming trips...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trip History Section -->
+                <div id="trip-history-section" class="content-section" style="display: none;">
+                    <div class="alert alert-glass">
+                        <i class="fas fa-history me-2"></i>
+                        Review your completed trips and performance history.
+                    </div>
+
+                    <div class="row" id="trip-history-container">
+                        <div class="col-12 text-center py-5">
+                            <div class="loading-spinner"></div>
+                            <p class="mt-2">Loading trip history...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Passenger Management Section -->
+                <div id="passengers-section" class="content-section" style="display: none;">
+                    <div class="glassmorphism-card">
+                        <h5 class="mb-3">
+                            <i class="fas fa-users me-2"></i>
+                            Current Trip Passengers
+                        </h5>
+                        <div class="mb-3">
+                            <select class="form-select" id="trip-selector" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: white;">
+                                <option value="">Select a trip to view passengers</option>
+                            </select>
+                        </div>
+                        <div id="passengers-list">
+                            <p class="text-center text-muted">Select a trip to view passenger list</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Section -->
+                <div id="performance-section" class="content-section" style="display: none;">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="glassmorphism-card">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-chart-pie me-2"></i>
+                                    Trip Completion Rate
+                                </h5>
+                                <div class="text-center">
+                                    <svg class="progress-ring" width="120" height="120">
+                                        <circle class="progress-ring__circle" />
+                                        <circle class="progress-ring__progress" id="completion-progress" />
+                                    </svg>
+                                    <div class="mt-2">
+                                        <h3 id="completion-percentage">0%</h3>
+                                        <small class="text-muted">Last 6 months</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="glassmorphism-card">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-star me-2"></i>
+                                    Performance Metrics
+                                </h5>
+                                <div id="performance-metrics">
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span>On-time Departures</span>
+                                            <span id="ontime-rate">0%</span>
                                         </div>
-                                        <div class="d-flex justify-content-between mt-1">
-                                            <small id="checked-in-count">0 Checked in</small>
-                                            <small id="total-passengers">of 0 passengers</small>
+                                        <div class="progress mt-1" style="height: 8px;">
+                                            <div class="progress-bar bg-success" id="ontime-bar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Passenger Satisfaction</span>
+                                            <span id="satisfaction-rate">0%</span>
+                                        </div>
+                                        <div class="progress mt-1" style="height: 8px;">
+                                            <div class="progress-bar bg-info" id="satisfaction-bar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Safety Record</span>
+                                            <span id="safety-rate">100%</span>
+                                        </div>
+                                        <div class="progress mt-1" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" id="safety-bar" style="width: 100%"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="card">
-                        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Passenger List</h5>
-                            <span class="badge bg-light text-dark" id="passenger-count">0 passengers</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover passenger-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Contact</th>
-                                            <th>Email</th>
-                                            <th>Group Size</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="passenger-list">
-                                        <tr>
-                                            <td colspan="6" class="text-center py-4">Loading passenger list...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                    
+                    <div class="glassmorphism-card">
+                        <h5 class="mb-3">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Recent Activity Timeline
+                        </h5>
+                        <div class="check-in-timeline" id="activity-timeline">
+                            <div class="text-center py-4">
+                                <div class="loading-spinner"></div>
+                                <p class="mt-2">Loading activity...</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Trip Details Modal -->
+                <div id="trip-details" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 id="trip-detail-title">Trip Details</h3>
+                        <button id="back-to-trips" class="btn btn-glass btn-sm">
+                            <i class="fas fa-arrow-left me-2"></i>Back to trips
+                        </button>
+                    </div>
+
+                    <div class="glassmorphism-card mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="text-gradient mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Trip Information
+                                </h5>
+                                <p><strong>Location:</strong> <span id="trip-location"></span></p>
+                                <p><strong>Route:</strong> <span id="trip-route"></span></p>
+                                <p><strong>Boat:</strong> <span id="trip-boat"></span></p>
+                                <p><strong>Date & Time:</strong> <span id="trip-date-time"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="text-gradient mb-3">
+                                    <i class="fas fa-users me-2"></i>
+                                    Passenger Status
+                                </h5>
+                                <p><strong>Capacity:</strong> <span id="trip-capacity"></span></p>
+                                <p><strong>Bookings:</strong> <span id="trip-bookings"></span></p>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Check-in Progress</span>
+                                        <span id="check-in-percentage">0%</span>
+                                    </div>
+                                    <div class="progress mt-1" style="height: 10px;">
+                                        <div id="check-in-progress" class="progress-bar bg-success" role="progressbar"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-1">
+                                        <small id="checked-in-count">0 Checked in</small>
+                                        <small id="total-passengers-trip">of 0 passengers</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glassmorphism-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">
+                                <i class="fas fa-list me-2"></i>
+                                Passenger List
+                            </h5>
+                            <div>
+                                <button class="btn btn-success-glass btn-sm me-2" id="bulk-check-in">
+                                    <i class="fas fa-check-double me-1"></i>
+                                    Bulk Check-in
+                                </button>
+                                <span class="badge bg-info" id="passenger-count">0 passengers</span>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-glass">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="select-all-passengers"></th>
+                                        <th>Passenger</th>
+                                        <th>Contact</th>
+                                        <th>Group Size</th>
+                                        <th>Status</th>
+                                        <th>Check-in Time</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="passenger-list">
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">Loading passenger list...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Check-in Modal -->
+    <!-- Enhanced Check-in Modal -->
     <div class="modal fade" id="check-in-modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">Passenger Check-in</h5>
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-check me-2"></i>
+                        Passenger Check-in
+                    </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Confirm check-in for <strong id="checkin-passenger-name"></strong>?</p>
-                    <p>Group size: <span id="checkin-passenger-count"></span> passengers</p>
+                    <div class="text-center mb-3">
+                        <div class="passenger-avatar" id="checkin-avatar"></div>
+                        <h6 id="checkin-passenger-name"></h6>
+                    </div>
+                    <div class="mb-3">
+                        <p><strong>Group size:</strong> <span id="checkin-passenger-count"></span> passengers</p>
+                        <p><strong>Contact:</strong> <span id="checkin-contact"></span></p>
+                        <p><strong>Email:</strong> <span id="checkin-email"></span></p>
+                    </div>
                     <div class="mb-3">
                         <label for="check-in-notes" class="form-label">Notes (optional):</label>
-                        <textarea id="check-in-notes" class="form-control" rows="3" placeholder="Add any notes about the check-in..."></textarea>
+                        <textarea id="check-in-notes" class="form-control" rows="3" placeholder="Add any notes about the check-in..." style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: white;"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" id="confirm-check-in" class="btn btn-success">Confirm Check-in</button>
+                    <button type="button" class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="confirm-check-in" class="btn btn-success-glass">
+                        <i class="fas fa-check me-1"></i>
+                        Confirm Check-in
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Bulk Check-in Modal -->
+    <div class="modal fade" id="bulk-checkin-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-check-double me-2"></i>
+                        Bulk Passenger Check-in
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        You are about to check in <strong id="bulk-count">0</strong> selected passengers.
+                    </div>
+                    <div class="mb-3">
+                        <label for="bulk-notes" class="form-label">General Notes (optional):</label>
+                        <textarea id="bulk-notes" class="form-control" rows="3" placeholder="Add general notes for all check-ins..." style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: white;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="confirm-bulk-checkin" class="btn btn-success-glass">
+                        <i class="fas fa-check-double me-1"></i>
+                        Check in All Selected
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trip Notes Modal -->
+    <div class="modal fade" id="trip-notes-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-sticky-note me-2"></i>
+                        Trip Notes
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="trip-notes" class="form-label">Trip Notes:</label>
+                        <textarea id="trip-notes" class="form-control" rows="6" placeholder="Add notes about this trip..." style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: white;"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="weather-conditions" class="form-label">Weather Conditions:</label>
+                        <input type="text" id="weather-conditions" class="form-control" placeholder="e.g., Sunny, 25°C, Light winds" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: white;">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="departure-time" class="form-label">Actual Departure:</label>
+                            <input type="time" id="departure-time" class="form-control" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: white;">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="return-time" class="form-label">Actual Return:</label>
+                            <input type="time" id="return-time" class="form-control" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: white;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-glass" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="save-trip-notes" class="btn btn-success-glass">
+                        <i class="fas fa-save me-1"></i>
+                        Save Notes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="floating-action-btn" id="emergency-button" title="Emergency Alert">
+        <i class="fas fa-exclamation-triangle"></i>
+    </button>
 
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>

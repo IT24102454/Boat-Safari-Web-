@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Your Feedback - Boat Safari</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --accent: #e74c3c;
+            --warning: #f39c12;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.15);
+            --shadow-heavy: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .feedback-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .feedback-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: var(--shadow-heavy);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feedback-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .feedback-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feedback-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1.5" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="30" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-20px, -20px) rotate(180deg); }
+        }
+
+        .feedback-header h1 {
+            margin: 0 0 1rem 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feedback-header p {
+            margin: 0;
+            opacity: 0.95;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feedback-form {
+            padding: 3rem 2rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .category-section {
+            margin-bottom: 2rem;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .category-option {
+            position: relative;
+        }
+
+        .category-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .category-option label {
+            display: block;
+            padding: 1.5rem 1rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-option label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-success);
+            transition: left 0.3s ease;
+            z-index: 1;
+        }
+
+        .category-option label i,
+        .category-option label span {
+            position: relative;
+            z-index: 2;
+            transition: color 0.3s ease;
+        }
+
+        .category-option input[type="radio"]:checked + label {
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .category-option input[type="radio"]:checked + label::before {
+            left: 0;
+        }
+
+        .category-option label:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .category-option label i {
+            display: block;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .category-option input[type="radio"]:checked + label i {
+            color: white;
+        }
+
+        .rating-section {
+            margin-bottom: 2rem;
+        }
+
+        .rating-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            justify-content: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 16px;
+            border: 2px solid #e1e8ed;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .star {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #ffc107;
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 8px rgba(255, 193, 7, 0.6));
+        }
+
+        .star-label {
+            margin-left: 1rem;
+            color: var(--dark);
+            font-size: 1rem;
+            font-weight: 600;
+            min-width: 100px;
+        }
+
+        .btn-submit {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 1.25rem 3rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-submit:hover::before {
+            left: 100%;
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-light);
+        }
+
+        .success-message i {
+            font-size: 1.5rem;
+            color: #28a745;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-light);
+        }
+
+        .error-message i {
+            font-size: 1.5rem;
+            color: #dc3545;
+        }
+
+        .feedback-tips {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .feedback-tips h3 {
+            margin: 0 0 1rem 0;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feedback-tips ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+
+        .feedback-tips li {
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        /* Animations */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback-card {
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .form-group {
+            animation: slideInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .feedback-container {
+                padding: 1rem 0.5rem;
+            }
+
+            .feedback-form {
+                padding: 2rem 1.5rem;
+            }
+
+            .feedback-header {
+                padding: 2rem 1.5rem;
+            }
+
+            .feedback-header h1 {
+                font-size: 2rem;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem;
+            }
+
+            .category-option label {
+                padding: 1rem 0.75rem;
+            }
+
+            .category-option label i {
+                font-size: 1.5rem;
+            }
+
+            .rating-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .star {
+                font-size: 1.8rem;
+            }
+
+            .btn-submit {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .feedback-card {
+                background: rgba(44, 62, 80, 0.95);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .form-group input,
+            .form-group textarea {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.2);
+                color: white;
+            }
+            
+            .category-option label {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: rgba(255, 255, 255, 0.2);
+                color: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" style="position: fixed; top: 0; z-index: 1000; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 20px rgba(0,0,0,0.1);">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo" style="font-weight: 700; font-size: 1.5rem;">
+                <i class="fas fa-ship" style="color: #3498db; margin-right: 0.5rem;"></i>
+                Boat Safari
+            </a>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="trips.html" class="nav-link">Trips</a>
+                <a href="boat.html" class="nav-link">Boats</a>
+                <a href="feedback.html" class="nav-link active" style="color: #3498db; font-weight: 600;">Feedback</a>
+                <a href="support.html" class="nav-link">Support</a>
+                <a href="profile.html" class="nav-link profile-link" style="display: none;">
+                    <i class="fas fa-user"></i> Profile
+                </a>
+                <a href="login.html" class="nav-link login-link">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <div style="height: 80px;"></div> <!-- Spacer for fixed nav -->
+
+    <main>
+        <div class="feedback-container">
+            <div class="feedback-card">
+                <div class="feedback-header">
+                    <h1><i class="fas fa-heart"></i> We Value Your Voice</h1>
+                    <p>Your feedback helps us create unforgettable boat safari experiences. Share your thoughts and help us serve you better!</p>
+                </div>
+
+                <div class="feedback-form">
+                    <div id="messageContainer"></div>
+
+                    <div class="feedback-tips">
+                        <h3><i class="fas fa-lightbulb"></i> Share Your Thoughts</h3>
+                        <p>We value your feedback! Help us improve by sharing your experience with our boat safari service. Your insights help us serve you better.</p>
+                    </div>
+
+                    <form id="feedbackForm">
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-edit"></i>
+                                Tell Us About Your Experience
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="title">What's this feedback about? *</label>
+                                <input type="text" id="title" name="title" required 
+                                       placeholder="Give your feedback a brief title...">
+                            </div>
+                        </div>
+
+                        <div class="form-section category-section">
+                            <div class="section-title">
+                                <i class="fas fa-tags"></i>
+                                Choose a Category
+                            </div>
+                            <div class="category-grid">
+                                <div class="category-option">
+                                    <input type="radio" id="general" name="category" value="GENERAL" checked>
+                                    <label for="general">
+                                        <i class="fas fa-comment"></i>
+                                        <span>General</span>
+                                    </label>
+                                </div>
+                                <div class="category-option">
+                                    <input type="radio" id="service" name="category" value="SERVICE">
+                                    <label for="service">
+                                        <i class="fas fa-hands-helping"></i>
+                                        <span>Service</span>
+                                    </label>
+                                </div>
+                                <div class="category-option">
+                                    <input type="radio" id="booking" name="category" value="BOOKING">
+                                    <label for="booking">
+                                        <i class="fas fa-calendar-check"></i>
+                                        <span>Booking</span>
+                                    </label>
+                                </div>
+                                <div class="category-option">
+                                    <input type="radio" id="website" name="category" value="WEBSITE">
+                                    <label for="website">
+                                        <i class="fas fa-globe"></i>
+                                        <span>Website</span>
+                                    </label>
+                                </div>
+                                <div class="category-option">
+                                    <input type="radio" id="trip" name="category" value="TRIP">
+                                    <label for="trip">
+                                        <i class="fas fa-ship"></i>
+                                        <span>Trip</span>
+                                    </label>
+                                </div>
+                                <div class="category-option">
+                                    <input type="radio" id="staff" name="category" value="STAFF">
+                                    <label for="staff">
+                                        <i class="fas fa-users"></i>
+                                        <span>Staff</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section rating-section">
+                            <div class="section-title">
+                                <i class="fas fa-star"></i>
+                                Rate Your Experience (Optional)
+                            </div>
+                            <div class="rating-container">
+                                <div class="star-rating">
+                                    <span class="star" data-rating="1">★</span>
+                                    <span class="star" data-rating="2">★</span>
+                                    <span class="star" data-rating="3">★</span>
+                                    <span class="star" data-rating="4">★</span>
+                                    <span class="star" data-rating="5">★</span>
+                                </div>
+                                <span class="star-label" id="ratingLabel">Click to rate</span>
+                            </div>
+                            <input type="hidden" id="rating" name="rating" value="">
+                        </div>
+
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-comment-dots"></i>
+                                Share Your Thoughts
+                            </div>
+                            <div class="form-group">
+                                <label for="comments">Your detailed feedback *</label>
+                                <textarea id="comments" name="comments" required 
+                                          placeholder="Tell us about your experience, suggestions for improvement, or any other feedback you'd like to share..."></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-paper-plane"></i> Submit Your Feedback
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Boat Safari</h3>
+                <p>Experience the beauty of marine life with our guided boat safaris.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="trips.html">Our Trips</a></li>
+                    <li><a href="booking.html">Book Now</a></li>
+                    <li><a href="feedback.html">Feedback</a></li>
+                    <li><a href="support.html">Support</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <p><i class="fas fa-phone"></i> +94 11 234 5678</p>
+                <p><i class="fas fa-envelope"></i> info@boatsafari.lk</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Boat Safari. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="assets/js/auth.js"></script>
+    <script>
+        let selectedRating = 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthAndRedirect();
+            initializeStarRating();
+            initializeForm();
+        });
+
+        function checkAuthAndRedirect() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showMessage('Please log in to submit feedback.', 'error');
+                setTimeout(() => {
+                    window.location.href = 'login.html?redirect=feedback.html';
+                }, 2000);
+                return;
+            }
+            updateNavbar();
+        }
+
+        function updateNavbar() {
+            const token = localStorage.getItem('token');
+            const loginLink = document.querySelector('.login-link');
+            const profileLink = document.querySelector('.profile-link');
+            
+            if (token) {
+                loginLink.style.display = 'none';
+                profileLink.style.display = 'block';
+            }
+        }
+
+        function initializeStarRating() {
+            const stars = document.querySelectorAll('.star');
+            const ratingLabel = document.getElementById('ratingLabel');
+            
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    selectedRating = parseInt(this.getAttribute('data-rating'));
+                    document.getElementById('rating').value = selectedRating;
+                    updateStarDisplay();
+                    updateRatingLabel();
+                });
+
+                star.addEventListener('mouseenter', function() {
+                    const hoverRating = parseInt(this.getAttribute('data-rating'));
+                    highlightStars(hoverRating);
+                });
+            });
+
+            document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+                updateStarDisplay();
+            });
+        }
+
+        function highlightStars(rating) {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        function updateStarDisplay() {
+            highlightStars(selectedRating);
+        }
+
+        function updateRatingLabel() {
+            const ratingLabel = document.getElementById('ratingLabel');
+            const labels = {
+                1: 'Poor',
+                2: 'Fair',
+                3: 'Good',
+                4: 'Very Good',
+                5: 'Excellent'
+            };
+            
+            if (selectedRating > 0) {
+                ratingLabel.textContent = labels[selectedRating];
+            } else {
+                ratingLabel.textContent = 'Click to rate';
+            }
+        }
+
+        function initializeForm() {
+            const form = document.getElementById('feedbackForm');
+            form.addEventListener('submit', handleSubmit);
+            
+            // Add form animation
+            const formGroups = document.querySelectorAll('.form-group');
+            formGroups.forEach((group, index) => {
+                group.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            // Add input focus effects
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Add category selection effects
+            const categoryOptions = document.querySelectorAll('.category-option input[type="radio"]');
+            categoryOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    // Add ripple effect
+                    const label = this.nextElementSibling;
+                    label.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        label.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            const submitBtn = event.target.querySelector('.btn-submit');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+            try {
+                const formData = new FormData(event.target);
+                const token = localStorage.getItem('token');
+                
+                if (!token) {
+                    throw new Error('Please log in to submit feedback');
+                }
+
+                const feedbackData = {
+                    title: formData.get('title'),
+                    category: formData.get('category'),
+                    comments: formData.get('comments'),
+                    rating: selectedRating > 0 ? selectedRating : null
+                };
+
+                const response = await fetch('/api/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(feedbackData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('🎉 Thank you! Your feedback has been submitted successfully. We truly appreciate you taking the time to share your thoughts with us!', 'success');
+                    event.target.reset();
+                    selectedRating = 0;
+                    updateStarDisplay();
+                    updateRatingLabel();
+                    
+                    // Add celebration animation
+                    const card = document.querySelector('.feedback-card');
+                    card.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        card.style.transform = 'scale(1)';
+                    }, 300);
+                    
+                    // Scroll to top to show success message
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    throw new Error(result.message || 'Failed to submit feedback');
+                }
+
+            } catch (error) {
+                console.error('Error submitting feedback:', error);
+                showMessage(error.message || 'Failed to submit feedback. Please try again.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            const className = type === 'error' ? 'error-message' : 'success-message';
+            
+            container.innerHTML = `
+                <div class="${className}">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

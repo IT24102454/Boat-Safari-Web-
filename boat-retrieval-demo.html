@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boat Database Retrieval Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        .btn.stats { background: linear-gradient(135deg, #e67e22, #d35400); }
+        .btn.search { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .btn.filter { background: linear-gradient(135deg, #1abc9c, #16a085); }
+        .result-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+        .result-header {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .boat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .boat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+        }
+        .boat-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .boat-detail {
+            margin: 5px 0;
+            color: #555;
+        }
+        .boat-detail strong {
+            color: #2c3e50;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-available { background: #d4edda; color: #155724; }
+        .status-maintenance { background: #fff3cd; color: #856404; }
+        .status-out-of-service { background: #f8d7da; color: #721c24; }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        .error {
+            color: #e74c3c;
+            background: #fdf2f2;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .success {
+            color: #27ae60;
+            background: #eafaf1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .query-info {
+            background: #e8f4f8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚤 Boat Database Retrieval Demo</h1>
+        <div class="subtitle">Comprehensive demonstration of retrieving boat details from the database's boats table</div>
+        
+        <div class="button-grid">
+            <button class="btn" onclick="getAllBoats()">
+                📋 Get All Boats
+            </button>
+            <button class="btn" onclick="getAvailableBoats()">
+                ✅ Available Boats Only
+            </button>
+            <button class="btn filter" onclick="getBoatsByStatus('MAINTENANCE')">
+                🔧 Boats in Maintenance
+            </button>
+            <button class="btn filter" onclick="getBoatsByType('Safari Boat')">
+                🦒 Safari Boats
+            </button>
+            <button class="btn search" onclick="getBoatsByCapacity(10)">
+                👥 Large Boats (10+ capacity)
+            </button>
+            <button class="btn stats" onclick="getBoatStatistics()">
+                📊 Database Statistics
+            </button>
+            <button class="btn search" onclick="searchBoats('Sea')">
+                🔍 Search 'Sea'
+            </button>
+            <button class="btn" onclick="getTableInfo()">
+                ℹ️ Table Information
+            </button>
+        </div>
+        
+        <div id="result-container" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function makeRequest(endpoint, description) {
+            const container = document.getElementById('result-container');
+            container.style.display = 'block';
+            container.innerHTML = `
+                <div class="loading">
+                    🔄 ${description}...
+                </div>
+            `;
+
+            try {
+                // Try multiple authentication methods
+                const methods = [
+                    // No auth
+                    () => fetch(`/api/boat-demo/${endpoint}`, {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    }),
+                    // With mock token
+                    () => fetch(`/api/boat-demo/${endpoint}`, {
+                        method: 'GET',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer mock-token'
+                        }
+                    }),
+                    // Try admin endpoint
+                    () => fetch(`/api/admin/boats`, {
+                        method: 'GET',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + localStorage.getItem('token')
+                        }
+                    })
+                ];
+
+                let response;
+                let error;
+                
+                for (const method of methods) {
+                    try {
+                        response = await method();
+                        if (response.ok) break;
+                    } catch (e) {
+                        error = e;
+                    }
+                }
+
+                if (!response || !response.ok) {
+                    throw new Error(`HTTP ${response?.status || 'Connection'}: ${response?.statusText || error?.message || 'Failed to connect'}`);
+                }
+
+                const data = await response.json();
+                displayResult(data, description, endpoint);
+
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="result-header">❌ Error</div>
+                    <div class="error">
+                        <strong>Failed to retrieve data:</strong> ${error.message}<br>
+                        <small>This might be due to authentication requirements or the server being down.</small>
+                    </div>
+                `;
+                console.error('Error:', error);
+            }
+        }
+
+        function displayResult(data, description, endpoint) {
+            const container = document.getElementById('result-container');
+            
+            let html = `
+                <div class="result-header">✅ ${description}</div>
+                <div class="success">Successfully retrieved data from database</div>
+            `;
+
+            if (data.query) {
+                html += `<div class="query-info">SQL Query: ${data.query}</div>`;
+            }
+
+            if (data.queries) {
+                html += '<div class="query-info">SQL Queries:<br>';
+                Object.entries(data.queries).forEach(([key, query]) => {
+                    html += `• ${key}: ${query}<br>`;
+                });
+                html += '</div>';
+            }
+
+            // Display statistics
+            if (endpoint === 'stats') {
+                html += '<div class="stats-grid">';
+                html += `
+                    <div class="stat-card">
+                        <div class="stat-number">${data.totalBoats || 0}</div>
+                        <div class="stat-label">Total Boats</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${data.availableBoats || 0}</div>
+                        <div class="stat-label">Available</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${data.boatsInMaintenance || 0}</div>
+                        <div class="stat-label">Maintenance</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${data.boatsOutOfService || 0}</div>
+                        <div class="stat-label">Out of Service</div>
+                    </div>
+                `;
+                html += '</div>';
+            }
+
+            // Display table info
+            if (endpoint === 'table-info') {
+                html += '<h3>Database Table Structure:</h3>';
+                html += '<div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">';
+                html += `<strong>Table Name:</strong> ${data.tableName}<br>`;
+                html += `<strong>Entity Class:</strong> ${data.entityClass}<br><br>`;
+                html += '<strong>Columns:</strong><br>';
+                Object.entries(data.columns).forEach(([col, type]) => {
+                    html += `• ${col}: ${type}<br>`;
+                });
+                html += '</div>';
+                
+                html += '<h3>Available API Endpoints:</h3>';
+                html += '<div style="background: white; padding: 15px; border-radius: 8px;">';
+                data.availableEndpoints.forEach(endpoint => {
+                    html += `• ${endpoint}<br>`;
+                });
+                html += '</div>';
+            }
+
+            // Display boats
+            if (data.boats) {
+                if (data.totalCount !== undefined) {
+                    html += `<div style="margin: 15px 0; font-weight: bold;">Found ${data.totalCount} boats</div>`;
+                }
+
+                if (data.boats.length > 0) {
+                    html += '<div class="boat-grid">';
+                    data.boats.forEach(boat => {
+                        const statusClass = getStatusClass(boat.status);
+                        html += `
+                            <div class="boat-card">
+                                <div class="boat-name">${boat.boatName || 'Unnamed Boat'}</div>
+                                <div class="boat-detail"><strong>ID:</strong> ${boat.boatId}</div>
+                                <div class="boat-detail"><strong>Model:</strong> ${boat.model || 'N/A'}</div>
+                                <div class="boat-detail"><strong>Type:</strong> ${boat.type || 'N/A'}</div>
+                                <div class="boat-detail"><strong>Capacity:</strong> ${boat.capacity || 'N/A'}</div>
+                                <div class="boat-detail"><strong>Registration:</strong> ${boat.registrationNumber || 'N/A'}</div>
+                                <div class="boat-detail">
+                                    <strong>Status:</strong> 
+                                    <span class="status-badge ${statusClass}">
+                                        ${formatStatus(boat.status)}
+                                    </span>
+                                </div>
+                                ${boat.features ? `<div class="boat-detail"><strong>Features:</strong> ${boat.features}</div>` : ''}
+                                ${boat.description ? `<div class="boat-detail"><strong>Description:</strong> ${boat.description}</div>` : ''}
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                } else {
+                    html += '<div style="text-align: center; padding: 20px; color: #7f8c8d;">No boats found matching the criteria</div>';
+                }
+            }
+
+            // Display single boat
+            if (data.boat && !data.boats) {
+                const boat = data.boat;
+                const statusClass = getStatusClass(boat.status);
+                html += `
+                    <div class="boat-card" style="max-width: 500px; margin: 20px auto;">
+                        <div class="boat-name">${boat.boatName || 'Unnamed Boat'}</div>
+                        <div class="boat-detail"><strong>ID:</strong> ${boat.boatId}</div>
+                        <div class="boat-detail"><strong>Model:</strong> ${boat.model || 'N/A'}</div>
+                        <div class="boat-detail"><strong>Type:</strong> ${boat.type || 'N/A'}</div>
+                        <div class="boat-detail"><strong>Capacity:</strong> ${boat.capacity || 'N/A'}</div>
+                        <div class="boat-detail"><strong>Registration:</strong> ${boat.registrationNumber || 'N/A'}</div>
+                        <div class="boat-detail">
+                            <strong>Status:</strong> 
+                            <span class="status-badge ${statusClass}">
+                                ${formatStatus(boat.status)}
+                            </span>
+                        </div>
+                        ${boat.features ? `<div class="boat-detail"><strong>Features:</strong> ${boat.features}</div>` : ''}
+                        ${boat.description ? `<div class="boat-detail"><strong>Description:</strong> ${boat.description}</div>` : ''}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'AVAILABLE': return 'status-available';
+                case 'MAINTENANCE': return 'status-maintenance';
+                case 'OUT_OF_SERVICE': return 'status-out-of-service';
+                default: return '';
+            }
+        }
+
+        function formatStatus(status) {
+            switch(status) {
+                case 'AVAILABLE': return 'Available';
+                case 'MAINTENANCE': return 'Maintenance';
+                case 'OUT_OF_SERVICE': return 'Out of Service';
+                default: return status || 'Unknown';
+            }
+        }
+
+        // API functions
+        function getAllBoats() {
+            makeRequest('all', 'Retrieving all boats from database');
+        }
+
+        function getAvailableBoats() {
+            makeRequest('available', 'Retrieving available boats');
+        }
+
+        function getBoatsByStatus(status) {
+            makeRequest(`status/${status}`, `Retrieving boats with status '${status}'`);
+        }
+
+        function getBoatsByType(type) {
+            makeRequest(`type/${encodeURIComponent(type)}`, `Retrieving boats of type '${type}'`);
+        }
+
+        function getBoatsByCapacity(capacity) {
+            makeRequest(`capacity/${capacity}`, `Retrieving boats with capacity >= ${capacity}`);
+        }
+
+        function searchBoats(name) {
+            makeRequest(`search/${encodeURIComponent(name)}`, `Searching boats containing '${name}'`);
+        }
+
+        function getBoatStatistics() {
+            makeRequest('stats', 'Retrieving boat database statistics');
+        }
+
+        function getTableInfo() {
+            makeRequest('table-info', 'Retrieving database table information');
+        }
+
+        // Auto-load all boats on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            getAllBoats();
+        });
+    </script>
+</body>
+</html>

@@ -24,11 +24,16 @@ public class SecurityConfig {
                         .requestMatchers("/", "/*.html", "/assets/**", "/partials/**", "/img/**").permitAll()
                         // auth endpoints
                         .requestMatchers("/api/register", "/api/login").permitAll()
+                        // setup endpoints (development only)
+                        .requestMatchers("/api/setup/**").permitAll()
                         // trips browsing allowed without login
                         .requestMatchers(HttpMethod.GET, "/api/trips/**").permitAll()
                         // Support public endpoints
                         .requestMatchers(HttpMethod.POST, "/api/support/contact").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/support/staff").permitAll()
+                        // Feedback public endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/feedback/public").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/feedback/public/**").permitAll()
                         // Admin-only endpoints
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
                         // Guide dashboard endpoints
@@ -42,7 +47,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/guides/**").hasAnyRole("ADMIN", "SAFARIGUIDE")
                         // Support booking history requires login
                         .requestMatchers("/api/support/bookings/**").authenticated()
-                        // Bookings & payments must be logged in
+                        // Admin bookings endpoints - allow admin access to all bookings
+                        .requestMatchers(HttpMethod.GET, "/api/bookings").hasAnyRole("ADMIN", "STAFFMEMBER", "ITSUPPORT", "ITASSISTANT")
+                        .requestMatchers(HttpMethod.PUT, "/api/bookings/**").hasAnyRole("ADMIN", "STAFFMEMBER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/bookings/**").hasAnyRole("ADMIN")
+                        // Individual booking access - allow users to view their own bookings for payment
+                        .requestMatchers(HttpMethod.GET, "/api/bookings/**").authenticated()
+                        // Booking creation and payment endpoints must be logged in
                         .requestMatchers("/api/bookings/**", "/api/payments/**").authenticated()
                         // Boats list can be viewed only when logged in (change to permitAll if you want public)
                         .requestMatchers(HttpMethod.GET, "/api/boats/**").authenticated()

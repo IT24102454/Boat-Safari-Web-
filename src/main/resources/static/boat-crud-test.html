@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boat CRUD Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        button { margin: 5px; padding: 10px; }
+        .success { color: green; }
+        .error { color: red; }
+        textarea { width: 100%; height: 100px; }
+    </style>
+</head>
+<body>
+    <h1>Boat CRUD Operations Test</h1>
+    
+    <div class="section">
+        <h2>1. Login</h2>
+        <button onclick="testLogin()">Test Login</button>
+        <div id="loginResult"></div>
+    </div>
+    
+    <div class="section">
+        <h2>2. Load Boats</h2>
+        <button onclick="loadBoats()">Load Boats</button>
+        <div id="boatsResult"></div>
+    </div>
+    
+    <div class="section">
+        <h2>3. Create Boat</h2>
+        <button onclick="createBoat()">Create Test Boat</button>
+        <div id="createResult"></div>
+    </div>
+    
+    <div class="section">
+        <h2>4. Update Boat</h2>
+        <input type="number" id="updateBoatId" placeholder="Boat ID to update">
+        <button onclick="updateBoat()">Update Boat</button>
+        <div id="updateResult"></div>
+    </div>
+    
+    <div class="section">
+        <h2>5. Delete Boat</h2>
+        <input type="number" id="deleteBoatId" placeholder="Boat ID to delete">
+        <button onclick="deleteBoat()">Delete Boat</button>
+        <div id="deleteResult"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Console Log</h2>
+        <textarea id="consoleLog" readonly></textarea>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script>
+        let token = '';
+        let testBoatId = null;
+        
+        function log(message) {
+            const logArea = document.getElementById('consoleLog');
+            logArea.value += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            logArea.scrollTop = logArea.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearLog() {
+            document.getElementById('consoleLog').value = '';
+        }
+        
+        async function testLogin() {
+            try {
+                log('Testing login...');
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@gmail.com',
+                        password: 'adminadmin'
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Login failed: ' + response.status + ' - ' + await response.text());
+                }
+                
+                const loginData = await response.json();
+                token = loginData.token;
+                
+                document.getElementById('loginResult').innerHTML = 
+                    '<span class="success">✅ Login successful! Token: ' + token.substring(0, 20) + '...</span>';
+                log('Login successful, token received');
+                
+            } catch (error) {
+                log('Login error: ' + error.message);
+                document.getElementById('loginResult').innerHTML = 
+                    '<span class="error">❌ Login failed: ' + error.message + '</span>';
+            }
+        }
+        
+        async function loadBoats() {
+            try {
+                if (!token) {
+                    throw new Error('Please login first');
+                }
+                
+                log('Loading boats...');
+                const response = await fetch('/api/admin/boats', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load boats: ' + response.status + ' - ' + await response.text());
+                }
+                
+                const boats = await response.json();
+                
+                document.getElementById('boatsResult').innerHTML = 
+                    '<span class="success">✅ Loaded ' + boats.length + ' boats</span><br>' +
+                    '<pre>' + JSON.stringify(boats, null, 2) + '</pre>';
+                log('Loaded ' + boats.length + ' boats successfully');
+                
+            } catch (error) {
+                log('Load boats error: ' + error.message);
+                document.getElementById('boatsResult').innerHTML = 
+                    '<span class="error">❌ Failed to load boats: ' + error.message + '</span>';
+            }
+        }
+        
+        async function createBoat() {
+            try {
+                if (!token) {
+                    throw new Error('Please login first');
+                }
+                
+                const newBoat = {
+                    name: 'Test Boat ' + Math.floor(Math.random() * 1000),
+                    model: 'Test Model',
+                    type: 'Standard',
+                    capacity: 10,
+                    registrationNumber: 'TEST' + Math.floor(Math.random() * 1000),
+                    status: 'Available',
+                    features: 'GPS, Radio',
+                    description: 'Test boat for CRUD testing'
+                };
+                
+                log('Creating boat: ' + JSON.stringify(newBoat));
+                const response = await fetch('/api/admin/boats', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newBoat)
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error('Failed to create boat: ' + response.status + ' - ' + errorText);
+                }
+                
+                const createdBoat = await response.json();
+                testBoatId = createdBoat.boatId || createdBoat.id;
+                
+                document.getElementById('createResult').innerHTML = 
+                    '<span class="success">✅ Boat created successfully! ID: ' + testBoatId + '</span><br>' +
+                    '<pre>' + JSON.stringify(createdBoat, null, 2) + '</pre>';
+                log('Boat created successfully with ID: ' + testBoatId);
+                
+            } catch (error) {
+                log('Create boat error: ' + error.message);
+                document.getElementById('createResult').innerHTML = 
+                    '<span class="error">❌ Failed to create boat: ' + error.message + '</span>';
+            }
+        }
+        
+        async function updateBoat() {
+            try {
+                if (!token) {
+                    throw new Error('Please login first');
+                }
+                
+                const boatId = document.getElementById('updateBoatId').value || testBoatId;
+                if (!boatId) {
+                    throw new Error('Please provide a boat ID');
+                }
+                
+                const updatedBoat = {
+                    boatId: boatId,
+                    name: 'Updated Test Boat',
+                    model: 'Updated Model',
+                    type: 'Premium',
+                    capacity: 12,
+                    registrationNumber: 'UPD' + boatId,
+                    status: 'Available',
+                    features: 'GPS, Radio, Sonar',
+                    description: 'Updated test boat'
+                };
+                
+                log('Updating boat ' + boatId + ': ' + JSON.stringify(updatedBoat));
+                const response = await fetch('/api/admin/boats/' + boatId, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedBoat)
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error('Failed to update boat: ' + response.status + ' - ' + errorText);
+                }
+                
+                const updated = await response.json();
+                
+                document.getElementById('updateResult').innerHTML = 
+                    '<span class="success">✅ Boat updated successfully!</span><br>' +
+                    '<pre>' + JSON.stringify(updated, null, 2) + '</pre>';
+                log('Boat ' + boatId + ' updated successfully');
+                
+            } catch (error) {
+                log('Update boat error: ' + error.message);
+                document.getElementById('updateResult').innerHTML = 
+                    '<span class="error">❌ Failed to update boat: ' + error.message + '</span>';
+            }
+        }
+        
+        async function deleteBoat() {
+            try {
+                if (!token) {
+                    throw new Error('Please login first');
+                }
+                
+                const boatId = document.getElementById('deleteBoatId').value || testBoatId;
+                if (!boatId) {
+                    throw new Error('Please provide a boat ID');
+                }
+                
+                log('Deleting boat ' + boatId);
+                const response = await fetch('/api/admin/boats/' + boatId, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error('Failed to delete boat: ' + response.status + ' - ' + errorText);
+                }
+                
+                document.getElementById('deleteResult').innerHTML = 
+                    '<span class="success">✅ Boat deleted successfully!</span>';
+                log('Boat ' + boatId + ' deleted successfully');
+                
+            } catch (error) {
+                log('Delete boat error: ' + error.message);
+                document.getElementById('deleteResult').innerHTML = 
+                    '<span class="error">❌ Failed to delete boat: ' + error.message + '</span>';
+            }
+        }
+    </script>
+</body>
+</html>

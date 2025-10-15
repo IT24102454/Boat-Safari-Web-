@@ -101,6 +101,9 @@ function showTab(tabName) {
         case 'bookings':
             loadBookings();
             break;
+        case 'boats':
+            loadBoats();
+            break;
         case 'staff-management':
             loadStaffMembers();
             break;
@@ -113,7 +116,7 @@ function showTab(tabName) {
 // Load dashboard statistics
 async function loadDashboardStats() {
     try {
-        const [usersResponse, tripsResponse, bookingsResponse, staffResponse] = await Promise.all([
+        const [usersResponse, tripsResponse, bookingsResponse, staffResponse, boatsResponse] = await Promise.all([
             fetch('/api/admin/users', {
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -133,6 +136,11 @@ async function loadDashboardStats() {
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('token')
                 }
+            }),
+            fetch('/api/admin/boats', {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
             })
         ]);
 
@@ -140,15 +148,20 @@ async function loadDashboardStats() {
         const trips = tripsResponse.ok ? await tripsResponse.json() : [];
         const bookings = bookingsResponse.ok ? await bookingsResponse.json() : [];
         const staff = staffResponse.ok ? await staffResponse.json() : [];
+        const boats = boatsResponse.ok ? await boatsResponse.json() : [];
 
-        // Calculate revenue
-        const totalRevenue = bookings.reduce((sum, booking) => sum + (booking.totalAmount || 0), 0);
+        // Calculate revenue - fix field name
+        const totalRevenue = bookings.reduce((sum, booking) => sum + (booking.totalCost || booking.totalAmount || 0), 0);
 
         // Update stat cards
         document.getElementById('totalUsers').textContent = users.length || 0;
         document.getElementById('totalTrips').textContent = trips.length || 0;
         document.getElementById('totalBookings').textContent = bookings.length || 0;
         document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+        const totalBoatsElement = document.getElementById('totalBoats');
+        if (totalBoatsElement) {
+            totalBoatsElement.textContent = boats.length || 0;
+        }
         document.getElementById('totalStaff').textContent = staff.length || 0;
 
     } catch (error) {
@@ -418,12 +431,12 @@ async function updateRevenueChart() {
                 monthlyRevenue[monthKey] = 0;
             }
             
-            // Calculate revenue for each month
+            // Calculate revenue for each month - fix field name
             bookings.forEach(booking => {
-                if (booking.totalAmount && booking.bookingDate) {
-                    const bookingMonth = booking.bookingDate.slice(0, 7);
+                if ((booking.totalCost || booking.totalAmount) && (booking.holdTimer || booking.bookingDate)) {
+                    const bookingMonth = (booking.holdTimer || booking.bookingDate).slice(0, 7);
                     if (monthlyRevenue.hasOwnProperty(bookingMonth)) {
-                        monthlyRevenue[bookingMonth] += booking.totalAmount;
+                        monthlyRevenue[bookingMonth] += (booking.totalCost || booking.totalAmount);
                     }
                 }
             });
@@ -735,13 +748,13 @@ function displayBookings(bookings) {
     tableBody.innerHTML = bookings.map(booking => `
         <tr>
             <td>${booking.bookingId || 'N/A'}</td>
-            <td>${booking.customer?.firstName || ''} ${booking.customer?.lastName || ''}</td>
-            <td>${booking.trip?.route || 'N/A'}</td>
+            <td>${booking.name || booking.customer?.firstName || ''} ${booking.customer?.lastName || ''}</td>
+            <td>${booking.trip?.route || booking.trip?.name || 'N/A'}</td>
             <td>${booking.trip?.date || 'N/A'}</td>
             <td>${booking.passengers || 'N/A'}</td>
-            <td>$${booking.totalAmount || '0.00'}</td>
-            <td><span class="status-badge status-${(booking.bookingStatus || 'confirmed').toLowerCase()}">${booking.bookingStatus || 'Confirmed'}</span></td>
-            <td>${booking.bookingDate ? new Date(booking.bookingDate).toLocaleDateString() : 'N/A'}</td>
+            <td>$${(booking.totalCost || booking.totalAmount || 0).toFixed(2)}</td>
+            <td><span class="status-badge status-${(booking.status || booking.bookingStatus || 'confirmed').toLowerCase()}">${booking.status || booking.bookingStatus || 'Confirmed'}</span></td>
+            <td>${booking.holdTimer ? new Date(booking.holdTimer).toLocaleDateString() : 'N/A'}</td>
             <td>
                 <div class="action-buttons">
                     <button class="btn btn-warning btn-sm" onclick="editBooking(${booking.bookingId})">
@@ -754,6 +767,127 @@ function displayBookings(bookings) {
             </td>
         </tr>
     `).join('');
+}
+
+// Open edit booking modal
+async function openEditBookingModal(bookingId) {
+    try {
+        const response = await fetch(`/api/bookings/${bookingId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch booking details');
+        }
+
+        const booking = await response.json();
+
+        // Create modal HTML with enhanced styling
+        const modalHTML = `
+            <div id="editBookingModal" class="modal" style="display: block;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">
+                            <i class="fas fa-edit"></i>
+                            Edit Booking #${booking.bookingId}
+                        </h3>
+                        <button class="close" onclick="closeEditBookingModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editBookingForm">
+                            <div class="form-group">
+                                <label class="form-label" for="edit-customer-name">Customer Name:</label>
+                                <input type="text" class="form-control" id="edit-customer-name" value="${booking.name || ''}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-contact">Contact:</label>
+                                <input type="text" class="form-control" id="edit-contact" value="${booking.contact || ''}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-email">Email:</label>
+                                <input type="email" class="form-control" id="edit-email" value="${booking.email || ''}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-passengers">Number of Passengers:</label>
+                                <input type="number" class="form-control" id="edit-passengers" value="${booking.passengers || 1}" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-booking-status">Booking Status:</label>
+                                <select class="form-control" id="edit-booking-status" required>
+                                    <option value="PROVISIONAL" ${booking.status === 'PROVISIONAL' ? 'selected' : ''}>Provisional</option>
+                                    <option value="CONFIRMED" ${booking.status === 'CONFIRMED' ? 'selected' : ''}>Confirmed</option>
+                                    <option value="CANCELLED" ${booking.status === 'CANCELLED' ? 'selected' : ''}>Cancelled</option>
+                                    <option value="COMPLETED" ${booking.status === 'COMPLETED' ? 'selected' : ''}>Completed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="edit-total-cost">Total Cost:</label>
+                                <input type="number" class="form-control" id="edit-total-cost" value="${booking.totalCost || 0}" step="0.01" min="0" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-modal btn-cancel" onclick="closeEditBookingModal()">Cancel</button>
+                        <button type="button" class="btn-modal btn-primary" onclick="saveBookingChanges(${bookingId})">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add modal to page
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    } catch (error) {
+        console.error('Error opening edit booking modal:', error);
+        showNotification('Failed to open booking details: ' + error.message, 'error');
+    }
+}
+
+// Close edit booking modal
+function closeEditBookingModal() {
+    const modal = document.getElementById('editBookingModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Save booking changes
+async function saveBookingChanges(bookingId) {
+    try {
+        const bookingData = {
+            name: document.getElementById('edit-customer-name').value,
+            contact: document.getElementById('edit-contact').value,
+            email: document.getElementById('edit-email').value,
+            passengers: parseInt(document.getElementById('edit-passengers').value),
+            status: document.getElementById('edit-booking-status').value,
+            totalCost: parseFloat(document.getElementById('edit-total-cost').value)
+        };
+
+        const response = await fetch(`/api/bookings/${bookingId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            body: JSON.stringify(bookingData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update booking');
+        }
+
+        closeEditBookingModal();
+        loadBookings();
+        loadDashboardStats();
+        showNotification('Booking updated successfully', 'success');
+
+    } catch (error) {
+        console.error('Error saving booking changes:', error);
+        showNotification('Failed to update booking: ' + error.message, 'error');
+    }
 }
 
 // Load staff members data
@@ -848,6 +982,15 @@ async function loadGuides() {
         }
     } catch (error) {
         console.error('Error loading guides:', error);
+    }
+}
+
+// Load both boats and guides for trip forms
+async function loadBoatsAndGuides() {
+    try {
+        await Promise.all([loadBoats(), loadGuides()]);
+    } catch (error) {
+        console.error('Error loading boats and guides:', error);
     }
 }
 
@@ -1151,6 +1294,14 @@ function loadRecentExports() {
 
 // Modal functions
 function openAddUserModal() {
+    // Reset form
+    const form = document.getElementById('addUserForm');
+    if (form) {
+        form.reset();
+        delete form.dataset.mode;
+        delete form.dataset.userId;
+    }
+    
     // Reset the password field to required for new users
     const passwordField = document.getElementById('password');
     if (passwordField) {
@@ -1159,24 +1310,52 @@ function openAddUserModal() {
         passwordField.value = '';
     }
     
-    // Reset form mode
-    const form = document.getElementById('addUserForm');
-    delete form.dataset.mode;
-    delete form.dataset.userId;
-    
     // Reset modal title and button text
-    document.querySelector('#addUserModal h2').textContent = 'Add New User';
-    document.querySelector('#addUserForm button[type="submit"]').textContent = 'Save User';
+    const modalTitle = document.querySelector('#addUserModal .modal-title');
+    if (modalTitle) {
+        modalTitle.innerHTML = '<i class="fas fa-user-plus"></i> Add New User';
+    }
+    
+    const submitButton = document.querySelector('#addUserForm button[type="submit"], button[form="addUserForm"]');
+    if (submitButton) {
+        submitButton.innerHTML = '<i class="fas fa-save"></i> Save User';
+    }
     
     document.getElementById('addUserModal').style.display = 'block';
 }
 
 function openAddTripModal() {
+    // Reset form and modal state
+    const form = document.getElementById('addTripForm');
+    if (form) {
+        form.reset();
+        delete form.dataset.mode;
+        delete form.dataset.tripId;
+    }
+    
+    // Reset modal title and button text
+    const modalTitle = document.querySelector('#addTripModal .modal-title');
+    if (modalTitle) {
+        modalTitle.innerHTML = '<i class="fas fa-route"></i> Add New Trip';
+    }
+    
+    const submitButton = document.querySelector('#addTripForm button[type="submit"], button[form="addTripForm"]');
+    if (submitButton) {
+        submitButton.innerHTML = '<i class="fas fa-save"></i> Save Trip';
+    }
+    
+    // Load boats and guides for the dropdowns
+    loadBoatsAndGuides();
+    
     document.getElementById('addTripModal').style.display = 'block';
 }
 
 function openAddStaffModal() {
     document.getElementById('addStaffModal').style.display = 'block';
+}
+
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
 }
 
 function closeModal(modalId) {
@@ -1325,8 +1504,24 @@ function setupFormHandlers() {
                 // Reset form mode
                 delete addUserForm.dataset.mode;
                 delete addUserForm.dataset.userId;
-                document.querySelector('#addUserModal h2').textContent = 'Add New User';
-                document.querySelector('#addUserForm button[type="submit"]').textContent = 'Save User';
+                
+                // Reset modal title and button text
+                const modalTitle = document.querySelector('#addUserModal .modal-title');
+                if (modalTitle) {
+                    modalTitle.innerHTML = '<i class="fas fa-user-plus"></i> Add New User';
+                }
+                
+                const submitButton = document.querySelector('#addUserForm button[type="submit"], button[form="addUserForm"]');
+                if (submitButton) {
+                    submitButton.innerHTML = '<i class="fas fa-save"></i> Save User';
+                }
+                
+                // Reset password field to required
+                const passwordField = document.getElementById('password');
+                if (passwordField) {
+                    passwordField.setAttribute('required', 'required');
+                    passwordField.placeholder = '';
+                }
             } catch (error) {
                 console.error(`Error ${isEditMode ? 'updating' : 'creating'} user:`, error);
                 showNotification(`Failed to ${isEditMode ? 'update' : 'create'} user: ` + error.message, 'error');
@@ -1390,8 +1585,17 @@ function setupFormHandlers() {
                 // Reset form mode
                 delete addTripForm.dataset.mode;
                 delete addTripForm.dataset.tripId;
-                document.querySelector('#addTripModal h2').textContent = 'Add New Trip';
-                document.querySelector('#addTripForm button[type="submit"]').textContent = 'Save Trip';
+                
+                // Reset modal title and button text
+                const modalTitle = document.querySelector('#addTripModal .modal-title');
+                if (modalTitle) {
+                    modalTitle.innerHTML = '<i class="fas fa-route"></i> Add New Trip';
+                }
+                
+                const submitButton = document.querySelector('#addTripForm button[type="submit"], button[form="addTripForm"]');
+                if (submitButton) {
+                    submitButton.innerHTML = '<i class="fas fa-save"></i> Save Trip';
+                }
             } catch (error) {
                 console.error(`Error ${isEditMode ? 'updating' : 'creating'} trip:`, error);
                 showNotification(`Failed to ${isEditMode ? 'update' : 'create'} trip: ` + error.message, 'error');
@@ -1446,24 +1650,39 @@ function setupFormHandlers() {
                 // Reset form mode
                 delete addStaffForm.dataset.mode;
                 delete addStaffForm.dataset.staffId;
-                document.querySelector('#addStaffModal h2').textContent = 'Add New Staff Member';
-                document.querySelector('#addStaffForm button[type="submit"]').textContent = 'Save Staff Member';
+                const modalTitle = document.querySelector('#addStaffModal .modal-title');
+                if (modalTitle) {
+                    modalTitle.innerHTML = '<i class="fas fa-user-plus"></i> Add New Staff Member';
+                }
+                const submitButton = document.querySelector('#addStaffForm button[type="submit"], button[form="addStaffForm"]');
+                if (submitButton) {
+                    submitButton.textContent = 'Save Staff Member';
+                }
             } catch (error) {
                 console.error(`Error ${isEditMode ? 'updating' : 'creating'} staff member:`, error);
                 showNotification(`Failed to ${isEditMode ? 'update' : 'create'} staff member: ` + error.message, 'error');
             }
         });
     }
+    
+    // Setup boat form handlers
+    setupBoatFormHandlers();
 }
 
 // CRUD operation functions
 async function editUser(userId) {
+    console.log('Editing user:', userId);
+    console.log('Available users:', currentUsersData);
+    
     // Find user in the currently loaded data
     const user = currentUsersData.find(u => u.userId === userId);
     if (!user) {
+        console.error('User not found with ID:', userId);
         showNotification('User not found', 'error');
         return;
     }
+    
+    console.log('Found user:', user);
     
     // Populate edit modal with user data
     document.getElementById('firstName').value = user.firstName || '';
@@ -1486,8 +1705,15 @@ async function editUser(userId) {
     form.dataset.userId = userId;
     
     // Change modal title and button text
-    document.querySelector('#addUserModal h2').textContent = 'Edit User';
-    document.querySelector('#addUserForm button[type="submit"]').textContent = 'Update User';
+    const modalTitle = document.querySelector('#addUserModal .modal-title');
+    if (modalTitle) {
+        modalTitle.innerHTML = '<i class="fas fa-user-edit"></i> Edit User';
+    }
+    
+    const submitButton = document.querySelector('#addUserForm button[type="submit"], button[form="addUserForm"]');
+    if (submitButton) {
+        submitButton.innerHTML = '<i class="fas fa-save"></i> Update User';
+    }
     
     // Show modal
     document.getElementById('addUserModal').style.display = 'block';
@@ -1519,12 +1745,18 @@ async function deleteUser(userId) {
 }
 
 async function editTrip(tripId) {
+    console.log('Editing trip:', tripId);
+    console.log('Available trips:', currentTripsData);
+    
     // Find trip in the currently loaded data
     const trip = currentTripsData.find(t => t.tripId === tripId);
     if (!trip) {
+        console.error('Trip not found with ID:', tripId);
         showNotification('Trip not found', 'error');
         return;
     }
+    
+    console.log('Found trip:', trip);
     
     // Populate edit modal with trip data
     document.getElementById('tripDate').value = trip.date || '';
@@ -1534,14 +1766,34 @@ async function editTrip(tripId) {
     document.getElementById('capacity').value = trip.capacity || '';
     document.getElementById('price').value = trip.price || '';
     
+    // Load boats and guides for the dropdowns
+    await loadBoatsAndGuides();
+    
+    // Set selected boat and guide if available
+    if (trip.boat && trip.boat.boatId) {
+        document.getElementById('boat').value = trip.boat.boatId;
+        console.log('Set boat ID:', trip.boat.boatId);
+    }
+    if (trip.guide && trip.guide.userId) {
+        document.getElementById('guide').value = trip.guide.userId;
+        console.log('Set guide ID:', trip.guide.userId);
+    }
+    
     // Set form to edit mode
     const form = document.getElementById('addTripForm');
     form.dataset.mode = 'edit';
     form.dataset.tripId = tripId;
     
     // Change modal title and button text
-    document.querySelector('#addTripModal h2').textContent = 'Edit Trip';
-    document.querySelector('#addTripForm button[type="submit"]').textContent = 'Update Trip';
+    const modalTitle = document.querySelector('#addTripModal .modal-title');
+    if (modalTitle) {
+        modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Trip';
+    }
+    
+    const submitButton = document.querySelector('#addTripForm button[type="submit"], button[form="addTripForm"]');
+    if (submitButton) {
+        submitButton.innerHTML = '<i class="fas fa-save"></i> Update Trip';
+    }
     
     // Show modal
     document.getElementById('addTripModal').style.display = 'block';
@@ -1573,42 +1825,21 @@ async function deleteTrip(tripId) {
 }
 
 function editBooking(bookingId) {
-    const booking = currentBookingsData.find(b => b.id === bookingId);
+    // Find booking from current bookings data (fix variable name)
+    const booking = currentBookings.find(b => b.bookingId === bookingId);
     if (!booking) {
         showNotification('Booking not found', 'error');
         return;
     }
 
-    // For now, we'll allow changing booking status and notes
-    const newStatus = prompt(`Change booking status for ${booking.customerName}\nCurrent: ${booking.status}\nOptions: CONFIRMED, CANCELLED, COMPLETED`, booking.status);
-    
-    if (newStatus && ['CONFIRMED', 'CANCELLED', 'COMPLETED'].includes(newStatus.toUpperCase())) {
-        fetch(`/api/bookings/${bookingId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-            },
-            body: JSON.stringify({ status: newStatus.toUpperCase() })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to update booking');
-            }
-            loadBookings();
-            loadDashboardStats();
-            showNotification('Booking updated successfully', 'success');
-        })
-        .catch(error => {
-            console.error('Error updating booking:', error);
-            showNotification('Failed to update booking: ' + error.message, 'error');
-        });
-    }
+    // Open edit booking modal 
+    openEditBookingModal(bookingId);
 }
 
 function cancelBooking(bookingId) {
-    const booking = currentBookingsData.find(b => b.id === bookingId);
-    const customerName = booking ? booking.customerName : 'Unknown Customer';
+    // Find booking from current bookings data (fix variable name)
+    const booking = currentBookings.find(b => b.bookingId === bookingId);
+    const customerName = booking ? (booking.name || booking.customerName) : 'Unknown Customer';
     
     if (confirm(`Are you sure you want to cancel the booking for ${customerName}? This action cannot be undone.`)) {
         fetch(`/api/bookings/${bookingId}`, {
@@ -1658,8 +1889,14 @@ function editStaffMember(userId) {
         staffForm.dataset.staffId = userId;
         
         // Update modal title and button text
-        document.querySelector('#addStaffModal h2').textContent = 'Edit Staff Member';
-        document.querySelector('#addStaffForm button[type="submit"]').textContent = 'Update Staff Member';
+        const modalTitle = document.querySelector('#addStaffModal .modal-title');
+        if (modalTitle) {
+            modalTitle.innerHTML = '<i class="fas fa-user-edit"></i> Edit Staff Member';
+        }
+        const submitButton = document.querySelector('#addStaffForm button[type="submit"], button[form="addStaffForm"]');
+        if (submitButton) {
+            submitButton.textContent = 'Update Staff Member';
+        }
         
         openModal('addStaffModal');
     } else {
@@ -1676,8 +1913,14 @@ function editStaffMember(userId) {
         form.dataset.userId = userId;
         
         // Update modal title and button text
-        document.querySelector('#addUserModal h2').textContent = 'Edit Staff Member';
-        document.querySelector('#addUserForm button[type="submit"]').textContent = 'Update Staff';
+        const modalTitle = document.querySelector('#addUserModal .modal-title');
+        if (modalTitle) {
+            modalTitle.innerHTML = '<i class="fas fa-user-edit"></i> Edit Staff Member';
+        }
+        const submitButton = document.querySelector('#addUserForm button[type="submit"], button[form="addUserForm"]');
+        if (submitButton) {
+            submitButton.textContent = 'Update Staff';
+        }
         
         openModal('addUserModal');
     }
@@ -1765,4 +2008,363 @@ window.onclick = function(event) {
             modals[i].style.display = 'none';
         }
     }
+}
+
+// ========================
+// BOAT MANAGEMENT FUNCTIONS
+// ========================
+
+let currentBoatsData = [];
+let selectedBoatId = null;
+
+// Load boats data
+async function loadBoats() {
+    try {
+        const tableBody = document.getElementById('boatTableBody');
+        if (tableBody) {
+            tableBody.innerHTML = '<tr><td colspan="8" class="loading"><i class="fas fa-spinner"></i><div>Loading boats...</div></td></tr>';
+        }
+        
+        const response = await fetch('/api/admin/boats', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch boats');
+        }
+
+        const boats = await response.json();
+        currentBoatsData = boats;
+        displayBoats(boats);
+        
+        console.log('Loaded boats:', boats);
+    } catch (error) {
+        console.error('Error loading boats:', error);
+        const tableBody = document.getElementById('boatTableBody');
+        if (tableBody) {
+            tableBody.innerHTML = 
+                '<tr><td colspan="8" style="text-align: center; color: #e74c3c;">Error loading boats</td></tr>';
+        }
+        showNotification('Failed to load boats: ' + error.message, 'error');
+    }
+}
+
+// Display boats in table
+function displayBoats(boats) {
+    const tbody = document.getElementById('boatTableBody');
+    
+    if (!boats || boats.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No boats found</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = boats.map(boat => `
+        <tr>
+            <td>${boat.boatId || 'N/A'}</td>
+            <td>${boat.boatName || 'N/A'}</td>
+            <td>${boat.model || 'N/A'}</td>
+            <td>${boat.type || 'N/A'}</td>
+            <td>${boat.capacity || 'N/A'}</td>
+            <td>${boat.registrationNumber || 'N/A'}</td>
+            <td>
+                <span class="status-badge status-${getStatusClass(boat.status)}">
+                    ${formatStatus(boat.status)}
+                </span>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-small btn-primary" onclick="openEditBoatModal(${boat.boatId})" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-small btn-warning" onclick="openStatusModal(${boat.boatId}, '${boat.boatName}', '${boat.status}')" title="Change Status">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="btn-small btn-danger" onclick="deleteBoat(${boat.boatId}, '${boat.boatName}')" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Get status class for styling
+function getStatusClass(status) {
+    switch(status) {
+        case 'AVAILABLE': return 'available';
+        case 'MAINTENANCE': return 'maintenance';
+        case 'OUT_OF_SERVICE': return 'out-of-service';
+        default: return 'unknown';
+    }
+}
+
+// Format status for display
+function formatStatus(status) {
+    switch(status) {
+        case 'AVAILABLE': return 'Available';
+        case 'MAINTENANCE': return 'Maintenance';
+        case 'OUT_OF_SERVICE': return 'Out of Service';
+        default: return status || 'Unknown';
+    }
+}
+
+// Open add boat modal
+function openAddBoatModal() {
+    document.getElementById('addBoatForm').reset();
+    document.getElementById('addBoatModal').style.display = 'block';
+}
+
+// Open edit boat modal
+async function openEditBoatModal(boatId) {
+    try {
+        const response = await fetch(`/api/admin/boats/${boatId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch boat details');
+        }
+
+        const boat = await response.json();
+        
+        // Populate edit form
+        document.getElementById('editBoatId').value = boat.boatId;
+        document.getElementById('editBoatName').value = boat.boatName || '';
+        document.getElementById('editBoatModel').value = boat.model || '';
+        document.getElementById('editBoatType').value = boat.type || '';
+        document.getElementById('editBoatCapacity').value = boat.capacity || '';
+        document.getElementById('editRegistrationNumber').value = boat.registrationNumber || '';
+        document.getElementById('editBoatStatus').value = boat.status || '';
+        document.getElementById('editBoatFeatures').value = boat.features || '';
+        document.getElementById('editBoatDescription').value = boat.description || '';
+        
+        document.getElementById('editBoatModal').style.display = 'block';
+    } catch (error) {
+        console.error('Error loading boat details:', error);
+        showNotification('Failed to load boat details: ' + error.message, 'error');
+    }
+}
+
+// Open status update modal
+function openStatusModal(boatId, boatName, currentStatus) {
+    selectedBoatId = boatId;
+    document.getElementById('statusBoatName').textContent = boatName;
+    document.getElementById('newStatus').value = currentStatus;
+    openModal('statusModal');
+}
+
+// Confirm status update
+async function confirmStatusUpdate() {
+    if (!selectedBoatId) return;
+    
+    const newStatus = document.getElementById('newStatus').value;
+    if (!newStatus) {
+        showNotification('Please select a status', 'error');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/admin/boats/${selectedBoatId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: newStatus })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update boat status');
+        }
+
+        const result = await response.json();
+        showNotification('Boat status updated successfully', 'success');
+        closeModal('statusModal');
+        loadBoats(); // Refresh the boats list
+        
+    } catch (error) {
+        console.error('Error updating boat status:', error);
+        showNotification('Failed to update boat status: ' + error.message, 'error');
+    }
+}
+
+// Delete boat
+async function deleteBoat(boatId, boatName) {
+    if (!confirm(`Are you sure you want to delete boat "${boatName}"? This action cannot be undone.`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/admin/boats/${boatId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to delete boat');
+        }
+
+        showNotification('Boat deleted successfully', 'success');
+        loadBoats(); // Refresh the boats list
+        loadDashboardStats(); // Update stats
+        
+    } catch (error) {
+        console.error('Error deleting boat:', error);
+        showNotification('Failed to delete boat: ' + error.message, 'error');
+    }
+}
+
+// Filter boats
+function filterBoats() {
+    const searchTerm = document.getElementById('boatSearchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('boatStatusFilter').value;
+    const typeFilter = document.getElementById('boatTypeFilter').value;
+
+    const filteredBoats = currentBoatsData.filter(boat => {
+        const matchesSearch = !searchTerm || 
+            (boat.boatName && boat.boatName.toLowerCase().includes(searchTerm)) ||
+            (boat.model && boat.model.toLowerCase().includes(searchTerm)) ||
+            (boat.registrationNumber && boat.registrationNumber.toLowerCase().includes(searchTerm));
+        
+        const matchesStatus = !statusFilter || boat.status === statusFilter;
+        const matchesType = !typeFilter || boat.type === typeFilter;
+
+        return matchesSearch && matchesStatus && matchesType;
+    });
+
+    displayBoats(filteredBoats);
+}
+
+// Clear boat filters
+function clearBoatFilters() {
+    document.getElementById('boatSearchInput').value = '';
+    document.getElementById('boatStatusFilter').value = '';
+    document.getElementById('boatTypeFilter').value = '';
+    displayBoats(currentBoatsData);
+}
+
+// Export boats
+function exportBoats() {
+    try {
+        // Create workbook and worksheet
+        const ws = XLSX.utils.json_to_sheet(currentBoatsData.map(boat => ({
+            'Boat ID': boat.boatId,
+            'Boat Name': boat.boatName,
+            'Model': boat.model,
+            'Type': boat.type,
+            'Capacity': boat.capacity,
+            'Registration Number': boat.registrationNumber,
+            'Status': boat.status,
+            'Features': boat.features,
+            'Description': boat.description
+        })));
+        
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Boats');
+        
+        // Save file
+        XLSX.writeFile(wb, `boats_${new Date().toISOString().split('T')[0]}.xlsx`);
+        
+        showNotification('Boats exported successfully', 'success');
+    } catch (error) {
+        console.error('Error exporting boats:', error);
+        showNotification('Failed to export boats: ' + error.message, 'error');
+    }
+}
+
+// Setup boat form handlers
+function setupBoatFormHandlers() {
+    // Add boat form
+    document.getElementById('addBoatForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            boatName: document.getElementById('boatName').value,
+            model: document.getElementById('boatModel').value,
+            type: document.getElementById('boatType').value,
+            capacity: parseInt(document.getElementById('boatCapacity').value),
+            registrationNumber: document.getElementById('registrationNumber').value,
+            status: document.getElementById('boatStatus').value,
+            features: document.getElementById('boatFeatures').value,
+            description: document.getElementById('boatDescription').value
+        };
+
+        try {
+            const response = await fetch('/api/admin/boats', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create boat');
+            }
+
+            const result = await response.json();
+            showNotification('Boat created successfully', 'success');
+            closeModal('addBoatModal');
+            loadBoats(); // Refresh the boats list
+            loadDashboardStats(); // Update stats
+            
+        } catch (error) {
+            console.error('Error creating boat:', error);
+            showNotification('Failed to create boat: ' + error.message, 'error');
+        }
+    });
+
+    // Edit boat form
+    document.getElementById('editBoatForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const boatId = document.getElementById('editBoatId').value;
+        const formData = {
+            boatName: document.getElementById('editBoatName').value,
+            model: document.getElementById('editBoatModel').value,
+            type: document.getElementById('editBoatType').value,
+            capacity: parseInt(document.getElementById('editBoatCapacity').value),
+            registrationNumber: document.getElementById('editRegistrationNumber').value,
+            status: document.getElementById('editBoatStatus').value,
+            features: document.getElementById('editBoatFeatures').value,
+            description: document.getElementById('editBoatDescription').value
+        };
+
+        try {
+            const response = await fetch(`/api/admin/boats/${boatId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update boat');
+            }
+
+            const result = await response.json();
+            showNotification('Boat updated successfully', 'success');
+            closeModal('editBoatModal');
+            loadBoats(); // Refresh the boats list
+            loadDashboardStats(); // Update stats
+            
+        } catch (error) {
+            console.error('Error updating boat:', error);
+            showNotification('Failed to update boat: ' + error.message, 'error');
+        }
+    });
 }

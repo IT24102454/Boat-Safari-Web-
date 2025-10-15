@@ -8,11 +8,11 @@ import java.time.LocalTime;
 
 @Entity
 @Data
-@Table(name = "Trips")
+@Table(name = "trips")
 public class Trip {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tripId")
+    @Column(name = "trip_id")
     private Long tripId;
 
     @Column(name = "name")
@@ -24,10 +24,10 @@ public class Trip {
     @Column(name = "date")
     private LocalDate date;
 
-    @Column(name = "startTime")
+    @Column(name = "start_time")
     private LocalTime startTime;
 
-    @Column(name = "endTime")
+    @Column(name = "end_time")
     private LocalTime endTime;
 
     @Column(name = "duration")
@@ -45,18 +45,17 @@ public class Trip {
     @Column(name = "route")
     private String route;
 
-    @Column(name = "imageUrl")
+    @Column(name = "image_url")
     private String imageUrl;
 
-    // TODO: Add status field after database migration
-    // @Column(name = "status")
-    // private String status = "ACTIVE"; // Default status
+    @Column(name = "status")
+    private String status = "ACTIVE"; // Default status
 
     @ManyToOne
-    @JoinColumn(name = "boatId")
+    @JoinColumn(name = "boat_id")
     private Boat boat;
 
     @ManyToOne
-    @JoinColumn(name = "guideId")
+    @JoinColumn(name = "guide_id")
     private SafariGuide guide;
 }

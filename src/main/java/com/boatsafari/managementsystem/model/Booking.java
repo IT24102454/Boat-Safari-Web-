@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(name = "Bookings")
+@Table(name = "bookings")
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "bookingId")
+    @Column(name = "booking_id")
     private Long bookingId;
 
     @Column(name = "name")
@@ -30,21 +30,21 @@ public class Booking {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "holdTimer")
+    @Column(name = "hold_timer")
     private LocalDateTime holdTimer;
 
-    @Column(name = "totalCost")
+    @Column(name = "total_cost")
     private double totalCost;
 
     @ManyToOne
-    @JoinColumn(name = "customerId")
+    @JoinColumn(name = "customer_id")
     private User customer;
 
     @ManyToOne
-    @JoinColumn(name = "tripId")
+    @JoinColumn(name = "trip_id")
     private Trip trip;
 
     @OneToOne
-    @JoinColumn(name = "paymentId")
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 }

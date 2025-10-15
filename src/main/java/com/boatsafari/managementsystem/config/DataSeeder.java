@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Configuration
+@ConditionalOnProperty(name = "app.seeder.enabled", havingValue = "true", matchIfMissing = false)
 public class DataSeeder {
 
     @Autowired
@@ -31,6 +33,7 @@ public class DataSeeder {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Bean
+    @ConditionalOnProperty(name = "app.seeder.enabled", havingValue = "true", matchIfMissing = false)
     CommandLineRunner initDatabase() {
         return args -> {
             // Seed admin user if not exists
