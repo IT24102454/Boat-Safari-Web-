@@ -85,56 +85,134 @@ public class StaffController {
     @PostMapping("/assign-resources")
     public ResponseEntity<Map<String, String>> assignResources(@RequestBody AssignResourcesDto assignmentDto) {
         try {
+            System.out.println("Received assignment request: " + assignmentDto);
+            
             // Validate trip exists
             Trip trip = tripService.getTripByIdDirect(assignmentDto.getTripId());
             if (trip == null) {
+                System.out.println("Trip not found with ID: " + assignmentDto.getTripId());
                 return ResponseEntity.badRequest()
                     .body(Map.of("error", "Trip not found"));
             }
 
-            // Assign boat if provided
+            System.out.println("Found trip: " + trip.getName());
+
+            // Handle boat assignment/reassignment/clearing
             if (assignmentDto.getBoatId() != null) {
-                Boat boat = boatService.getBoatByIdDirect(assignmentDto.getBoatId());
-                if (boat == null) {
+                System.out.println("Assigning boat with ID: " + assignmentDto.getBoatId());
+                Boat newBoat = boatService.getBoatByIdDirect(assignmentDto.getBoatId());
+                if (newBoat == null) {
+                    System.out.println("Boat not found with ID: " + assignmentDto.getBoatId());
                     return ResponseEntity.badRequest()
                         .body(Map.of("error", "Boat not found"));
                 }
                 
-                if (!"AVAILABLE".equals(boat.getStatus())) {
-                    return ResponseEntity.badRequest()
-                        .body(Map.of("error", "Boat is not available"));
-                }
+                System.out.println("Found boat: " + newBoat.getBoatName() + " with status: " + newBoat.getStatus());
                 
-                trip.setBoat(boat);
-                boat.setStatus("ASSIGNED");
-                boatService.updateBoat(boat);
+                // Check if this boat is already assigned to this trip
+                if (trip.getBoat() != null && trip.getBoat().getBoatId().equals(assignmentDto.getBoatId())) {
+                    System.out.println("Boat is already assigned to this trip, no change needed");
+                } else {
+                    // Check if the new boat is available or if we're reassigning from another trip
+                    boolean canAssignBoat = "AVAILABLE".equals(newBoat.getStatus()) || 
+                                          "available".equals(newBoat.getStatus()) ||
+                                          "ASSIGNED".equals(newBoat.getStatus()); // Allow reassignment
+                    
+                    if (!canAssignBoat) {
+                        return ResponseEntity.badRequest()
+                            .body(Map.of("error", "Boat is not available for assignment (current status: " + newBoat.getStatus() + ")"));
+                    }
+                    
+                    // If boat is currently assigned to another trip, free it from that trip
+                    if ("ASSIGNED".equals(newBoat.getStatus())) {
+                        List<Trip> allTrips = tripService.getAllTrips();
+                        for (Trip otherTrip : allTrips) {
+                            if (otherTrip.getBoat() != null && 
+                                otherTrip.getBoat().getBoatId().equals(newBoat.getBoatId()) && 
+                                !otherTrip.getTripId().equals(trip.getTripId())) {
+                                otherTrip.setBoat(null);
+                                tripService.updateTrip(otherTrip);
+                                System.out.println("Removed boat from trip: " + otherTrip.getName());
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Free up the previously assigned boat for this trip
+                    if (trip.getBoat() != null) {
+                        Boat oldBoat = trip.getBoat();
+                        oldBoat.setStatus("AVAILABLE");
+                        boatService.updateBoat(oldBoat);
+                        System.out.println("Previous boat freed: " + oldBoat.getBoatName());
+                    }
+                    
+                    // Assign the new boat
+                    trip.setBoat(newBoat);
+                    newBoat.setStatus("ASSIGNED");
+                    boatService.updateBoat(newBoat);
+                    System.out.println("Boat assigned successfully: " + newBoat.getBoatName());
+                }
+            } else {
+                // Handle clearing boat assignment (when boatId is null or empty)
+                if (trip.getBoat() != null) {
+                    Boat oldBoat = trip.getBoat();
+                    oldBoat.setStatus("AVAILABLE");
+                    boatService.updateBoat(oldBoat);
+                    trip.setBoat(null);
+                    System.out.println("Boat assignment cleared. Boat " + oldBoat.getBoatName() + " is now available.");
+                }
             }
 
-            // Assign guide if provided
+            // Handle guide assignment/reassignment/clearing
             if (assignmentDto.getGuideId() != null) {
-                SafariGuide guide = userService.getGuideById(assignmentDto.getGuideId());
-                if (guide == null) {
+                System.out.println("Assigning guide with ID: " + assignmentDto.getGuideId());
+                SafariGuide newGuide = userService.getGuideById(assignmentDto.getGuideId());
+                if (newGuide == null) {
+                    System.out.println("Guide not found with ID: " + assignmentDto.getGuideId());
                     return ResponseEntity.badRequest()
                         .body(Map.of("error", "Guide not found"));
                 }
                 
-                // TODO: Add status checking when status field is available
-                // if ("ASSIGNED".equals(guide.getStatus())) {
-                //     return ResponseEntity.badRequest()
-                //         .body(Map.of("error", "Guide is already assigned"));
-                // }
+                System.out.println("Found guide: " + newGuide.getFirstName() + " " + newGuide.getSecondName());
                 
-                trip.setGuide(guide);
-                // TODO: Update guide status when status field is available
-                // guide.setStatus("ASSIGNED");
-                // userService.updateUser(guide);
+                // Check if this guide is already assigned to this trip
+                if (trip.getGuide() != null && trip.getGuide().getUserId().equals(assignmentDto.getGuideId())) {
+                    System.out.println("Guide is already assigned to this trip, no change needed");
+                } else {
+                    // If this guide is assigned to another trip, free them from that trip
+                    List<Trip> allTrips = tripService.getAllTrips();
+                    for (Trip otherTrip : allTrips) {
+                        if (otherTrip.getGuide() != null && 
+                            otherTrip.getGuide().getUserId().equals(newGuide.getUserId()) && 
+                            !otherTrip.getTripId().equals(trip.getTripId())) {
+                            otherTrip.setGuide(null);
+                            tripService.updateTrip(otherTrip);
+                            System.out.println("Removed guide from trip: " + otherTrip.getName());
+                            break;
+                        }
+                    }
+                    
+                    // Assign the guide to this trip
+                    trip.setGuide(newGuide);
+                    System.out.println("Guide assigned successfully: " + newGuide.getFirstName() + " " + newGuide.getSecondName());
+                }
+            } else {
+                // Handle clearing guide assignment (when guideId is null or empty)
+                if (trip.getGuide() != null) {
+                    SafariGuide oldGuide = trip.getGuide();
+                    trip.setGuide(null);
+                    System.out.println("Guide assignment cleared. Guide " + oldGuide.getFirstName() + " " + oldGuide.getSecondName() + " is now available.");
+                }
             }
 
             // Update trip
             tripService.updateTrip(trip);
+            System.out.println("Trip updated successfully");
 
             return ResponseEntity.ok(Map.of("message", "Resources assigned successfully"));
         } catch (Exception e) {
+            System.err.println("Error in assignResources: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Failed to assign resources: " + e.getMessage()));
         }
@@ -321,6 +399,70 @@ public class StaffController {
             }
             if (tripData.containsKey("imageUrl")) {
                 trip.setImageUrl((String) tripData.get("imageUrl"));
+            }
+
+            // Handle boat assignment
+            if (tripData.containsKey("boatId")) {
+                Object boatIdObj = tripData.get("boatId");
+                if (boatIdObj != null && !boatIdObj.toString().isEmpty()) {
+                    Long boatId = null;
+                    if (boatIdObj instanceof Number) {
+                        boatId = ((Number) boatIdObj).longValue();
+                    } else if (boatIdObj instanceof String) {
+                        boatId = Long.parseLong((String) boatIdObj);
+                    }
+                    
+                    if (boatId != null) {
+                        Boat boat = boatService.getBoatByIdDirect(boatId);
+                        if (boat != null) {
+                            // Remove old boat assignment if exists
+                            if (trip.getBoat() != null && !trip.getBoat().getBoatId().equals(boatId)) {
+                                Boat oldBoat = trip.getBoat();
+                                oldBoat.setStatus("AVAILABLE");
+                                boatService.updateBoat(oldBoat);
+                            }
+                            
+                            trip.setBoat(boat);
+                            boat.setStatus("ASSIGNED");
+                            boatService.updateBoat(boat);
+                            System.out.println("Boat assigned to trip: " + boat.getBoatName());
+                        }
+                    }
+                } else {
+                    // Remove boat assignment
+                    if (trip.getBoat() != null) {
+                        Boat oldBoat = trip.getBoat();
+                        oldBoat.setStatus("AVAILABLE");
+                        boatService.updateBoat(oldBoat);
+                        trip.setBoat(null);
+                        System.out.println("Boat assignment removed from trip");
+                    }
+                }
+            }
+
+            // Handle guide assignment
+            if (tripData.containsKey("guideId")) {
+                Object guideIdObj = tripData.get("guideId");
+                if (guideIdObj != null && !guideIdObj.toString().isEmpty()) {
+                    Long guideId = null;
+                    if (guideIdObj instanceof Number) {
+                        guideId = ((Number) guideIdObj).longValue();
+                    } else if (guideIdObj instanceof String) {
+                        guideId = Long.parseLong((String) guideIdObj);
+                    }
+                    
+                    if (guideId != null) {
+                        SafariGuide guide = userService.getGuideById(guideId);
+                        if (guide != null) {
+                            trip.setGuide(guide);
+                            System.out.println("Guide assigned to trip: " + guide.getFirstName() + " " + guide.getSecondName());
+                        }
+                    }
+                } else {
+                    // Remove guide assignment
+                    trip.setGuide(null);
+                    System.out.println("Guide assignment removed from trip");
+                }
             }
 
             Trip updatedTrip = tripService.updateTrip(trip);
