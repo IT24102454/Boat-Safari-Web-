@@ -127,4 +127,55 @@ public class SetupController {
             return ResponseEntity.badRequest().body(error);
         }
     }
+
+    @PostMapping("/create-it-users")
+    public ResponseEntity<?> createITUsers() {
+        try {
+            // Create IT Support user
+            ITSupport itSupport = new ITSupport();
+            itSupport.setFirstName("IT");
+            itSupport.setSecondName("Support");
+            itSupport.setEmail("itsupport@gmail.com");
+            itSupport.setPassword("password123");
+            itSupport.setContactNo("555-IT-HELP");
+            itSupport.setAddress("123 IT Street");
+            itSupport.setCity("Tech City");
+            itSupport.setStreet("Support Lane");
+            itSupport.setPostalCode("90210");
+            itSupport.setHireDate("2023-01-01");
+            itSupport.setCertification("IT Support Specialist");
+            itSupport.setStatus("AVAILABLE");
+            
+            userService.register(itSupport);
+
+            // Create IT Assistant user
+            ITAssistant itAssistant = new ITAssistant();
+            itAssistant.setFirstName("IT");
+            itAssistant.setSecondName("Assistant");
+            itAssistant.setEmail("itassistant@gmail.com");
+            itAssistant.setPassword("password123");
+            itAssistant.setContactNo("555-IT-ASST");
+            itAssistant.setAddress("456 Tech Avenue");
+            itAssistant.setCity("Tech City");
+            itAssistant.setStreet("Assistant Boulevard");
+            itAssistant.setPostalCode("90211");
+            itAssistant.setHireDate("2023-01-01");
+            itAssistant.setCertification("IT Assistant");
+            itAssistant.setStatus("AVAILABLE");
+            
+            userService.register(itAssistant);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "IT users created successfully");
+            response.put("credentials", Map.of(
+                "itSupport", Map.of("email", "itsupport@gmail.com", "password", "password123"),
+                "itAssistant", Map.of("email", "itassistant@gmail.com", "password", "password123")
+            ));
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to create IT users: " + e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
 }

@@ -463,6 +463,9 @@
             } else if (data.role === 'STAFF' || data.role === 'STAFFMEMBER') {
                 console.log('Redirecting to staff portal');
                 window.location.href = '/staff.html';
+            } else if (data.role === 'IT_SUPPORT' || data.role === 'IT_ASSISTANT') {
+                console.log('Redirecting to IT Support dashboard');
+                window.location.href = '/itsupport.html';
             } else {
                 console.log('Redirecting to trips page (default) for role:', data.role);
                 window.location.href = '/trips.html';

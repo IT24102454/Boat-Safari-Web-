@@ -29,10 +29,10 @@ public class Feedback {
     @Column(name = "category", length = 50)
     private String category; // "GENERAL", "SERVICE", "BOOKING", "WEBSITE", "TRIP", "STAFF"
 
-    @Column(name = "is_visible", nullable = false)
+    @Column(name = "is_visible")
     private Boolean isVisible = true; // IT Support can hide feedbacks
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
@@ -60,9 +60,15 @@ public class Feedback {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
         if (isVisible == null) {
             isVisible = true;
+        }
+        // Ensure required fields have defaults
+        if (category == null || category.trim().isEmpty()) {
+            category = "GENERAL";
         }
     }
 

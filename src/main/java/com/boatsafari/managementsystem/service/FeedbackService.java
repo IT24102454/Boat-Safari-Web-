@@ -62,16 +62,30 @@ public class FeedbackService {
             throw new IllegalArgumentException("Rating must be between 1 and 5");
         }
 
-        Feedback feedback = new Feedback();
-        feedback.setTitle(title.trim());
-        feedback.setComments(comments.trim());
-        feedback.setCategory(category.toUpperCase());
-        feedback.setRating(rating);
-        feedback.setUser(null); // Anonymous feedback - no user association
-        feedback.setIsVisible(true);
-        feedback.setCreatedAt(LocalDateTime.now());
+        try {
+            Feedback feedback = new Feedback();
+            feedback.setTitle(title.trim());
+            feedback.setComments(comments.trim());
+            feedback.setCategory(category.toUpperCase());
+            feedback.setRating(rating);
+            feedback.setUser(null); // Anonymous feedback - no user association
+            feedback.setBooking(null); // No booking association for anonymous feedback
+            feedback.setRepliedBy(null); // No reply initially
+            feedback.setIsVisible(true);
+            feedback.setCreatedAt(LocalDateTime.now());
+            // Ensure other fields are null for anonymous feedback
+            feedback.setReply(null);
+            feedback.setRepliedAt(null);
+            feedback.setUpdatedAt(null);
+            feedback.setExperience(null);
 
-        return feedbackRepository.save(feedback);
+            return feedbackRepository.save(feedback);
+        } catch (Exception e) {
+            // Log the actual error for debugging
+            System.err.println("Error saving anonymous feedback: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to save feedback: " + e.getMessage(), e);
+        }
     }
 
     /**
