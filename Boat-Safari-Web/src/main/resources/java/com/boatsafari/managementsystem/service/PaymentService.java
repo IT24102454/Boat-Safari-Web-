@@ -1,7 +1,9 @@
 package com.boatsafari.managementsystem.service;
 
 import com.boatsafari.managementsystem.dto.PaymentRequest;
+import com.boatsafari.managementsystem.model.Booking;
 import com.boatsafari.managementsystem.model.Payment;
+import com.boatsafari.managementsystem.repository.BookingRepository;
 import com.boatsafari.managementsystem.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
