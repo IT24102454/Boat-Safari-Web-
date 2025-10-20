@@ -113,7 +113,11 @@ public class FeedbackController {
     @GetMapping("/admin/all")
     public ResponseEntity<?> getAllFeedbacks() {
         try {
-            return ResponseEntity.ok(feedbackService.getAllFeedbacks());
+            List<Feedback> feedbacks = feedbackService.getAllFeedbacks();
+            List<FeedbackAdminDTO> feedbackDTOs = feedbacks.stream()
+                    .map(this::toAdminDto)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(feedbackDTOs);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ErrorResponse("Failed to retrieve feedbacks"));
         }
@@ -122,7 +126,11 @@ public class FeedbackController {
     @GetMapping("/admin/pending")
     public ResponseEntity<?> getPendingFeedbacks() {
         try {
-            return ResponseEntity.ok(feedbackService.getFeedbacksWithoutReplies());
+            List<Feedback> feedbacks = feedbackService.getFeedbacksWithoutReplies();
+            List<FeedbackAdminDTO> feedbackDTOs = feedbacks.stream()
+                    .map(this::toAdminDto)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(feedbackDTOs);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ErrorResponse("Failed to retrieve pending feedbacks"));
         }
@@ -131,7 +139,11 @@ public class FeedbackController {
     @GetMapping("/admin/replied")
     public ResponseEntity<?> getRepliedFeedbacks() {
         try {
-            return ResponseEntity.ok(feedbackService.getFeedbacksWithReplies());
+            List<Feedback> feedbacks = feedbackService.getFeedbacksWithReplies();
+            List<FeedbackAdminDTO> feedbackDTOs = feedbacks.stream()
+                    .map(this::toAdminDto)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(feedbackDTOs);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new ErrorResponse("Failed to retrieve replied feedbacks"));
         }
@@ -251,5 +263,109 @@ public class FeedbackController {
         private String reply;
         private String userName;
         private LocalDateTime createdAt;
+    }
+
+    @Data
+    public static class FeedbackAdminDTO {
+        private Long feedbackId;
+        private String title;
+        private String comments;
+        private String experience;
+        private String category;
+        private Integer rating;
+        private Boolean isVisible;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+        private String reply;
+        private LocalDateTime repliedAt;
+        private UserDTO user;
+        private BookingDTO booking;
+        private UserDTO repliedBy;
+    }
+
+    @Data
+    public static class UserDTO {
+        private Long userId;
+        private String firstName;
+        private String lastName;
+        private String email;
+    }
+
+    @Data
+    public static class BookingDTO {
+        private Long bookingId;
+        private LocalDateTime bookingDate;
+    }
+
+    private FeedbackAdminDTO toAdminDto(Feedback feedback) {
+        FeedbackAdminDTO dto = new FeedbackAdminDTO();
+        dto.setFeedbackId(feedback.getFeedbackId());
+        dto.setTitle(feedback.getTitle());
+        dto.setComments(feedback.getComments());
+        dto.setExperience(feedback.getExperience());
+        dto.setCategory(feedback.getCategory());
+        dto.setRating(feedback.getRating());
+        dto.setIsVisible(feedback.getIsVisible());
+        dto.setCreatedAt(feedback.getCreatedAt());
+        dto.setUpdatedAt(feedback.getUpdatedAt());
+        dto.setReply(feedback.getReply());
+        dto.setRepliedAt(feedback.getRepliedAt());
+
+        // Safely handle user relationship
+        if (feedback.getUser() != null) {
+            try {
+                UserDTO userDto = new UserDTO();
+                userDto.setUserId(feedback.getUser().getUserId());
+                userDto.setFirstName(feedback.getUser().getFirstName());
+                userDto.setLastName(feedback.getUser().getSecondName());
+                userDto.setEmail(feedback.getUser().getEmail());
+                dto.setUser(userDto);
+            } catch (Exception e) {
+                // Handle lazy loading issues
+                UserDTO userDto = new UserDTO();
+                userDto.setUserId(feedback.getUser().getUserId());
+                userDto.setFirstName("Unknown");
+                userDto.setEmail("Unknown");
+                dto.setUser(userDto);
+            }
+        }
+
+        // Safely handle booking relationship
+        if (feedback.getBooking() != null) {
+            try {
+                BookingDTO bookingDto = new BookingDTO();
+                bookingDto.setBookingId(feedback.getBooking().getBookingId());
+                // Get trip date if available
+                if (feedback.getBooking().getTrip() != null && feedback.getBooking().getTrip().getDate() != null) {
+                    bookingDto.setBookingDate(feedback.getBooking().getTrip().getDate().atStartOfDay());
+                }
+                dto.setBooking(bookingDto);
+            } catch (Exception e) {
+                // Handle lazy loading issues
+                BookingDTO bookingDto = new BookingDTO();
+                bookingDto.setBookingId(feedback.getBooking().getBookingId());
+                dto.setBooking(bookingDto);
+            }
+        }
+
+        // Safely handle repliedBy relationship
+        if (feedback.getRepliedBy() != null) {
+            try {
+                UserDTO repliedByDto = new UserDTO();
+                repliedByDto.setUserId(feedback.getRepliedBy().getUserId());
+                repliedByDto.setFirstName(feedback.getRepliedBy().getFirstName());
+                repliedByDto.setLastName(feedback.getRepliedBy().getSecondName());
+                repliedByDto.setEmail(feedback.getRepliedBy().getEmail());
+                dto.setRepliedBy(repliedByDto);
+            } catch (Exception e) {
+                // Handle lazy loading issues
+                UserDTO repliedByDto = new UserDTO();
+                repliedByDto.setUserId(feedback.getRepliedBy().getUserId());
+                repliedByDto.setFirstName("IT Support");
+                dto.setRepliedBy(repliedByDto);
+            }
+        }
+
+        return dto;
     }
 }

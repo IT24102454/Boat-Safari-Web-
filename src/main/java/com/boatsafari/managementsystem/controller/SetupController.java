@@ -1,11 +1,13 @@
 package com.boatsafari.managementsystem.controller;
 
 import com.boatsafari.managementsystem.model.*;
+import com.boatsafari.managementsystem.repository.PaymentRepository;
 import com.boatsafari.managementsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,9 @@ public class SetupController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @PostMapping("/create-users")
     public ResponseEntity<?> createTestUsers() {
@@ -176,6 +181,84 @@ public class SetupController {
             Map<String, String> error = new HashMap<>();
             error.put("error", "Failed to create IT users: " + e.getMessage());
             return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    @PostMapping("/sample-payments")
+    public ResponseEntity<Map<String, Object>> createSamplePayments() {
+        try {
+            // Create sample payments
+            Payment payment1 = new Payment();
+            payment1.setPaymentMethod("Card");
+            payment1.setPaymentDate(LocalDateTime.now().minusDays(1));
+            payment1.setAmount(250.00);
+            payment1.setStatus("Completed");
+            payment1.setCardHolderName("John Smith");
+            paymentRepository.save(payment1);
+
+            Payment payment2 = new Payment();
+            payment2.setPaymentMethod("Card");
+            payment2.setPaymentDate(LocalDateTime.now().minusDays(2));
+            payment2.setAmount(180.00);
+            payment2.setStatus("Completed");
+            payment2.setCardHolderName("Jane Doe");
+            paymentRepository.save(payment2);
+
+            Payment payment3 = new Payment();
+            payment3.setPaymentMethod("On Arrival");
+            payment3.setPaymentDate(LocalDateTime.now().minusDays(3));
+            payment3.setAmount(320.00);
+            payment3.setStatus("Pending");
+            paymentRepository.save(payment3);
+
+            Payment payment4 = new Payment();
+            payment4.setPaymentMethod("Card");
+            payment4.setPaymentDate(LocalDateTime.now().minusDays(4));
+            payment4.setAmount(450.00);
+            payment4.setStatus("Completed");
+            payment4.setCardHolderName("Mike Johnson");
+            paymentRepository.save(payment4);
+
+            Payment payment5 = new Payment();
+            payment5.setPaymentMethod("Card");
+            payment5.setPaymentDate(LocalDateTime.now().minusDays(5));
+            payment5.setAmount(290.00);
+            payment5.setStatus("Failed");
+            payment5.setCardHolderName("Sarah Wilson");
+            paymentRepository.save(payment5);
+
+            Payment payment6 = new Payment();
+            payment6.setPaymentMethod("On Arrival");
+            payment6.setPaymentDate(LocalDateTime.now().minusDays(6));
+            payment6.setAmount(380.00);
+            payment6.setStatus("Completed");
+            paymentRepository.save(payment6);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Sample payments created successfully");
+            response.put("count", 6);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to create sample payments");
+            errorResponse.put("details", e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
+    }
+
+    @GetMapping("/payment-count")
+    public ResponseEntity<Map<String, Object>> getPaymentCount() {
+        try {
+            long count = paymentRepository.count();
+            Map<String, Object> response = new HashMap<>();
+            response.put("count", count);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to get payment count");
+            errorResponse.put("details", e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
         }
     }
 }

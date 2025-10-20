@@ -26,6 +26,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/register", "/api/login").permitAll()
                         // setup endpoints (development only)
                         .requestMatchers("/api/setup/**").permitAll()
+                        // Payment admin endpoints (temporary for testing)
+                        .requestMatchers("/api/admin/payments/**").permitAll()
                         // trips browsing allowed without login
                         .requestMatchers(HttpMethod.GET, "/api/trips/**").permitAll()
                         // Support public endpoints
@@ -34,6 +36,11 @@ public class SecurityConfig {
                         // Feedback public endpoints
                         .requestMatchers(HttpMethod.POST, "/api/feedback/public").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/feedback/public/**").permitAll()
+                        // Feedback admin endpoints - IT Support and Admin access
+                        .requestMatchers("/api/feedback/admin/**").hasAnyRole("ADMIN", "ITSUPPORT", "ITASSISTANT")
+                        .requestMatchers(HttpMethod.POST, "/api/feedback/*/reply").hasAnyRole("ADMIN", "ITSUPPORT", "ITASSISTANT")
+                        .requestMatchers(HttpMethod.PUT, "/api/feedback/*/toggle-visibility").hasAnyRole("ADMIN", "ITSUPPORT", "ITASSISTANT")
+                        .requestMatchers(HttpMethod.DELETE, "/api/feedback/*").hasAnyRole("ADMIN", "ITSUPPORT", "ITASSISTANT")
                         // Admin-only endpoints
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN")
                         // Guide dashboard endpoints

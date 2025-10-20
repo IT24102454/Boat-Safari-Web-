@@ -4,12 +4,10 @@ import com.boatsafari.managementsystem.model.User;
 import com.boatsafari.managementsystem.model.Boat;
 import com.boatsafari.managementsystem.service.UserService;
 import com.boatsafari.managementsystem.service.TripService;
-import com.boatsafari.managementsystem.service.BookingService;
 import com.boatsafari.managementsystem.service.BoatService;
 import com.boatsafari.managementsystem.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
