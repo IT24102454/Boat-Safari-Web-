@@ -531,7 +531,7 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="staff.html">Dashboard</a></li>
                 <li><a href="trips.html">Trips</a></li>
-                <li><a href="boats.html">Boats</a></li>
+                <li><a href="boat.html">Boats</a></li>
                 <li><a href="feedback-management.html" class="it-support-only">Feedback</a></li>
                 <li><a href="support.html">Support</a></li>
             </ul>
@@ -700,7 +700,15 @@
                     </button>
                     <button class="btn btn-warning" onclick="clearAssignments()">
                         <i class="fas fa-times"></i>
-                        Clear Assignment
+                        Clear Form
+                    </button>
+                    <button class="btn btn-danger" onclick="clearTripAssignments()">
+                        <i class="fas fa-trash-alt"></i>
+                        Remove All Assignments
+                    </button>
+                    <button class="btn btn-success" onclick="refreshAssignmentData()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh Data
                     </button>
                 </div>
 
@@ -903,6 +911,18 @@
                     <div class="form-group">
                         <label for="editTripLocation">Location:</label>
                         <input type="text" class="form-control" id="editTripLocation">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTripBoat">Assigned Boat:</label>
+                        <select class="form-control" id="editTripBoat">
+                            <option value="">Select a boat...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTripGuide">Assigned Guide:</label>
+                        <select class="form-control" id="editTripGuide">
+                            <option value="">Select a guide...</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group">

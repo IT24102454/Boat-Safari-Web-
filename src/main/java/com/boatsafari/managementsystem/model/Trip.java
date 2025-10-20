@@ -51,11 +51,11 @@ public class Trip {
     @Column(name = "status")
     private String status = "ACTIVE"; // Default status
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "boat_id")
     private Boat boat;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "guide_id")
     private SafariGuide guide;
 }

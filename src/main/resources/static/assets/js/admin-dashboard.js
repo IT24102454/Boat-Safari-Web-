@@ -57,7 +57,8 @@ function loadInitialData() {
     loadTrips();
     loadBookings();
     loadStaffMembers();
-    loadBoats();
+    loadBoats(); // This loads boats for the table
+    loadBoatsForDropdowns(); // This loads boats for dropdowns
     loadGuides();
 }
 
@@ -686,6 +687,11 @@ function displayTrips(trips) {
         return;
     }
 
+    // Debug log to see the structure of trips data
+    console.log('Displaying trips:', trips);
+    console.log('First trip boat data:', trips[0]?.boat);
+    console.log('First trip guide data:', trips[0]?.guide);
+
     tableBody.innerHTML = trips.map(trip => `
         <tr>
             <td>${trip.tripId || 'N/A'}</td>
@@ -695,7 +701,7 @@ function displayTrips(trips) {
             <td>${trip.route || 'N/A'}</td>
             <td>${trip.capacity || 'N/A'}</td>
             <td>$${trip.price || '0.00'}</td>
-            <td>${trip.boat?.name || 'Unassigned'}</td>
+            <td>${trip.boat?.boatName || trip.boat?.name || 'Unassigned'}</td>
             <td>${trip.guide?.firstName || 'Unassigned'} ${trip.guide?.secondName || ''}</td>
             <td><span class="status-badge status-${(trip.status || 'active').toLowerCase()}">${trip.status || 'Active'}</span></td>
             <td>
@@ -946,19 +952,27 @@ function displayStaffMembers(staff) {
     `).join('');
 }
 
-// Load boats data
-async function loadBoats() {
+// Load boats data for dropdowns
+async function loadBoatsForDropdowns() {
     try {
-        const response = await fetch('/api/boats', {
+        console.log('Loading boats from API...'); // Debug log
+        const response = await fetch('/api/admin/boats', {
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
             }
         });
 
+        console.log('Boats API response status:', response.status); // Debug log
+        
         if (response.ok) {
             const boats = await response.json();
+            console.log('Loaded boats:', boats); // Debug log
             availableBoats = boats;
             populateBoatSelects(boats);
+        } else {
+            console.error('Failed to load boats, status:', response.status);
+            const errorText = await response.text();
+            console.error('Error response:', errorText);
         }
     } catch (error) {
         console.error('Error loading boats:', error);
@@ -988,27 +1002,76 @@ async function loadGuides() {
 // Load both boats and guides for trip forms
 async function loadBoatsAndGuides() {
     try {
-        await Promise.all([loadBoats(), loadGuides()]);
+        await Promise.all([loadBoatsForDropdowns(), loadGuides()]);
     } catch (error) {
         console.error('Error loading boats and guides:', error);
     }
 }
 
+// Helper function to manually refresh dropdowns when modal is opened
+async function refreshTripDropdowns() {
+    try {
+        // Load fresh data
+        await loadBoatsAndGuides();
+        
+        // Wait for data to be loaded
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // Manually populate boat dropdowns
+        const boatSelects = ['boat', 'editBoat'];
+        boatSelects.forEach(selectId => {
+            const select = document.getElementById(selectId);
+            if (select && availableBoats && availableBoats.length > 0) {
+                select.innerHTML = '<option value="">Select Boat</option>' +
+                    availableBoats.map(boat => `<option value="${boat.boatId}">${boat.boatName || boat.name || 'Unnamed Boat'}</option>`).join('');
+                console.log(`Refreshed ${selectId} with ${availableBoats.length} boats`);
+            }
+        });
+        
+        // Manually populate guide dropdowns if guides are available
+        const response = await fetch('/api/guides', {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+        
+        if (response.ok) {
+            const guides = await response.json();
+            const guideSelects = ['guide', 'editGuide'];
+            guideSelects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (select) {
+                    select.innerHTML = '<option value="">Select Guide</option>' +
+                        guides.map(guide => `<option value="${guide.userId}">${guide.firstName} ${guide.secondName || guide.lastName || ''}</option>`).join('');
+                    console.log(`Refreshed ${selectId} with ${guides.length} guides`);
+                }
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error refreshing trip dropdowns:', error);
+    }
+}
+
 // Populate boat select dropdowns
 function populateBoatSelects(boats) {
-    const selects = ['boat', 'edit-boat'];
+    console.log('Populating boat selects with:', boats); // Debug log
+    const selects = ['boat', 'editBoat'];
     selects.forEach(selectId => {
         const select = document.getElementById(selectId);
         if (select) {
             select.innerHTML = '<option value="">Select Boat</option>' +
-                boats.map(boat => `<option value="${boat.boatId}">${boat.name}</option>`).join('');
+                boats.map(boat => `<option value="${boat.boatId}">${boat.boatName || boat.name || 'Unnamed Boat'}</option>`).join('');
+            console.log(`Populated ${selectId} with ${boats.length} boats`); // Debug log
+        } else {
+            console.log(`Element with ID '${selectId}' not found`); // Debug log
         }
     });
 }
 
 // Populate guide select dropdowns
 function populateGuideSelects(guides) {
-    const selects = ['guide', 'edit-guide'];
+    const selects = ['guide', 'editGuide'];
     selects.forEach(selectId => {
         const select = document.getElementById(selectId);
         if (select) {
@@ -1344,10 +1407,11 @@ function openAddTripModal() {
         submitButton.innerHTML = '<i class="fas fa-save"></i> Save Trip';
     }
     
-    // Load boats and guides for the dropdowns
-    loadBoatsAndGuides();
-    
+    // Show modal
     document.getElementById('addTripModal').style.display = 'block';
+    
+    // Load boats and guides for the dropdowns after showing modal
+    refreshTripDropdowns();
 }
 
 function openAddStaffModal() {
@@ -1603,6 +1667,60 @@ function setupFormHandlers() {
         });
     }
 
+    // Edit Trip form
+    const editTripForm = document.getElementById('editTripForm');
+    if (editTripForm) {
+        editTripForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const tripData = {
+                date: document.getElementById('editTripDate').value,
+                startTime: document.getElementById('editStartTime').value,
+                endTime: document.getElementById('editEndTime').value,
+                capacity: parseInt(document.getElementById('editCapacity').value),
+                price: parseFloat(document.getElementById('editPrice').value),
+                route: document.getElementById('editRoute').value
+            };
+
+            const boatId = document.getElementById('editBoat').value;
+            const guideId = document.getElementById('editGuide').value;
+
+            if (boatId) {
+                tripData.boat = { boatId: boatId };
+            }
+
+            if (guideId) {
+                tripData.guide = { userId: guideId };
+            }
+
+            const tripId = document.getElementById('editTripId').value;
+
+            try {
+                const response = await fetch(`/api/trips/${tripId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify(tripData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update trip');
+                }
+
+                closeModal('editTripModal');
+                loadTrips();
+                loadDashboardStats();
+                showNotification('Trip updated successfully', 'success');
+                editTripForm.reset();
+            } catch (error) {
+                console.error('Error updating trip:', error);
+                showNotification('Failed to update trip: ' + error.message, 'error');
+            }
+        });
+    }
+
     // Add Staff form
     const addStaffForm = document.getElementById('addStaffForm');
     if (addStaffForm) {
@@ -1758,45 +1876,42 @@ async function editTrip(tripId) {
     
     console.log('Found trip:', trip);
     
-    // Populate edit modal with trip data
-    document.getElementById('tripDate').value = trip.date || '';
-    document.getElementById('startTime').value = trip.startTime || '';
-    document.getElementById('endTime').value = trip.endTime || '';
-    document.getElementById('route').value = trip.route || '';
-    document.getElementById('capacity').value = trip.capacity || '';
-    document.getElementById('price').value = trip.price || '';
-    
-    // Load boats and guides for the dropdowns
-    await loadBoatsAndGuides();
-    
-    // Set selected boat and guide if available
-    if (trip.boat && trip.boat.boatId) {
-        document.getElementById('boat').value = trip.boat.boatId;
-        console.log('Set boat ID:', trip.boat.boatId);
+    try {
+        // Show modal first
+        document.getElementById('editTripModal').style.display = 'block';
+        
+        // Populate basic trip data immediately
+        document.getElementById('editTripId').value = tripId;
+        document.getElementById('editTripDate').value = trip.date || '';
+        document.getElementById('editStartTime').value = trip.startTime || '';
+        document.getElementById('editEndTime').value = trip.endTime || '';
+        document.getElementById('editRoute').value = trip.route || '';
+        document.getElementById('editCapacity').value = trip.capacity || '';
+        document.getElementById('editPrice').value = trip.price || '';
+        
+        // Refresh dropdowns with latest data
+        await refreshTripDropdowns();
+        
+        // Set selected boat and guide if available (after dropdowns are populated)
+        if (trip.boat && trip.boat.boatId) {
+            const editBoatSelect = document.getElementById('editBoat');
+            if (editBoatSelect) {
+                editBoatSelect.value = trip.boat.boatId;
+                console.log('Set boat ID:', trip.boat.boatId);
+            }
+        }
+        if (trip.guide && trip.guide.userId) {
+            const editGuideSelect = document.getElementById('editGuide');
+            if (editGuideSelect) {
+                editGuideSelect.value = trip.guide.userId;
+                console.log('Set guide ID:', trip.guide.userId);
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error in editTrip:', error);
+        showNotification('Error loading trip data: ' + error.message, 'error');
     }
-    if (trip.guide && trip.guide.userId) {
-        document.getElementById('guide').value = trip.guide.userId;
-        console.log('Set guide ID:', trip.guide.userId);
-    }
-    
-    // Set form to edit mode
-    const form = document.getElementById('addTripForm');
-    form.dataset.mode = 'edit';
-    form.dataset.tripId = tripId;
-    
-    // Change modal title and button text
-    const modalTitle = document.querySelector('#addTripModal .modal-title');
-    if (modalTitle) {
-        modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Trip';
-    }
-    
-    const submitButton = document.querySelector('#addTripForm button[type="submit"], button[form="addTripForm"]');
-    if (submitButton) {
-        submitButton.innerHTML = '<i class="fas fa-save"></i> Update Trip';
-    }
-    
-    // Show modal
-    document.getElementById('addTripModal').style.display = 'block';
 }
 
 async function deleteTrip(tripId) {

@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Load all dashboard data
 async function loadDashboardData() {
     try {
+        console.log('Loading dashboard data...');
         await Promise.all([
             loadQuickStats(),
             loadTrips(),
@@ -61,6 +62,7 @@ async function loadDashboardData() {
             loadAssignments(),
             loadCapacityData()
         ]);
+        console.log('Dashboard data loaded successfully');
     } catch (error) {
         console.error('Error loading dashboard data:', error);
         showNotification('Error loading dashboard data', 'error');
@@ -108,6 +110,7 @@ async function loadQuickStats() {
 // Load trips data
 async function loadTrips() {
     try {
+        console.log('Loading trips...');
         const response = await fetch('/api/trips', {
             method: 'GET',
             headers: {
@@ -121,10 +124,12 @@ async function loadTrips() {
         }
 
         currentTrips = await response.json();
+        console.log('Trips loaded:', currentTrips);
         displayTrips(currentTrips);
         populateTripSelectors();
     } catch (error) {
         console.error('Error loading trips:', error);
+        console.log('Using mock trips data as fallback');
         showMockTrips(); // Show mock data if API fails
     }
 }
@@ -196,6 +201,7 @@ function showMockTrips() {
     
     currentTrips = mockTrips;
     displayTrips(mockTrips);
+    populateTripSelectors(); // Ensure selectors are populated with mock data
 }
 
 // Load boats data
@@ -269,39 +275,136 @@ function showMockGuides() {
 // Populate trip selector dropdown
 function populateTripSelectors() {
     const selector = document.getElementById('assignTripSelect');
+    if (!selector) {
+        console.error('Trip selector element not found');
+        return;
+    }
+    
     selector.innerHTML = '<option value="">Select a trip...</option>';
+    
+    console.log('Populating trip selector with trips:', currentTrips);
+    
+    if (!currentTrips || currentTrips.length === 0) {
+        selector.innerHTML += '<option value="" disabled>No trips available</option>';
+        return;
+    }
     
     currentTrips.forEach(trip => {
         const option = document.createElement('option');
         option.value = trip.tripId;
-        option.textContent = `${trip.name || 'Trip'} - ${new Date(trip.date).toLocaleDateString()}`;
+        const tripName = trip.name || 'Unnamed Trip';
+        const tripDate = trip.date ? new Date(trip.date).toLocaleDateString() : 'No date';
+        option.textContent = `${tripName} - ${tripDate}`;
         selector.appendChild(option);
     });
+    
+    console.log('Trip selector populated with', selector.options.length - 1, 'trips');
 }
 
 // Populate boat selector dropdown
 function populateBoatSelector() {
     const selector = document.getElementById('assignBoatSelect');
+    if (!selector) {
+        console.error('Boat selector element not found');
+        return;
+    }
+    
     selector.innerHTML = '<option value="">Select a boat...</option>';
     
-    availableBoats.filter(boat => boat.status === 'AVAILABLE').forEach(boat => {
+    console.log('Populating boat selector with boats:', availableBoats);
+    
+    if (!availableBoats || availableBoats.length === 0) {
+        selector.innerHTML += '<option value="" disabled>No boats available</option>';
+        return;
+    }
+    
+    // Show all boats, not just available ones, to allow reassignment
+    availableBoats.forEach(boat => {
         const option = document.createElement('option');
         option.value = boat.boatId;
-        option.textContent = boat.boatName;
+        const boatName = boat.boatName || `Boat ${boat.boatId}`;
+        const statusText = boat.status === 'ASSIGNED' ? ' (Currently Assigned)' : '';
+        option.textContent = `${boatName}${statusText}`;
         selector.appendChild(option);
     });
+    
+    console.log('Boat selector populated with', availableBoats.length, 'boats (including assigned ones)');
 }
 
 // Populate guide selector dropdown
 function populateGuideSelector() {
     const selector = document.getElementById('assignGuideSelect');
+    if (!selector) {
+        console.error('Guide selector element not found');
+        return;
+    }
+    
     selector.innerHTML = '<option value="">Select a guide...</option>';
+    
+    console.log('Populating guide selector with guides:', availableGuides);
+    
+    if (!availableGuides || availableGuides.length === 0) {
+        selector.innerHTML += '<option value="" disabled>No guides available</option>';
+        return;
+    }
     
     // For now, show all guides since we don't have status field yet
     availableGuides.forEach(guide => {
         const option = document.createElement('option');
         option.value = guide.userId;
-        option.textContent = `${guide.firstName} ${guide.secondName}`;
+        const firstName = guide.firstName || 'Unknown';
+        const lastName = guide.secondName || guide.lastName || '';
+        option.textContent = `${firstName} ${lastName}`.trim();
+        selector.appendChild(option);
+    });
+    
+    console.log('Guide selector populated with', availableGuides.length, 'guides');
+}
+
+// Populate edit trip modal boat dropdown
+function populateEditTripBoatSelector() {
+    const selector = document.getElementById('editTripBoat');
+    if (!selector) {
+        console.error('Edit trip boat selector element not found');
+        return;
+    }
+    
+    selector.innerHTML = '<option value="">Select a boat...</option>';
+    
+    if (!availableBoats || availableBoats.length === 0) {
+        selector.innerHTML += '<option value="" disabled>No boats available</option>';
+        return;
+    }
+    
+    availableBoats.forEach(boat => {
+        const option = document.createElement('option');
+        option.value = boat.boatId;
+        option.textContent = boat.boatName || `Boat ${boat.boatId}`;
+        selector.appendChild(option);
+    });
+}
+
+// Populate edit trip modal guide dropdown
+function populateEditTripGuideSelector() {
+    const selector = document.getElementById('editTripGuide');
+    if (!selector) {
+        console.error('Edit trip guide selector element not found');
+        return;
+    }
+    
+    selector.innerHTML = '<option value="">Select a guide...</option>';
+    
+    if (!availableGuides || availableGuides.length === 0) {
+        selector.innerHTML += '<option value="" disabled>No guides available</option>';
+        return;
+    }
+    
+    availableGuides.forEach(guide => {
+        const option = document.createElement('option');
+        option.value = guide.userId;
+        const firstName = guide.firstName || 'Unknown';
+        const lastName = guide.secondName || guide.lastName || '';
+        option.textContent = `${firstName} ${lastName}`.trim();
         selector.appendChild(option);
     });
 }
@@ -443,7 +546,18 @@ function showTab(tabName) {
             loadTrips();
             break;
         case 'assignments':
-            loadAssignments();
+            console.log('Loading assignment tab data...');
+            // Refresh all assignment-related data
+            Promise.all([
+                loadTrips(),
+                loadBoats(), 
+                loadGuides(),
+                loadAssignments()
+            ]).then(() => {
+                console.log('Assignment tab data loaded successfully');
+            }).catch(error => {
+                console.error('Error loading assignment tab data:', error);
+            });
             break;
         case 'capacity':
             loadCapacityData();
@@ -525,6 +639,9 @@ async function addNewTrip() {
 async function updateTrip() {
     try {
         const tripId = document.getElementById('editTripId').value;
+        const boatId = document.getElementById('editTripBoat').value;
+        const guideId = document.getElementById('editTripGuide').value;
+        
         const tripData = {
             name: document.getElementById('editTripName').value,
             date: document.getElementById('editTripDate').value,
@@ -534,8 +651,12 @@ async function updateTrip() {
             capacity: parseInt(document.getElementById('editTripCapacity').value),
             price: parseFloat(document.getElementById('editTripPrice').value),
             location: document.getElementById('editTripLocation').value,
-            description: document.getElementById('editTripDescription').value
+            description: document.getElementById('editTripDescription').value,
+            boatId: boatId ? parseInt(boatId) : null,
+            guideId: guideId ? parseInt(guideId) : null
         };
+
+        console.log('Updating trip with data:', tripData);
 
         const response = await fetch(`/api/staff/trips/${tripId}`, {
             method: 'PUT',
@@ -554,7 +675,12 @@ async function updateTrip() {
         const result = await response.json();
         showNotification(result.message || 'Trip updated successfully!', 'success');
         closeModal('editTripModal');
-        loadTrips(); // Reload trips
+        
+        // Reload data to reflect changes
+        await Promise.all([
+            loadTrips(),
+            loadAssignments()
+        ]);
     } catch (error) {
         console.error('Error updating trip:', error);
         showNotification('Error updating trip: ' + error.message, 'error');
@@ -564,20 +690,29 @@ async function updateTrip() {
 // Assign resources to trip
 async function assignResources() {
     try {
-        const tripId = document.getElementById('assignTripSelect').value;
-        const boatId = document.getElementById('assignBoatSelect').value;
-        const guideId = document.getElementById('assignGuideSelect').value;
+        const tripSelect = document.getElementById('assignTripSelect');
+        const boatSelect = document.getElementById('assignBoatSelect');
+        const guideSelect = document.getElementById('assignGuideSelect');
+        
+        // Check if elements exist
+        if (!tripSelect || !boatSelect || !guideSelect) {
+            showNotification('Assignment form elements not found. Please refresh the page.', 'error');
+            return;
+        }
+
+        const tripId = tripSelect.value;
+        const boatId = boatSelect.value;
+        const guideId = guideSelect.value;
+
+        console.log('Assignment form values:', { tripId, boatId, guideId });
 
         if (!tripId) {
             showNotification('Please select a trip', 'warning');
             return;
         }
 
-        // Validate that at least one resource is being assigned
-        if (!boatId && !guideId) {
-            showNotification('Please select at least a boat or a guide to assign', 'warning');
-            return;
-        }
+        // Allow clearing assignments - no validation needed for empty selections
+        // This allows users to remove boat/guide assignments by selecting empty options
 
         const assignmentData = {
             tripId: parseInt(tripId),
@@ -585,26 +720,49 @@ async function assignResources() {
             guideId: guideId ? parseInt(guideId) : null
         };
 
-        console.log('Assigning resources:', assignmentData); // Debug log
+        console.log('Sending assignment data:', assignmentData);
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showNotification('Authentication token not found. Please login again.', 'error');
+            window.location.href = 'login.html';
+            return;
+        }
 
         const response = await fetch('/api/staff/assign-resources', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
+                'Authorization': 'Bearer ' + token
             },
             body: JSON.stringify(assignmentData)
         });
 
+        console.log('Assignment response status:', response.status);
+
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to assign resources');
+            let errorMessage = 'Failed to assign resources';
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.error || errorMessage;
+            } catch (parseError) {
+                console.error('Error parsing error response:', parseError);
+                errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+            }
+            throw new Error(errorMessage);
         }
 
         const result = await response.json();
+        console.log('Assignment result:', result);
+        
         showNotification(result.message || 'Resources assigned successfully!', 'success');
-        loadTrips();
-        loadAssignments();
+        
+        // Reload data to reflect changes
+        await Promise.all([
+            loadTrips(),
+            loadAssignments()
+        ]);
+        
         clearAssignmentForm();
     } catch (error) {
         console.error('Error assigning resources:', error);
@@ -619,8 +777,82 @@ function clearAssignments() {
     document.getElementById('assignGuideSelect').value = '';
 }
 
+// Clear assignments for the selected trip (remove boat/guide assignments)
+async function clearTripAssignments() {
+    try {
+        const tripSelect = document.getElementById('assignTripSelect');
+        const tripId = tripSelect.value;
+
+        if (!tripId) {
+            showNotification('Please select a trip to clear assignments', 'warning');
+            return;
+        }
+
+        if (!confirm('Are you sure you want to remove all assignments (boat and guide) from this trip?')) {
+            return;
+        }
+
+        const assignmentData = {
+            tripId: parseInt(tripId),
+            boatId: null,
+            guideId: null
+        };
+
+        console.log('Clearing assignments for trip:', assignmentData);
+
+        const response = await fetch('/api/staff/assign-resources', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            body: JSON.stringify(assignmentData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to clear assignments');
+        }
+
+        const result = await response.json();
+        showNotification(result.message || 'Assignments cleared successfully!', 'success');
+        
+        // Reload data to reflect changes
+        await Promise.all([
+            loadTrips(),
+            loadAssignments()
+        ]);
+        
+        clearAssignmentForm();
+    } catch (error) {
+        console.error('Error clearing assignments:', error);
+        showNotification('Error clearing assignments: ' + error.message, 'error');
+    }
+}
+
 function clearAssignmentForm() {
     clearAssignments();
+}
+
+// Refresh assignment data
+async function refreshAssignmentData() {
+    try {
+        showNotification('Refreshing assignment data...', 'info');
+        console.log('Refreshing assignment data...');
+        
+        await Promise.all([
+            loadTrips(),
+            loadBoats(),
+            loadGuides(),
+            loadAssignments()
+        ]);
+        
+        showNotification('Assignment data refreshed successfully!', 'success');
+        console.log('Assignment data refreshed successfully');
+    } catch (error) {
+        console.error('Error refreshing assignment data:', error);
+        showNotification('Error refreshing assignment data: ' + error.message, 'error');
+    }
 }
 
 // Refresh functions
@@ -795,6 +1027,10 @@ function editTrip(tripId) {
         return response.json();
     })
     .then(trip => {
+        // Populate dropdowns first
+        populateEditTripBoatSelector();
+        populateEditTripGuideSelector();
+        
         // Populate edit form
         document.getElementById('editTripId').value = trip.tripId;
         document.getElementById('editTripName').value = trip.name || '';
@@ -806,6 +1042,14 @@ function editTrip(tripId) {
         document.getElementById('editTripPrice').value = trip.price || '';
         document.getElementById('editTripLocation').value = trip.location || '';
         document.getElementById('editTripDescription').value = trip.description || '';
+        
+        // Set boat and guide selections
+        if (trip.boat && trip.boat.boatId) {
+            document.getElementById('editTripBoat').value = trip.boat.boatId;
+        }
+        if (trip.guide && trip.guide.userId) {
+            document.getElementById('editTripGuide').value = trip.guide.userId;
+        }
         
         // Open edit modal
         document.getElementById('editTripModal').style.display = 'block';

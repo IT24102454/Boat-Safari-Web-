@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test IT Support Login</title>
+</head>
+<body>
+    <h1>Test IT Support Login</h1>
+    
+    <div id="loginTest">
+        <h2>Login Test</h2>
+        <button onclick="testLogin()">Test IT Support Login</button>
+        <div id="loginResult"></div>
+    </div>
+
+    <div id="dashboardTest" style="margin-top: 20px;">
+        <h2>Dashboard Access Test</h2>
+        <button onclick="testDashboardAccess()">Test Dashboard Access</button>
+        <div id="dashboardResult"></div>
+    </div>
+
+    <div id="tokenInfo" style="margin-top: 20px;">
+        <h2>Current Token Info</h2>
+        <button onclick="showTokenInfo()">Show Token Info</button>
+        <div id="tokenResult"></div>
+    </div>
+
+    <script>
+        async function testLogin() {
+            const result = document.getElementById('loginResult');
+            result.innerHTML = 'Testing login...';
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'itsupport@gmail.com',
+                        password: 'password123'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userRole', data.role);
+                    
+                    result.innerHTML = `
+                        <div style="color: green;">
+                            <p>✅ Login successful!</p>
+                            <p>Role: ${data.role}</p>
+                            <p>Token stored in localStorage</p>
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = `<div style="color: red;">❌ Login failed: ${response.statusText}</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div style="color: red;">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testDashboardAccess() {
+            const result = document.getElementById('dashboardResult');
+            result.innerHTML = 'Testing dashboard access...';
+            
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('userRole');
+            
+            if (!token) {
+                result.innerHTML = '<div style="color: red;">❌ No token found. Please login first.</div>';
+                return;
+            }
+            
+            if (role !== 'IT_SUPPORT' && role !== 'IT_ASSISTANT') {
+                result.innerHTML = `<div style="color: red;">❌ Access denied. Role: ${role}</div>`;
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/itsupport/dashboard-stats', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `
+                        <div style="color: green;">
+                            <p>✅ Dashboard access successful!</p>
+                            <p>Stats retrieved: ${JSON.stringify(data, null, 2)}</p>
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = `<div style="color: red;">❌ Dashboard access failed: ${response.statusText}</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div style="color: red;">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        function showTokenInfo() {
+            const result = document.getElementById('tokenResult');
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('userRole');
+            
+            result.innerHTML = `
+                <div>
+                    <p><strong>Token:</strong> ${token ? token.substring(0, 50) + '...' : 'Not found'}</p>
+                    <p><strong>Role:</strong> ${role || 'Not found'}</p>
+                    <p><strong>localStorage keys:</strong> ${Object.keys(localStorage).join(', ')}</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
