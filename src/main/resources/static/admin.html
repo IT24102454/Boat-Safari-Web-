@@ -17,10 +17,30 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #1fbfd6 0%, #2a5298 100%);
             min-height: 100vh;
             color: #333;
+            overflow-x: hidden;
         }
+
+        /* Slide-up Animation Styles */
+        .slide-up {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .slide-up.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-up.delay-1 { transition-delay: 0.1s; }
+        .slide-up.delay-2 { transition-delay: 0.2s; }
+        .slide-up.delay-3 { transition-delay: 0.3s; }
+        .slide-up.delay-4 { transition-delay: 0.4s; }
+        .slide-up.delay-5 { transition-delay: 0.5s; }
+        .slide-up.delay-6 { transition-delay: 0.6s; }
 
         /* Navigation */
         .navbar {
@@ -1018,7 +1038,7 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Dashboard Header -->
-        <div class="dashboard-header">
+        <div class="dashboard-header slide-up">
             <h1 class="dashboard-title">
                 <i class="fas fa-tachometer-alt"></i>
                 Admin Dashboard
@@ -1027,7 +1047,7 @@
         </div>
 
         <!-- Quick Stats -->
-        <div class="quick-stats">
+        <div class="quick-stats slide-up delay-1">
             <div class="stat-card users">
                 <div class="stat-icon">
                     <i class="fas fa-users"></i>
@@ -1073,7 +1093,7 @@
         </div>
 
         <!-- Tab Navigation -->
-        <div class="tab-navigation">
+        <div class="tab-navigation slide-up delay-2">
             <div class="tab-buttons">
                 <button class="tab-btn active" onclick="showTab('analytics')">
                     <i class="fas fa-chart-area"></i>
@@ -1107,7 +1127,7 @@
         </div>
 
         <!-- Tab Content -->
-        <div class="tab-content">
+        <div class="tab-content slide-up delay-3">
             <!-- Analytics & Charts Tab -->
             <div id="analytics" class="tab-pane active">
                 <div class="section-header">
@@ -2120,5 +2140,29 @@
     <!-- JavaScript -->
     <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/admin-dashboard.js"></script>
+    
+    <!-- Slide-up Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Trigger slide-up animations
+            const animatedElements = document.querySelectorAll('.slide-up');
+            
+            function animateElement(element) {
+                if (element.getBoundingClientRect().top < window.innerHeight) {
+                    element.classList.add('animate');
+                }
+            }
+            
+            // Initial animation trigger
+            setTimeout(() => {
+                animatedElements.forEach(animateElement);
+            }, 100);
+            
+            // Scroll-triggered animations
+            window.addEventListener('scroll', () => {
+                animatedElements.forEach(animateElement);
+            });
+        });
+    </script>
 </body>
 </html>

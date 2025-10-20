@@ -675,11 +675,73 @@
         justify-content: center;
       }
     }
+
+    /* Slide-up entrance animations */
+    @keyframes slideUpFromBottom {
+        from {
+            transform: translateY(100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUpFromBottomFar {
+        from {
+            transform: translateY(150px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Initial hidden state */
+    .slide-in-element {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+
+    /* Animation classes */
+    .animate-slide-up {
+        animation: slideUpFromBottom 0.8s ease-out forwards;
+    }
+
+    .animate-slide-up-delay-1 {
+        animation: slideUpFromBottom 0.8s ease-out 0.2s forwards;
+    }
+
+    .animate-slide-up-delay-2 {
+        animation: slideUpFromBottom 0.8s ease-out 0.4s forwards;
+    }
+
+    .animate-slide-up-delay-3 {
+        animation: slideUpFromBottom 0.8s ease-out 0.6s forwards;
+    }
+
+    .animate-slide-up-delay-4 {
+        animation: slideUpFromBottom 0.8s ease-out 0.8s forwards;
+    }
+
+    .animate-slide-up-far {
+        animation: slideUpFromBottomFar 1s ease-out forwards;
+    }
+
+    .animate-slide-up-far-delay-1 {
+        animation: slideUpFromBottomFar 1s ease-out 0.3s forwards;
+    }
+
+    .animate-slide-up-far-delay-2 {
+        animation: slideUpFromBottomFar 1s ease-out 0.6s forwards;
+    }
   </style>
 </head>
 <body>
 <!-- Top Bar -->
-<div class="top-bar">
+<div class="top-bar slide-in-element">
   <div class="top-bar-container">
     <div class="contact-info">
       <a href="tel:00123456789"><i class="fas fa-phone"></i> Have Any Questions?</a>
@@ -695,7 +757,7 @@
 </div>
 
 <!-- Navigation -->
-<header class="nav">
+<header class="nav slide-in-element">
   <div class="nav-inner">
     <a href="/index.html" class="brand">
       <div class="logo"><i class="fas fa-ship"></i></div>
@@ -713,16 +775,16 @@
 </header>
 
 <!-- Hero -->
-<section class="hero">
+<section class="hero slide-in-element">
   <div class="hero-inner">
-    <h1>Customer Support</h1>
-    <div class="muted">Our dedicated team is here to assist you with any questions or issues you may have. Reach out to us for prompt and helpful assistance.</div>
+    <h1 class="slide-in-element">Customer Support</h1>
+    <div class="muted slide-in-element">Our dedicated team is here to assist you with any questions or issues you may have. Reach out to us for prompt and helpful assistance.</div>
   </div>
 </section>
 
-<main class="wrap">
+<main class="wrap slide-in-element">
   <!-- Contact Support -->
-  <div class="panel">
+  <div class="panel slide-in-element">
     <div class="panel-header">
       <h2 class="panel-title">Contact Support</h2>
     </div>
@@ -798,7 +860,7 @@
 </main>
 
 <!-- Footer -->
-<footer>
+<footer class="slide-in-element">
   <div class="foot-inner">
     <div class="footer-logo">
       <span><i class="fas fa-ship"></i></span> Boat Safari
@@ -944,6 +1006,36 @@
   // Initialize
   loadStaff();
   // Don't auto load bookings; require user to click search
+
+  // Slide-up animation on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    const slideElements = document.querySelectorAll('.slide-in-element');
+    
+    // Trigger animations with staggered delays
+    slideElements.forEach((element, index) => {
+        // Different delays for different sections
+        if (element.classList.contains('top-bar')) {
+            element.classList.add('animate-slide-up');
+        } else if (element.classList.contains('nav')) {
+            setTimeout(() => element.classList.add('animate-slide-up'), 200);
+        } else if (element.classList.contains('hero')) {
+            setTimeout(() => element.classList.add('animate-slide-up-far'), 400);
+        } else if (element.querySelector('h1')) {
+            setTimeout(() => element.classList.add('animate-slide-up-delay-1'), 600);
+        } else if (element.classList.contains('muted')) {
+            setTimeout(() => element.classList.add('animate-slide-up-delay-2'), 700);
+        } else if (element.classList.contains('wrap')) {
+            setTimeout(() => element.classList.add('animate-slide-up-far-delay-1'), 900);
+        } else if (element.classList.contains('panel')) {
+            setTimeout(() => element.classList.add('animate-slide-up-delay-3'), 1000);
+        } else if (element.tagName === 'FOOTER') {
+            setTimeout(() => element.classList.add('animate-slide-up-far-delay-2'), 1200);
+        } else {
+            // Default animation for other elements
+            setTimeout(() => element.classList.add('animate-slide-up'), index * 100);
+        }
+    });
+  });
 </script>
 </body>
 </html>

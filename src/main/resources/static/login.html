@@ -318,11 +318,73 @@
                 justify-content: center;
             }
         }
+
+        /* Slide-up entrance animations */
+        @keyframes slideUpFromBottom {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUpFromBottomFar {
+            from {
+                transform: translateY(150px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Initial hidden state */
+        .slide-in-element {
+            opacity: 0;
+            transform: translateY(100px);
+        }
+
+        /* Animation classes */
+        .animate-slide-up {
+            animation: slideUpFromBottom 0.8s ease-out forwards;
+        }
+
+        .animate-slide-up-delay-1 {
+            animation: slideUpFromBottom 0.8s ease-out 0.2s forwards;
+        }
+
+        .animate-slide-up-delay-2 {
+            animation: slideUpFromBottom 0.8s ease-out 0.4s forwards;
+        }
+
+        .animate-slide-up-delay-3 {
+            animation: slideUpFromBottom 0.8s ease-out 0.6s forwards;
+        }
+
+        .animate-slide-up-delay-4 {
+            animation: slideUpFromBottom 0.8s ease-out 0.8s forwards;
+        }
+
+        .animate-slide-up-far {
+            animation: slideUpFromBottomFar 1s ease-out forwards;
+        }
+
+        .animate-slide-up-far-delay-1 {
+            animation: slideUpFromBottomFar 1s ease-out 0.3s forwards;
+        }
+
+        .animate-slide-up-far-delay-2 {
+            animation: slideUpFromBottomFar 1s ease-out 0.6s forwards;
+        }
     </style>
 </head>
 <body>
 <!-- Top Bar -->
-<div class="top-bar">
+<div class="top-bar slide-in-element">
     <div class="top-bar-container">
         <div class="contact-info">
             <a href="tel:00123456789"><i class="fas fa-phone"></i> Have Any Questions?</a>
@@ -338,7 +400,7 @@
 </div>
 
 <!-- Navigation -->
-<header class="nav">
+<header class="nav slide-in-element">
     <div class="nav-inner">
         <a href="/index.html" class="brand">
             <div class="logo"><i class="fas fa-ship"></i></div>
@@ -355,26 +417,26 @@
 </header>
 
 <!-- Login Form -->
-<main class="wrap">
-    <div class="card">
-        <h2>Welcome Back</h2>
-        <div class="muted">Sign in to book and manage your trips</div>
+<main class="wrap slide-in-element">
+    <div class="card slide-in-element">
+        <h2 class="slide-in-element">Welcome Back</h2>
+        <div class="muted slide-in-element">Sign in to book and manage your trips</div>
 
-        <div class="form-group">
+        <div class="form-group slide-in-element">
             <i class="far fa-envelope"></i>
             <input id="email" type="email" placeholder="Email Address" />
         </div>
 
-        <div class="form-group">
+        <div class="form-group slide-in-element">
             <i class="fas fa-lock"></i>
             <input id="password" type="password" placeholder="Password" />
         </div>
 
-        <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</button>
+        <button id="loginBtn" class="slide-in-element"><i class="fas fa-sign-in-alt"></i> Login</button>
 
         <div id="error" class="error"></div>
 
-        <div class="links">
+        <div class="links slide-in-element">
             <a href="/register.html">Create an account</a>
             <a href="/index.html"><i class="fas fa-home"></i> Back to Home</a>
         </div>
@@ -382,7 +444,7 @@
 </main>
 
 <!-- Footer -->
-<footer>
+<footer class="slide-in-element">
     <div class="foot-inner">
         <div>© <span id="year"></span> Boat Safari. All Rights Reserved.</div>
         <div class="footer-links">
@@ -486,6 +548,40 @@
 
     // Set year in footer
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Slide-up animation on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const slideElements = document.querySelectorAll('.slide-in-element');
+        
+        // Trigger animations with staggered delays
+        slideElements.forEach((element, index) => {
+            // Different delays for different sections
+            if (element.classList.contains('top-bar')) {
+                element.classList.add('animate-slide-up');
+            } else if (element.classList.contains('nav')) {
+                setTimeout(() => element.classList.add('animate-slide-up'), 200);
+            } else if (element.classList.contains('wrap')) {
+                setTimeout(() => element.classList.add('animate-slide-up-far'), 400);
+            } else if (element.classList.contains('card')) {
+                setTimeout(() => element.classList.add('animate-slide-up-far-delay-1'), 600);
+            } else if (element.querySelector('h2')) {
+                setTimeout(() => element.classList.add('animate-slide-up-delay-1'), 700);
+            } else if (element.classList.contains('muted')) {
+                setTimeout(() => element.classList.add('animate-slide-up-delay-2'), 800);
+            } else if (element.classList.contains('form-group')) {
+                setTimeout(() => element.classList.add('animate-slide-up-delay-3'), 900 + (index % 2) * 100);
+            } else if (element.id === 'loginBtn') {
+                setTimeout(() => element.classList.add('animate-slide-up-delay-4'), 1100);
+            } else if (element.classList.contains('links')) {
+                setTimeout(() => element.classList.add('animate-slide-up-delay-4'), 1200);
+            } else if (element.tagName === 'FOOTER') {
+                setTimeout(() => element.classList.add('animate-slide-up-far-delay-2'), 1400);
+            } else {
+                // Default animation for other elements
+                setTimeout(() => element.classList.add('animate-slide-up'), index * 100);
+            }
+        });
+    });
 </script>
 <script src="assets/js/auth.js"></script>
 <script src="assets/js/user-profile.js"></script>

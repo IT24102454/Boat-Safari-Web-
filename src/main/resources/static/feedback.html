@@ -523,11 +523,73 @@
                 gap: 15px;
             }
         }
+
+        /* Slide-up entrance animations */
+        @keyframes slideUpFromBottom {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUpFromBottomFar {
+            from {
+                transform: translateY(150px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Initial hidden state */
+        .slide-in-element {
+            opacity: 0;
+            transform: translateY(100px);
+        }
+
+        /* Animation classes */
+        .animate-slide-up {
+            animation: slideUpFromBottom 0.8s ease-out forwards;
+        }
+
+        .animate-slide-up-delay-1 {
+            animation: slideUpFromBottom 0.8s ease-out 0.2s forwards;
+        }
+
+        .animate-slide-up-delay-2 {
+            animation: slideUpFromBottom 0.8s ease-out 0.4s forwards;
+        }
+
+        .animate-slide-up-delay-3 {
+            animation: slideUpFromBottom 0.8s ease-out 0.6s forwards;
+        }
+
+        .animate-slide-up-delay-4 {
+            animation: slideUpFromBottom 0.8s ease-out 0.8s forwards;
+        }
+
+        .animate-slide-up-far {
+            animation: slideUpFromBottomFar 1s ease-out forwards;
+        }
+
+        .animate-slide-up-far-delay-1 {
+            animation: slideUpFromBottomFar 1s ease-out 0.3s forwards;
+        }
+
+        .animate-slide-up-far-delay-2 {
+            animation: slideUpFromBottomFar 1s ease-out 0.6s forwards;
+        }
     </style>
 </head>
 <body>
     <!-- Top Bar -->
-    <header class="top-bar">
+    <header class="top-bar slide-in-element">
         <div class="top-bar-container">
             <div class="contact-info">
                 <a href="tel:+1234567890"><i class="fas fa-phone"></i> +1 (234) 567-890</a>
@@ -543,7 +605,7 @@
     </header>
 
     <!-- Navigation -->
-    <nav class="nav">
+    <nav class="nav slide-in-element">
         <div class="nav-inner">
             <a href="index.html" class="brand">
                 <i class="fas fa-anchor logo"></i>
@@ -563,29 +625,29 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero slide-in-element">
         <div class="hero-inner">
-            <h1>Share Your Experience</h1>
-            <p class="muted">Help us improve our service by sharing your feedback and rating your experience</p>
+            <h1 class="slide-in-element">Share Your Experience</h1>
+            <p class="muted slide-in-element">Help us improve our service by sharing your feedback and rating your experience</p>
         </div>
     </section>
 
     <!-- Main Content -->
-    <div class="container">
-        <div class="card">
+    <div class="container slide-in-element">
+        <div class="card slide-in-element">
             <div class="form-section">
-                <h2>Your Feedback Matters</h2>
-                <p class="muted">Tell us about your experience so we can continue to provide excellent service</p>
+                <h2 class="slide-in-element">Your Feedback Matters</h2>
+                <p class="muted slide-in-element">Tell us about your experience so we can continue to provide excellent service</p>
                 
                 <div id="alertContainer"></div>
                 
-                <form id="feedbackForm">
-                    <div class="form-group">
+                <form id="feedbackForm" class="slide-in-element">
+                    <div class="form-group slide-in-element">
                         <label for="title"><i class="fas fa-heading"></i> Feedback Title</label>
                         <input type="text" id="title" name="title" required placeholder="Brief title for your feedback">
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group slide-in-element">
                         <label for="category"><i class="fas fa-tags"></i> Category</label>
                         <select id="category" name="category" required>
                             <option value="">Select a category</option>
@@ -653,7 +715,7 @@
     </div>
 
     <!-- Footer -->
-    <footer>
+    <footer class="slide-in-element">
         <div class="footer-content">
             <div class="footer-links">
                 <a href="index.html">Home</a>
@@ -831,6 +893,44 @@
             return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
         }
         function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text || ''; return div.innerHTML; }
+
+        // Slide-up animation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const slideElements = document.querySelectorAll('.slide-in-element');
+            
+            // Trigger animations with staggered delays
+            slideElements.forEach((element, index) => {
+                // Different delays for different sections
+                if (element.classList.contains('top-bar')) {
+                    element.classList.add('animate-slide-up');
+                } else if (element.classList.contains('nav')) {
+                    setTimeout(() => element.classList.add('animate-slide-up'), 200);
+                } else if (element.classList.contains('hero')) {
+                    setTimeout(() => element.classList.add('animate-slide-up-far'), 400);
+                } else if (element.querySelector('h1')) {
+                    setTimeout(() => element.classList.add('animate-slide-up-delay-1'), 600);
+                } else if (element.classList.contains('muted') && element.querySelector) {
+                    setTimeout(() => element.classList.add('animate-slide-up-delay-2'), 700);
+                } else if (element.classList.contains('container')) {
+                    setTimeout(() => element.classList.add('animate-slide-up-far-delay-1'), 800);
+                } else if (element.classList.contains('card')) {
+                    setTimeout(() => element.classList.add('animate-slide-up-delay-1'), 900);
+                } else if (element.querySelector('h2')) {
+                    setTimeout(() => element.classList.add('animate-slide-up-delay-2'), 1000);
+                } else if (element.classList.contains('muted')) {
+                    setTimeout(() => element.classList.add('animate-slide-up-delay-3'), 1100);
+                } else if (element.id === 'feedbackForm') {
+                    setTimeout(() => element.classList.add('animate-slide-up-delay-4'), 1200);
+                } else if (element.classList.contains('form-group')) {
+                    setTimeout(() => element.classList.add('animate-slide-up-delay-4'), 1300 + (index % 4) * 100);
+                } else if (element.tagName === 'FOOTER') {
+                    setTimeout(() => element.classList.add('animate-slide-up-far-delay-2'), 1600);
+                } else {
+                    // Default animation for other elements
+                    setTimeout(() => element.classList.add('animate-slide-up'), index * 100);
+                }
+            });
+        });
     </script>
 </body>
 </html>
