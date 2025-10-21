@@ -44,21 +44,25 @@ public class JwtUtils {
     }
 
     private String getUserRole(User user) {
-        // Convert class name to a standardized role name
-        String className = user.getClass().getSimpleName().toUpperCase();
+        // Use the actual role from the database (discriminator value)
+        String role = user.getRole();
+        if (role != null) {
+            return role;
+        }
 
-        // Map class names to standard role names used in SecurityConfig
+        // Fallback to class name mapping if role is null (should match discriminator values)
+        String className = user.getClass().getSimpleName().toUpperCase();
         switch (className) {
             case "ADMIN":
                 return "ADMIN";
             case "STAFFMEMBER":
-                return "STAFFMEMBER";
+                return "STAFF";
             case "SAFARIGUIDE":
-                return "SAFARIGUIDE";
+                return "SAFARI_GUIDE";
             case "ITSUPPORT":
-                return "ITSUPPORT";
+                return "IT_SUPPORT";
             case "ITASSISTANT":
-                return "ITASSISTANT";
+                return "IT_ASSISTANT";
             case "CUSTOMER":
                 return "CUSTOMER";
             default:

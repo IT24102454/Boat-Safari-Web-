@@ -108,6 +108,9 @@ function showTab(tabName) {
         case 'staff-management':
             loadStaffMembers();
             break;
+        case 'payment-history':
+            loadPaymentHistory();
+            break;
         case 'reports':
             loadRecentExports();
             break;
@@ -2482,4 +2485,451 @@ function setupBoatFormHandlers() {
             showNotification('Failed to update boat: ' + error.message, 'error');
         }
     });
+}
+
+// ================= PAYMENT HISTORY FUNCTIONALITY =================
+
+// Global variables for payment history
+let currentPaymentHistory = [];
+
+// Load payment history data
+async function loadPaymentHistory() {
+    console.log('Loading payment history...');
+    try {
+        const token = localStorage.getItem('token');
+        console.log('Token available:', !!token);
+        
+        const response = await fetch('/api/admin/payments/history', {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        console.log('API Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch payment history: ${response.status}`);
+        }
+
+        const paymentHistory = await response.json();
+        console.log('Payment history loaded from API:', paymentHistory);
+        currentPaymentHistory = paymentHistory;
+        displayPaymentHistory(paymentHistory);
+    } catch (error) {
+        console.error('Error loading payment history:', error);
+        showNotification('Failed to load payment history, using mock data', 'warning');
+        
+        // Show mock data for development
+        const mockPaymentHistory = [
+            {
+                paymentId: 1,
+                bookingId: 1,
+                customerName: 'Alice Johnson',
+                customerEmail: 'alice@example.com',
+                customerContact: '+1234567890',
+                paymentMethod: 'CREDIT_CARD',
+                status: 'PAID',
+                amount: 450.00,
+                paymentDate: '2025-10-15T10:30:00',
+                tripName: 'Coastal Safari',
+                tripDate: '2025-10-15',
+                passengers: 3
+            },
+            {
+                paymentId: 2,
+                bookingId: 2,
+                customerName: 'Bob Wilson',
+                customerEmail: 'bob@example.com',
+                customerContact: '+1987654321',
+                paymentMethod: 'PAYPAL',
+                status: 'PENDING',
+                amount: 240.00,
+                paymentDate: '2025-10-16T14:15:00',
+                tripName: 'Dolphin Watching',
+                tripDate: '2025-10-16',
+                passengers: 2
+            },
+            {
+                paymentId: 3,
+                bookingId: 3,
+                customerName: 'Carol Martinez',
+                customerEmail: 'carol@example.com',
+                customerContact: '+1555666777',
+                paymentMethod: 'DEBIT_CARD',
+                status: 'PAID',
+                amount: 600.00,
+                paymentDate: '2025-10-17T09:45:00',
+                tripName: 'Deep Sea Adventure',
+                tripDate: '2025-10-17',
+                passengers: 4
+            }
+        ];
+        console.log('Using mock payment history:', mockPaymentHistory);
+        currentPaymentHistory = mockPaymentHistory;
+        displayPaymentHistory(mockPaymentHistory);
+    }
+}
+
+// Display payment history in table
+function displayPaymentHistory(payments) {
+    const tableBody = document.getElementById('paymentHistoryTableBody');
+    if (!tableBody) return;
+
+    if (payments.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="9" class="loading">No payment records found</td></tr>';
+        return;
+    }
+
+    tableBody.innerHTML = payments.map(payment => `
+        <tr>
+            <td>#${payment.paymentId}</td>
+            <td>#${payment.bookingId}</td>
+            <td>
+                <strong>${payment.customerName}</strong><br>
+                <small>${payment.customerEmail}</small>
+            </td>
+            <td>
+                <strong>${payment.tripName}</strong><br>
+                <small>${formatDate(payment.tripDate)} • ${payment.passengers} passengers</small>
+            </td>
+            <td>$${payment.amount.toFixed(2)}</td>
+            <td>
+                <span class="payment-method-badge ${payment.paymentMethod.toLowerCase()}">
+                    ${formatPaymentMethod(payment.paymentMethod)}
+                </span>
+            </td>
+            <td>
+                <span class="status-badge status-${payment.status.toLowerCase()}">
+                    ${payment.status}
+                </span>
+            </td>
+            <td>${formatDateTime(payment.paymentDate)}</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-small btn-primary" onclick="viewPaymentDetails(${payment.paymentId})" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn-small btn-warning" onclick="downloadPaymentReceipt(${payment.paymentId})" title="Download Receipt">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    ${(payment.status === 'SUCCESS' || payment.status === 'PAID') ? `
+                        <button class="btn-small btn-danger" onclick="processRefund(${payment.paymentId})" title="Process Refund">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                    ` : ''}
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Apply payment filters
+async function applyPaymentFilters() {
+    const status = document.getElementById('paymentStatusFilter').value;
+    const method = document.getElementById('paymentMethodFilter').value;
+    const customerName = document.getElementById('customerNameFilter').value.trim();
+    const customerEmail = document.getElementById('customerEmailFilter').value.trim();
+    const dateFrom = document.getElementById('dateFromFilter').value;
+    const dateTo = document.getElementById('dateToFilter').value;
+
+    try {
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (status) params.append('status', status);
+        if (method) params.append('paymentMethod', method);
+        if (customerName) params.append('customerName', customerName);
+        if (customerEmail) params.append('email', customerEmail);
+        if (dateFrom) params.append('dateFrom', dateFrom);
+        if (dateTo) params.append('dateTo', dateTo);
+
+        const response = await fetch(`/api/admin/payments/search?${params.toString()}`, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+
+        if (response.ok) {
+            const filteredPayments = await response.json();
+            displayPaymentHistory(filteredPayments);
+            showNotification(`Found ${filteredPayments.length} payment records`, 'success');
+        } else {
+            // Fallback to client-side filtering
+            filterPaymentsClientSide();
+        }
+    } catch (error) {
+        console.error('Error applying payment filters:', error);
+        // Fallback to client-side filtering
+        filterPaymentsClientSide();
+    }
+}
+
+// Client-side payment filtering
+function filterPaymentsClientSide() {
+    const status = document.getElementById('paymentStatusFilter').value;
+    const method = document.getElementById('paymentMethodFilter').value;
+    const customerName = document.getElementById('customerNameFilter').value.trim().toLowerCase();
+    const customerEmail = document.getElementById('customerEmailFilter').value.trim().toLowerCase();
+    const dateFrom = document.getElementById('dateFromFilter').value;
+    const dateTo = document.getElementById('dateToFilter').value;
+
+    let filteredPayments = currentPaymentHistory.filter(payment => {
+        // Status filter
+        if (status && payment.status !== status) return false;
+        
+        // Payment method filter
+        if (method && payment.paymentMethod !== method) return false;
+        
+        // Customer name filter
+        if (customerName && !payment.customerName.toLowerCase().includes(customerName)) return false;
+        
+        // Customer email filter
+        if (customerEmail && !payment.customerEmail.toLowerCase().includes(customerEmail)) return false;
+        
+        // Date range filter
+        if (dateFrom || dateTo) {
+            const paymentDate = new Date(payment.paymentDate);
+            if (dateFrom && paymentDate < new Date(dateFrom)) return false;
+            if (dateTo && paymentDate > new Date(dateTo + 'T23:59:59')) return false;
+        }
+        
+        return true;
+    });
+
+    displayPaymentHistory(filteredPayments);
+    showNotification(`Found ${filteredPayments.length} payment records`, 'success');
+}
+
+// Clear payment filters
+function clearPaymentFilters() {
+    document.getElementById('paymentStatusFilter').value = '';
+    document.getElementById('paymentMethodFilter').value = '';
+    document.getElementById('customerNameFilter').value = '';
+    document.getElementById('customerEmailFilter').value = '';
+    document.getElementById('dateFromFilter').value = '';
+    document.getElementById('dateToFilter').value = '';
+    
+    displayPaymentHistory(currentPaymentHistory);
+    showNotification('Filters cleared', 'success');
+}
+
+// Refresh payment history
+function refreshPaymentHistory() {
+    loadPaymentHistory();
+    showNotification('Payment history refreshed', 'success');
+}
+
+// Export payment history
+function exportPaymentHistory() {
+    const format = prompt('Export format (csv/excel/json):', 'csv');
+    if (format && ['csv', 'excel', 'json'].includes(format.toLowerCase())) {
+        exportData('payments', format.toLowerCase());
+    }
+}
+
+// View payment details modal
+function viewPaymentDetails(paymentId) {
+    const payment = currentPaymentHistory.find(p => p.paymentId === paymentId);
+    if (!payment) {
+        showNotification('Payment not found', 'error');
+        return;
+    }
+
+    const modalHTML = `
+        <div id="paymentDetailsModal" class="modal payment-details-modal" style="display: block;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        <i class="fas fa-receipt"></i>
+                        Payment Details #${payment.paymentId}
+                    </h3>
+                    <button class="close" onclick="closePaymentDetailsModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="payment-info-grid">
+                        <div class="payment-info-item">
+                            <strong>Payment ID</strong>
+                            #${payment.paymentId}
+                        </div>
+                        <div class="payment-info-item">
+                            <strong>Booking ID</strong>
+                            #${payment.bookingId}
+                        </div>
+                        <div class="payment-info-item">
+                            <strong>Amount</strong>
+                            $${payment.amount.toFixed(2)}
+                        </div>
+                        <div class="payment-info-item">
+                            <strong>Status</strong>
+                            <span class="status-badge status-${payment.status.toLowerCase()}">${payment.status}</span>
+                        </div>
+                        <div class="payment-info-item">
+                            <strong>Payment Method</strong>
+                            ${formatPaymentMethod(payment.paymentMethod)}
+                        </div>
+                        <div class="payment-info-item">
+                            <strong>Payment Date</strong>
+                            ${formatDateTime(payment.paymentDate)}
+                        </div>
+                        <div class="payment-info-item">
+                            <strong>Customer Name</strong>
+                            ${payment.customerName}
+                        </div>
+                        <div class="payment-info-item">
+                            <strong>Customer Email</strong>
+                            ${payment.customerEmail}
+                        </div>
+                        <div class="payment-info-item">
+                            <strong>Customer Contact</strong>
+                            ${payment.customerContact || 'N/A'}
+                        </div>
+                        <div class="payment-info-item">
+                            <strong>Trip</strong>
+                            ${payment.tripName}
+                        </div>
+                        <div class="payment-info-item">
+                            <strong>Trip Date</strong>
+                            ${formatDate(payment.tripDate)}
+                        </div>
+                        <div class="payment-info-item">
+                            <strong>Passengers</strong>
+                            ${payment.passengers}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal btn-primary" onclick="downloadPaymentReceipt(${payment.paymentId})">
+                        <i class="fas fa-download"></i> Download Receipt
+                    </button>
+                    ${(payment.status === 'SUCCESS' || payment.status === 'PAID') ? `
+                        <button type="button" class="btn-modal btn-danger" onclick="processRefund(${payment.paymentId})">
+                            <i class="fas fa-undo"></i> Process Refund
+                        </button>
+                    ` : ''}
+                    <button type="button" class="btn-modal btn-cancel" onclick="closePaymentDetailsModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+// Close payment details modal
+function closePaymentDetailsModal() {
+    const modal = document.getElementById('paymentDetailsModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Download payment receipt
+function downloadPaymentReceipt(paymentId) {
+    const payment = currentPaymentHistory.find(p => p.paymentId === paymentId);
+    if (!payment) {
+        showNotification('Payment not found', 'error');
+        return;
+    }
+
+    // Generate PDF receipt
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Header
+    doc.setFontSize(20);
+    doc.text('PAYMENT RECEIPT', 20, 20);
+    
+    // Receipt details
+    doc.setFontSize(12);
+    doc.text(`Receipt #: ${payment.paymentId}`, 20, 40);
+    doc.text(`Date: ${formatDateTime(payment.paymentDate)}`, 20, 50);
+    doc.text(`Status: ${payment.status}`, 20, 60);
+    
+    // Customer details
+    doc.text('CUSTOMER DETAILS', 20, 80);
+    doc.text(`Name: ${payment.customerName}`, 20, 90);
+    doc.text(`Email: ${payment.customerEmail}`, 20, 100);
+    doc.text(`Contact: ${payment.customerContact || 'N/A'}`, 20, 110);
+    
+    // Trip details
+    doc.text('TRIP DETAILS', 20, 130);
+    doc.text(`Trip: ${payment.tripName}`, 20, 140);
+    doc.text(`Date: ${formatDate(payment.tripDate)}`, 20, 150);
+    doc.text(`Passengers: ${payment.passengers}`, 20, 160);
+    
+    // Payment details
+    doc.text('PAYMENT DETAILS', 20, 180);
+    doc.text(`Method: ${formatPaymentMethod(payment.paymentMethod)}`, 20, 190);
+    doc.text(`Amount: $${payment.amount.toFixed(2)}`, 20, 200);
+    
+    // Save the PDF
+    doc.save(`receipt_${payment.paymentId}.pdf`);
+    showNotification('Receipt downloaded successfully', 'success');
+}
+
+// Process refund
+async function processRefund(paymentId) {
+    const payment = currentPaymentHistory.find(p => p.paymentId === paymentId);
+    if (!payment) {
+        showNotification('Payment not found', 'error');
+        return;
+    }
+
+    if (payment.status !== 'SUCCESS' && payment.status !== 'PAID') {
+        showNotification('Only successful payments can be refunded', 'error');
+        return;
+    }
+
+    const refundAmount = prompt(`Enter refund amount (max: $${payment.amount.toFixed(2)}):`, payment.amount.toFixed(2));
+    if (!refundAmount || isNaN(refundAmount) || parseFloat(refundAmount) <= 0) {
+        return;
+    }
+
+    if (parseFloat(refundAmount) > payment.amount) {
+        showNotification('Refund amount cannot exceed payment amount', 'error');
+        return;
+    }
+
+    if (confirm(`Are you sure you want to process a refund of $${parseFloat(refundAmount).toFixed(2)} for payment #${paymentId}?`)) {
+        try {
+            const response = await fetch(`/api/admin/payments/${paymentId}/refund`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                body: JSON.stringify({ amount: parseFloat(refundAmount) })
+            });
+
+            if (response.ok) {
+                showNotification('Refund processed successfully', 'success');
+                loadPaymentHistory(); // Refresh the payment history
+                closePaymentDetailsModal();
+            } else {
+                throw new Error('Failed to process refund');
+            }
+        } catch (error) {
+            console.error('Error processing refund:', error);
+            showNotification('Failed to process refund: ' + error.message, 'error');
+        }
+    }
+}
+
+// Helper functions for payment display
+function formatPaymentMethod(method) {
+    const methods = {
+        'CREDIT_CARD': 'Credit Card',
+        'DEBIT_CARD': 'Debit Card',
+        'PAYPAL': 'PayPal',
+        'BANK_TRANSFER': 'Bank Transfer',
+        'CASH': 'Cash'
+    };
+    return methods[method] || method;
+}
+
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString();
+}
+
+function formatDateTime(dateTimeString) {
+    return new Date(dateTimeString).toLocaleString();
 }

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { margin: 10px 0; padding: 10px 20px; }
+        .result { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+        .error { background: #ffe6e6; color: red; }
+        .success { background: #e6ffe6; color: green; }
+    </style>
+</head>
+<body>
+    <h1>Payment API Test</h1>
+    
+    <div>
+        <button onclick="startServer()">Start Server</button>
+        <button onclick="createSampleData()">Create Sample Payment Data</button>
+        <button onclick="checkPaymentCount()">Check Payment Count</button>
+        <button onclick="testPaymentAPI()">Test Payment API</button>
+        <button onclick="loadPaymentHistory()">Load Payment History</button>
+    </div>
+    
+    <div id="result"></div>
+
+    <script>
+        const baseURL = 'http://localhost:9091';
+        
+        function showResult(message, isError = false) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="result ${isError ? 'error' : 'success'}">${message}</div>`;
+        }
+        
+        function startServer() {
+            showResult('Starting server... Please wait for Spring Boot to start (usually takes 10-15 seconds)');
+        }
+        
+        async function createSampleData() {
+            try {
+                showResult('Creating sample payment data...');
+                const response = await fetch(`${baseURL}/api/setup/sample-payments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult(`✅ Sample data created successfully! Count: ${data.count}`);
+                } else {
+                    const error = await response.text();
+                    showResult(`❌ Failed to create sample data: ${error}`, true);
+                }
+            } catch (error) {
+                showResult(`❌ Network error: ${error.message}. Make sure the server is running.`, true);
+            }
+        }
+        
+        async function checkPaymentCount() {
+            try {
+                showResult('Checking payment count...');
+                const response = await fetch(`${baseURL}/api/setup/payment-count`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult(`✅ Current payment count: ${data.count}`);
+                } else {
+                    const error = await response.text();
+                    showResult(`❌ Failed to get payment count: ${error}`, true);
+                }
+            } catch (error) {
+                showResult(`❌ Network error: ${error.message}. Make sure the server is running.`, true);
+            }
+        }
+        
+        async function testPaymentAPI() {
+            try {
+                showResult('Testing payment API endpoints...');
+                
+                // Test payment history
+                const historyResponse = await fetch(`${baseURL}/api/admin/payments/history`);
+                if (historyResponse.ok) {
+                    const historyData = await historyResponse.json();
+                    showResult(`✅ Payment history API working! Found ${historyData.length} payments`);
+                } else {
+                    showResult(`❌ Payment history API failed: ${historyResponse.status}`, true);
+                }
+                
+                // Test payment stats
+                const statsResponse = await fetch(`${baseURL}/api/admin/payments/stats`);
+                if (statsResponse.ok) {
+                    const statsData = await statsResponse.json();
+                    showResult(`✅ Payment stats API working! Total revenue: $${statsData.totalRevenue}`);
+                } else {
+                    showResult(`❌ Payment stats API failed: ${statsResponse.status}`, true);
+                }
+            } catch (error) {
+                showResult(`❌ Network error: ${error.message}. Make sure the server is running.`, true);
+            }
+        }
+        
+        async function loadPaymentHistory() {
+            try {
+                showResult('Loading payment history...');
+                const response = await fetch(`${baseURL}/api/admin/payments/history`);
+                
+                if (response.ok) {
+                    const payments = await response.json();
+                    let html = `<h3>Payment History (${payments.length} payments)</h3><table border="1">`;
+                    html += `<tr><th>ID</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th><th>Customer</th></tr>`;
+                    
+                    payments.forEach(payment => {
+                        html += `<tr>
+                            <td>${payment.paymentId || 'N/A'}</td>
+                            <td>$${payment.amount || '0.00'}</td>
+                            <td>${payment.paymentMethod || 'N/A'}</td>
+                            <td>${payment.status || 'N/A'}</td>
+                            <td>${payment.paymentDate || 'N/A'}</td>
+                            <td>${payment.cardHolderName || 'N/A'}</td>
+                        </tr>`;
+                    });
+                    html += '</table>';
+                    
+                    showResult(html);
+                } else {
+                    const error = await response.text();
+                    showResult(`❌ Failed to load payment history: ${error}`, true);
+                }
+            } catch (error) {
+                showResult(`❌ Network error: ${error.message}. Make sure the server is running.`, true);
+            }
+        }
+    </script>
+</body>
+</html>

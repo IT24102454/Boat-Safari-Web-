@@ -650,11 +650,73 @@
             font-size: 28px;
         }
     }
+
+    /* Slide-up entrance animations */
+    @keyframes slideUpFromBottom {
+        from {
+            transform: translateY(100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUpFromBottomFar {
+        from {
+            transform: translateY(150px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Initial hidden state */
+    .slide-in-element {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+
+    /* Animation classes */
+    .animate-slide-up {
+        animation: slideUpFromBottom 0.8s ease-out forwards;
+    }
+
+    .animate-slide-up-delay-1 {
+        animation: slideUpFromBottom 0.8s ease-out 0.2s forwards;
+    }
+
+    .animate-slide-up-delay-2 {
+        animation: slideUpFromBottom 0.8s ease-out 0.4s forwards;
+    }
+
+    .animate-slide-up-delay-3 {
+        animation: slideUpFromBottom 0.8s ease-out 0.6s forwards;
+    }
+
+    .animate-slide-up-delay-4 {
+        animation: slideUpFromBottom 0.8s ease-out 0.8s forwards;
+    }
+
+    .animate-slide-up-far {
+        animation: slideUpFromBottomFar 1s ease-out forwards;
+    }
+
+    .animate-slide-up-far-delay-1 {
+        animation: slideUpFromBottomFar 1s ease-out 0.3s forwards;
+    }
+
+    .animate-slide-up-far-delay-2 {
+        animation: slideUpFromBottomFar 1s ease-out 0.6s forwards;
+    }
   </style>
 </head>
 <body>
 <!-- Top Bar -->
-<div class="top-bar">
+<div class="top-bar slide-in-element">
     <div class="top-bar-container">
         <div class="contact-info">
             <a href="tel:00123456789"><i class="fas fa-phone"></i> Have Any Questions?</a>
@@ -670,7 +732,7 @@
 </div>
 
 <!-- Navigation -->
-<header class="nav">
+<header class="nav slide-in-element">
     <div class="nav-inner">
         <a href="/index.html" class="brand">
             <div class="logo"><i class="fas fa-ship"></i></div>
@@ -689,15 +751,15 @@
 </header>
 
 <!-- Hero -->
-<section class="hero">
+<section class="hero slide-in-element">
   <div class="hero-inner">
-    <h1>Our Fleet</h1>
-    <div class="muted">Browse boats available for your trips — specs, features, and status</div>
+    <h1 class="slide-in-element">Our Fleet</h1>
+    <div class="muted slide-in-element">Browse boats available for your trips — specs, features, and status</div>
   </div>
 </section>
 
 <!-- Boats Grid -->
-<main class="wrap">
+<main class="wrap slide-in-element">
   <div id="boatList" class="loading">Loading...</div>
 </main>
 
@@ -710,7 +772,7 @@
 </div>
 
 <!-- Footer -->
-<footer>
+<footer class="slide-in-element">
     <div class="foot-inner">
         <div class="footer-logo">
             <span><i class="fas fa-ship"></i></span> Boat Safari
@@ -737,19 +799,38 @@
   function getBoatImage(boat){
     const name = (boat.boatName || '').toLowerCase();
     const model = (boat.model || '').toLowerCase();
+    const boatId = boat.boatId || 0;
 
-    const map = [
-      {key:'safari 270', url:'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1200&auto=format&fit=crop'},
-      {key:'explorer 220', url:'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=1200&auto=format&fit=crop'},
-      {key:'lagoon 300', url:'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1200&auto=format&fit=crop'},
-      {key:'sunchaser 180', url:'https://images.unsplash.com/photo-1512295767273-ac109ac3acfa?q=80&w=1200&auto=format&fit=crop'},
-      {key:'river runner', url:'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=1200&auto=format&fit=crop'},
-      {key:'polar 270', url:'https://images.unsplash.com/photo-1483683804023-6ccdb62f86ef?q=80&w=1200&auto=format&fit=crop'},
-      {key:'riviera', url:'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop'}
+    // Use boat images from the boats folder
+    const localImages = [
+      'img/boats/yacht-4.jpg',
+      'img/boats/yacht-5.jpg', 
+      'img/boats/yacht-6.jpg',
+      'img/boats/yacht-7.jpg',
+      'img/boats/yacht-8.jpg'
     ];
 
+    // Map specific boat names/models to specific images
+    const map = [
+      {key:'safari 270', url:'img/boats/yacht-4.jpg'},
+      {key:'explorer 220', url:'img/boats/yacht-5.jpg'},
+      {key:'lagoon 300', url:'img/boats/yacht-6.jpg'},
+      {key:'sunchaser 180', url:'img/boats/yacht-7.jpg'},
+      {key:'river runner', url:'img/boats/yacht-8.jpg'},
+      {key:'polar 270', url:'img/boats/yacht-4.jpg'},
+      {key:'riviera', url:'img/boats/yacht-5.jpg'}
+    ];
+
+    // Try to find a match based on boat name or model
     const hit = map.find(m => name.includes(m.key) || model.includes(m.key) || ((boat.model||'').toLowerCase().includes(m.key)));
-    return hit ? hit.url : 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=1200&auto=format&fit=crop';
+    
+    if (hit) {
+      return hit.url;
+    }
+    
+    // If no specific match, use boat ID to deterministically assign an image
+    const imageIndex = boatId % localImages.length;
+    return localImages[imageIndex];
   }
 
   async function loadBoats(){
@@ -1006,6 +1087,32 @@
   document.addEventListener('DOMContentLoaded', function() {
     loadBoats();
     document.getElementById('year').textContent = new Date().getFullYear();
+    
+    // Slide-up animation on page load
+    const slideElements = document.querySelectorAll('.slide-in-element');
+    
+    // Trigger animations with staggered delays
+    slideElements.forEach((element, index) => {
+        // Different delays for different sections
+        if (element.classList.contains('top-bar')) {
+            element.classList.add('animate-slide-up');
+        } else if (element.classList.contains('nav')) {
+            setTimeout(() => element.classList.add('animate-slide-up'), 200);
+        } else if (element.classList.contains('hero')) {
+            setTimeout(() => element.classList.add('animate-slide-up-far'), 400);
+        } else if (element.querySelector('h1')) {
+            setTimeout(() => element.classList.add('animate-slide-up-delay-1'), 600);
+        } else if (element.classList.contains('muted')) {
+            setTimeout(() => element.classList.add('animate-slide-up-delay-2'), 700);
+        } else if (element.classList.contains('wrap')) {
+            setTimeout(() => element.classList.add('animate-slide-up-far-delay-1'), 900);
+        } else if (element.tagName === 'FOOTER') {
+            setTimeout(() => element.classList.add('animate-slide-up-far-delay-2'), 1100);
+        } else {
+            // Default animation for other elements
+            setTimeout(() => element.classList.add('animate-slide-up'), index * 100);
+        }
+    });
   });
 </script>
 </body>

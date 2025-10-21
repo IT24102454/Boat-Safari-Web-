@@ -4,7 +4,6 @@ import com.boatsafari.managementsystem.model.Feedback;
 import com.boatsafari.managementsystem.model.User;
 import com.boatsafari.managementsystem.model.Booking;
 import com.boatsafari.managementsystem.repository.FeedbackRepository;
-import com.boatsafari.managementsystem.repository.UserRepository;
 import com.boatsafari.managementsystem.repository.BookingRepository;
 import com.boatsafari.managementsystem.util.CurrentUserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +22,6 @@ public class FeedbackService {
 
     @Autowired
     private FeedbackRepository feedbackRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private BookingRepository bookingRepository;

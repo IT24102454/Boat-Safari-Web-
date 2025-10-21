@@ -17,10 +17,30 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #1fbfd6 0%, #2a5298 100%);
             min-height: 100vh;
             color: #333;
+            overflow-x: hidden;
         }
+
+        /* Slide-up Animation Styles */
+        .slide-up {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .slide-up.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-up.delay-1 { transition-delay: 0.1s; }
+        .slide-up.delay-2 { transition-delay: 0.2s; }
+        .slide-up.delay-3 { transition-delay: 0.3s; }
+        .slide-up.delay-4 { transition-delay: 0.4s; }
+        .slide-up.delay-5 { transition-delay: 0.5s; }
+        .slide-up.delay-6 { transition-delay: 0.6s; }
 
         /* Navigation */
         .navbar {
@@ -976,16 +996,154 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-    </style>
-</head>
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
+
+        /* Payment History Specific Styles */
+        .filters-section {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .fade-in.show {
-            opacity: 1;
-            transform: translateY(0);
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #2a5298;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-details-modal .modal-content {
+            max-width: 800px;
+        }
+
+        .payment-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-info-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #2a5298;
+        }
+
+        .payment-info-item strong {
+            color: #2a5298;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Payment method badges */
+        .payment-method-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .payment-method-badge.credit_card {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .payment-method-badge.debit_card {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .payment-method-badge.paypal {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .payment-method-badge.bank_transfer {
+            background: #e8f5e8;
+            color: #388e3c;
+        }
+
+        .payment-method-badge.cash {
+            background: #fafafa;
+            color: #424242;
+        }
+
+        /* Modal footer styles */
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 0 0 25px 25px;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-modal {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-modal.btn-primary {
+            background: #2a5298;
+            color: white;
+        }
+
+        .btn-modal.btn-primary:hover {
+            background: #1e3c72;
+        }
+
+        .btn-modal.btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-modal.btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-modal.btn-cancel {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-modal.btn-cancel:hover {
+            background: #7f8c8d;
         }
     </style>
 </head>
@@ -1018,7 +1176,7 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Dashboard Header -->
-        <div class="dashboard-header">
+        <div class="dashboard-header slide-up">
             <h1 class="dashboard-title">
                 <i class="fas fa-tachometer-alt"></i>
                 Admin Dashboard
@@ -1027,7 +1185,7 @@
         </div>
 
         <!-- Quick Stats -->
-        <div class="quick-stats">
+        <div class="quick-stats slide-up delay-1">
             <div class="stat-card users">
                 <div class="stat-icon">
                     <i class="fas fa-users"></i>
@@ -1073,7 +1231,7 @@
         </div>
 
         <!-- Tab Navigation -->
-        <div class="tab-navigation">
+        <div class="tab-navigation slide-up delay-2">
             <div class="tab-buttons">
                 <button class="tab-btn active" onclick="showTab('analytics')">
                     <i class="fas fa-chart-area"></i>
@@ -1099,6 +1257,10 @@
                     <i class="fas fa-user-cog"></i>
                     Staff Management
                 </button>
+                <button class="tab-btn" onclick="showTab('payment-history')">
+                    <i class="fas fa-credit-card"></i>
+                    Payment History
+                </button>
                 <button class="tab-btn" onclick="showTab('reports')">
                     <i class="fas fa-file-export"></i>
                     Export Reports
@@ -1107,7 +1269,7 @@
         </div>
 
         <!-- Tab Content -->
-        <div class="tab-content">
+        <div class="tab-content slide-up delay-3">
             <!-- Analytics & Charts Tab -->
             <div id="analytics" class="tab-pane active">
                 <div class="section-header">
@@ -1671,6 +1833,106 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Payment History Tab -->
+            <div id="payment-history" class="tab-pane">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-credit-card"></i>
+                        Payment History
+                    </h2>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="refreshPaymentHistory()">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                        <button class="btn btn-success" onclick="exportPaymentHistory()">
+                            <i class="fas fa-file-export"></i>
+                            Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Payment Filters -->
+                <div class="filters-section">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label for="paymentStatusFilter">Payment Status:</label>
+                            <select id="paymentStatusFilter" class="form-control">
+                                <option value="">All Statuses</option>
+                                <option value="PAID">Paid</option>
+                                <option value="PENDING">Pending</option>
+                                <option value="FAILED">Failed</option>
+                                <option value="REFUNDED">Refunded</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="paymentMethodFilter">Payment Method:</label>
+                            <select id="paymentMethodFilter" class="form-control">
+                                <option value="">All Methods</option>
+                                <option value="CREDIT_CARD">Credit Card</option>
+                                <option value="DEBIT_CARD">Debit Card</option>
+                                <option value="PAYPAL">PayPal</option>
+                                <option value="BANK_TRANSFER">Bank Transfer</option>
+                                <option value="CASH">Cash</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="customerNameFilter">Customer Name:</label>
+                            <input type="text" id="customerNameFilter" class="form-control" placeholder="Enter customer name...">
+                        </div>
+                        <div class="filter-group">
+                            <label for="customerEmailFilter">Customer Email:</label>
+                            <input type="text" id="customerEmailFilter" class="form-control" placeholder="Enter customer email...">
+                        </div>
+                        <div class="filter-group">
+                            <label for="dateFromFilter">From Date:</label>
+                            <input type="date" id="dateFromFilter" class="form-control">
+                        </div>
+                        <div class="filter-group">
+                            <label for="dateToFilter">To Date:</label>
+                            <input type="date" id="dateToFilter" class="form-control">
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" onclick="applyPaymentFilters()">
+                            <i class="fas fa-filter"></i>
+                            Apply Filters
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearPaymentFilters()">
+                            <i class="fas fa-times"></i>
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Payment History Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Payment ID</th>
+                                <th>Booking ID</th>
+                                <th>Customer</th>
+                                <th>Trip</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                <th>Payment Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentHistoryTableBody">
+                            <tr>
+                                <td colspan="9" class="loading">
+                                    <i class="fas fa-spinner"></i>
+                                    <div>Loading payment history...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2120,5 +2382,29 @@
     <!-- JavaScript -->
     <script src="/assets/js/auth.js"></script>
     <script src="/assets/js/admin-dashboard.js"></script>
+    
+    <!-- Slide-up Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Trigger slide-up animations
+            const animatedElements = document.querySelectorAll('.slide-up');
+            
+            function animateElement(element) {
+                if (element.getBoundingClientRect().top < window.innerHeight) {
+                    element.classList.add('animate');
+                }
+            }
+            
+            // Initial animation trigger
+            setTimeout(() => {
+                animatedElements.forEach(animateElement);
+            }, 100);
+            
+            // Scroll-triggered animations
+            window.addEventListener('scroll', () => {
+                animatedElements.forEach(animateElement);
+            });
+        });
+    </script>
 </body>
 </html>

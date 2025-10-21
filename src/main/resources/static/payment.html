@@ -36,6 +36,83 @@
       transition: all 0.3s ease;
     }
 
+    /* Slide-up Animations */
+    @keyframes slideUpFromBottom {
+      from {
+        transform: translateY(100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUpFromBottomFar {
+      from {
+        transform: translateY(150px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Initial hidden state */
+    .slide-in-element {
+      opacity: 0;
+      transform: translateY(100px);
+    }
+
+    /* Animation classes */
+    .animate-slide-up {
+      animation: slideUpFromBottom 0.8s ease-out forwards;
+    }
+
+    .animate-slide-up-delay-1 {
+      animation: slideUpFromBottom 0.8s ease-out 0.2s forwards;
+    }
+
+    .animate-slide-up-delay-2 {
+      animation: slideUpFromBottom 0.8s ease-out 0.4s forwards;
+    }
+
+    .animate-slide-up-delay-3 {
+      animation: slideUpFromBottom 0.8s ease-out 0.6s forwards;
+    }
+
+    .animate-slide-up-delay-4 {
+      animation: slideUpFromBottom 0.8s ease-out 0.8s forwards;
+    }
+
+    .animate-slide-up-far {
+      animation: slideUpFromBottomFar 1s ease-out forwards;
+    }
+
+    .animate-fade-up {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .animate-fade-up-delay-1 {
+      animation: fadeInUp 0.6s ease-out 0.3s forwards;
+    }
+
+    .animate-fade-up-delay-2 {
+      animation: fadeInUp 0.6s ease-out 0.6s forwards;
+    }
+
     /* Top Bar */
     .top-bar {
       background-color: var(--dark-blue);
@@ -581,30 +658,30 @@
 </header>
 
 <!-- Header Section -->
-<section class="head">
+<section class="head slide-in-element">
   <div class="head-inner">
-    <h2>Complete Your Payment</h2>
-    <div id="bookingInfo" class="muted">Loading booking details...</div>
+    <h2 class="slide-in-element">Complete Your Payment</h2>
+    <div id="bookingInfo" class="muted slide-in-element">Loading booking details...</div>
   </div>
 </section>
 
 <!-- Main Content -->
-<main class="container">
-  <div class="panel">
-    <div class="panel-header">
+<main class="container slide-in-element">
+  <div class="panel slide-in-element">
+    <div class="panel-header slide-in-element">
       <h3>Payment Details</h3>
       <div class="icon"><i class="fas fa-credit-card"></i></div>
     </div>
     <div class="pad">
-      <div class="payment-methods">
-        <div class="payment-method-option active" id="cardOption">
+      <div class="payment-methods slide-in-element">
+        <div class="payment-method-option active slide-in-element" id="cardOption">
           <i class="fas fa-credit-card"></i>
           <label>
             <input type="radio" name="method" value="CARD" checked />
             Pay by Card
           </label>
         </div>
-        <div class="payment-method-option" id="arrivalOption">
+        <div class="payment-method-option slide-in-element" id="arrivalOption">
           <i class="fas fa-money-bill-wave"></i>
           <label>
             <input type="radio" name="method" value="PAY_ON_ARRIVAL" />
@@ -613,13 +690,13 @@
         </div>
       </div>
 
-      <div id="cardForm">
-        <div class="form-group">
+      <div id="cardForm" class="slide-in-element">
+        <div class="form-group slide-in-element">
           <i class="far fa-user"></i>
           <input id="cardHolderName" type="text" placeholder="Cardholder Name" />
         </div>
 
-        <div class="form-group">
+        <div class="form-group slide-in-element">
           <i class="far fa-credit-card"></i>
           <input id="cardNumber" type="text" placeholder="Card Number (16 digits)" maxlength="19" inputmode="numeric" />
         </div>
@@ -644,20 +721,20 @@
         </div>
       </div>
 
-      <button id="payBtn" class="pay-button">
+      <button id="payBtn" class="pay-button slide-in-element">
         <i class="fas fa-lock"></i> Pay Now
       </button>
 
-      <div id="error" class="error" style="display: none;"></div>
+      <div id="error" class="error slide-in-element" style="display: none;"></div>
 
-      <div class="secure-badge">
+      <div class="secure-badge slide-in-element">
         <i class="fas fa-shield-alt"></i> Secure Payment - Your data is protected
       </div>
     </div>
   </div>
 
-  <div class="panel">
-    <div class="panel-header">
+  <div class="panel slide-in-element">
+    <div class="panel-header slide-in-element">
       <h3>Booking Summary</h3>
       <div class="icon"><i class="fas fa-receipt"></i></div>
     </div>
@@ -939,6 +1016,50 @@
   document.getElementById('year').textContent = new Date().getFullYear();
 
   loadBooking();
+
+  // Slide-up animation on page load
+  window.addEventListener('load', function() {
+    const slideElements = document.querySelectorAll('.slide-in-element');
+    
+    // Trigger animations with staggered delays
+    slideElements.forEach((element, index) => {
+      // Add delay based on element position and type
+      let delay = index * 80; // Base delay
+      
+      // Different delays for different sections
+      if (element.classList.contains('head')) {
+        element.classList.add('animate-slide-up');
+      } else if (element.tagName === 'H2') {
+        setTimeout(() => element.classList.add('animate-fade-up'), 200);
+      } else if (element.classList.contains('muted')) {
+        setTimeout(() => element.classList.add('animate-fade-up-delay-1'), 400);
+      } else if (element.classList.contains('container')) {
+        setTimeout(() => element.classList.add('animate-slide-up-delay-1'), 600);
+      } else if (element.classList.contains('panel')) {
+        setTimeout(() => element.classList.add('animate-slide-up-delay-2'), 800 + (index * 150));
+      } else if (element.classList.contains('panel-header')) {
+        setTimeout(() => element.classList.add('animate-fade-up-delay-2'), 1000 + (index * 100));
+      } else if (element.classList.contains('form-group') || element.classList.contains('payment-method-option')) {
+        setTimeout(() => element.classList.add('animate-fade-up'), 1200 + (index * 80));
+      } else if (element.classList.contains('pay-button') || element.tagName === 'BUTTON') {
+        setTimeout(() => element.classList.add('animate-slide-up-delay-3'), 1600);
+      } else {
+        setTimeout(() => element.classList.add('animate-fade-up'), delay + 800);
+      }
+    });
+
+    // Add hover effects to form elements
+    const formGroups = document.querySelectorAll('.form-group');
+    formGroups.forEach(group => {
+      group.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-2px)';
+        this.style.transition = 'all 0.3s ease';
+      });
+      group.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
+  });
 </script>
 </body>
 </html>

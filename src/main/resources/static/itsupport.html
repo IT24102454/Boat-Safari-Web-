@@ -16,10 +16,30 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #1fbfd6 0%, #2a5298 100%);
             min-height: 100vh;
             color: #333;
+            overflow-x: hidden;
         }
+
+        /* Slide-up Animation Styles */
+        .slide-up {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .slide-up.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-up.delay-1 { transition-delay: 0.1s; }
+        .slide-up.delay-2 { transition-delay: 0.2s; }
+        .slide-up.delay-3 { transition-delay: 0.3s; }
+        .slide-up.delay-4 { transition-delay: 0.4s; }
+        .slide-up.delay-5 { transition-delay: 0.5s; }
+        .slide-up.delay-6 { transition-delay: 0.6s; }
 
         /* Navigation */
         .navbar {
@@ -145,7 +165,7 @@
 
         .dashboard-title {
             font-size: 2.8rem;
-            color: #2a5298;
+            color: #ffffff;
             margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
@@ -154,11 +174,11 @@
         }
 
         .dashboard-title i {
-            color: #2a5298;
+            color: #ffffff;
         }
 
         .dashboard-subtitle {
-            color: #555;
+            color: #ffffff;
             font-size: 1.2rem;
             margin-left: 4rem;
             font-weight: 500;
@@ -1409,7 +1429,7 @@
     <!-- Main Container -->
     <div class="main-container">
         <!-- Dashboard Header -->
-        <div class="dashboard-header">
+        <div class="dashboard-header slide-up">
             <div class="dashboard-title">
                 <i class="fas fa-cogs"></i>
                 IT Support Center
@@ -1426,7 +1446,7 @@
         </div>
 
         <!-- Quick Statistics -->
-        <div class="stats-grid" id="statsGrid">
+        <div class="stats-grid slide-up delay-1" id="statsGrid">
             <div class="stat-card bookings">
                 <div class="stat-header">
                     <div class="stat-icon">
@@ -1502,7 +1522,7 @@
         </div>
 
         <!-- Tab Navigation -->
-        <div class="tab-navigation">
+        <div class="tab-navigation slide-up delay-2">
             <div class="tab-buttons">
                 <button class="tab-btn active" onclick="switchTab('bookings')">
                     <i class="fas fa-calendar-check"></i>
@@ -1520,7 +1540,7 @@
         </div>
 
         <!-- Bookings Tab -->
-        <div class="tab-content active" id="bookings-tab">
+        <div class="tab-content active slide-up delay-3" id="bookings-tab">
             <div class="content-header">
                 <h2 class="section-title">
                     <i class="fas fa-calendar-check"></i>
@@ -1745,6 +1765,30 @@
     </div>
 
     <script src="itsupport-dashboard.js"></script>
+    
+    <!-- Slide-up Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Trigger slide-up animations
+            const animatedElements = document.querySelectorAll('.slide-up');
+            
+            function animateElement(element) {
+                if (element.getBoundingClientRect().top < window.innerHeight) {
+                    element.classList.add('animate');
+                }
+            }
+            
+            // Initial animation trigger
+            setTimeout(() => {
+                animatedElements.forEach(animateElement);
+            }, 100);
+            
+            // Scroll-triggered animations
+            window.addEventListener('scroll', () => {
+                animatedElements.forEach(animateElement);
+            });
+        });
+    </script>
 </body>
 
 </html>

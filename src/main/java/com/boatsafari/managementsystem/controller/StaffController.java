@@ -185,7 +185,10 @@ public class StaffController {
                         if (otherTrip.getGuide() != null && 
                             otherTrip.getGuide().getUserId().equals(newGuide.getUserId()) && 
                             !otherTrip.getTripId().equals(trip.getTripId())) {
+                            SafariGuide previousGuide = otherTrip.getGuide();
                             otherTrip.setGuide(null);
+                            previousGuide.setStatus("AVAILABLE");
+                            userService.updateUser(previousGuide);
                             tripService.updateTrip(otherTrip);
                             System.out.println("Removed guide from trip: " + otherTrip.getName());
                             break;
@@ -194,6 +197,8 @@ public class StaffController {
                     
                     // Assign the guide to this trip
                     trip.setGuide(newGuide);
+                    newGuide.setStatus("ASSIGNED");
+                    userService.updateUser(newGuide);
                     System.out.println("Guide assigned successfully: " + newGuide.getFirstName() + " " + newGuide.getSecondName());
                 }
             } else {
@@ -201,6 +206,8 @@ public class StaffController {
                 if (trip.getGuide() != null) {
                     SafariGuide oldGuide = trip.getGuide();
                     trip.setGuide(null);
+                    oldGuide.setStatus("AVAILABLE");
+                    userService.updateUser(oldGuide);
                     System.out.println("Guide assignment cleared. Guide " + oldGuide.getFirstName() + " " + oldGuide.getSecondName() + " is now available.");
                 }
             }
@@ -299,10 +306,9 @@ public class StaffController {
 
             // Unassign guide if assigned
             if (trip.getGuide() != null) {
-                // TODO: Update guide status when status field is available
-                // SafariGuide guide = trip.getGuide();
-                // guide.setStatus("AVAILABLE");
-                // userService.updateUser(guide);
+                SafariGuide guide = trip.getGuide();
+                guide.setStatus("AVAILABLE");
+                userService.updateUser(guide);
                 trip.setGuide(null);
             }
 
@@ -454,14 +460,31 @@ public class StaffController {
                     if (guideId != null) {
                         SafariGuide guide = userService.getGuideById(guideId);
                         if (guide != null) {
+                            // If trip already has a guide, make that guide available
+                            if (trip.getGuide() != null) {
+                                SafariGuide oldGuide = trip.getGuide();
+                                oldGuide.setStatus("AVAILABLE");
+                                userService.updateUser(oldGuide);
+                            }
+                            
                             trip.setGuide(guide);
+                            guide.setStatus("ASSIGNED");
+                            userService.updateUser(guide);
                             System.out.println("Guide assigned to trip: " + guide.getFirstName() + " " + guide.getSecondName());
                         }
                     }
                 } else {
                     // Remove guide assignment
-                    trip.setGuide(null);
-                    System.out.println("Guide assignment removed from trip");
+                    if (trip.getGuide() != null) {
+                        SafariGuide oldGuide = trip.getGuide();
+                        trip.setGuide(null);
+                        oldGuide.setStatus("AVAILABLE");
+                        userService.updateUser(oldGuide);
+                        System.out.println("Guide assignment removed from trip");
+                    } else {
+                        trip.setGuide(null);
+                        System.out.println("Guide assignment removed from trip");
+                    }
                 }
             }
 

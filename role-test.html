@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Role Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .user-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .user-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f5f5f5;
+            border-radius: 3px;
+        }
+        .role-customer { background-color: #d4edda; }
+        .role-admin { background-color: #fff3cd; }
+        .role-staff { background-color: #f8d7da; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+        .form-row input {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Role Registration Test</h1>
+    
+    <div class="section">
+        <h2>Test Registration</h2>
+        <p>Register a new user to test if they get the correct "CUSTOMER" role:</p>
+        
+        <div class="form-row">
+            <input type="text" id="firstName" placeholder="First Name" value="Test">
+            <input type="text" id="secondName" placeholder="Last Name" value="User">
+        </div>
+        <div class="form-row">
+            <input type="email" id="email" placeholder="Email" value="">
+            <input type="tel" id="contactNo" placeholder="Contact Number" value="1234567890">
+        </div>
+        <input type="password" id="password" placeholder="Password" value="testpassword">
+        <div class="form-row">
+            <input type="text" id="address" placeholder="Address" value="123 Test St">
+            <input type="text" id="city" placeholder="City" value="Test City">
+        </div>
+        <div class="form-row">
+            <input type="text" id="street" placeholder="Street" value="Test Street">
+            <input type="text" id="postalCode" placeholder="Postal Code" value="12345">
+        </div>
+        
+        <button onclick="registerTestUser()">Register Test User</button>
+        <div id="registrationResult"></div>
+    </div>
+    
+    <div class="section">
+        <h2>All Users</h2>
+        <button onclick="loadUsers()">Refresh User List</button>
+        <div class="user-list" id="userList">
+            Click "Refresh User List" to load users...
+        </div>
+    </div>
+
+    <script>
+        let userCounter = 1;
+
+        function generateTestEmail() {
+            const timestamp = Date.now();
+            document.getElementById('email').value = `test${userCounter}@example.com`;
+            userCounter++;
+        }
+
+        function registerTestUser() {
+            generateTestEmail();
+            
+            const userData = {
+                firstName: document.getElementById('firstName').value,
+                secondName: document.getElementById('secondName').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                contactNo: document.getElementById('contactNo').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                street: document.getElementById('street').value,
+                postalCode: document.getElementById('postalCode').value
+            };
+
+            fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('registrationResult');
+                if (data.message === 'User registered successfully') {
+                    resultDiv.innerHTML = `<p style="color: green;">✓ User registered successfully! Email: ${userData.email}</p>`;
+                    // Auto-refresh user list
+                    setTimeout(loadUsers, 1000);
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">✗ Registration failed: ${JSON.stringify(data)}</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('registrationResult').innerHTML = `<p style="color: red;">✗ Error: ${error.message}</p>`;
+            });
+        }
+
+        function loadUsers() {
+            fetch('/setup/users')
+                .then(response => response.json())
+                .then(users => {
+                    const userList = document.getElementById('userList');
+                    if (users.length === 0) {
+                        userList.innerHTML = '<p>No users found.</p>';
+                        return;
+                    }
+                    
+                    let html = '<h3>Users by Role:</h3>';
+                    
+                    // Group users by role
+                    const usersByRole = users.reduce((acc, user) => {
+                        const role = user.role || user.roleType || 'Unknown';
+                        if (!acc[role]) acc[role] = [];
+                        acc[role].push(user);
+                        return acc;
+                    }, {});
+                    
+                    // Display users grouped by role
+                    Object.keys(usersByRole).sort().forEach(role => {
+                        html += `<h4>${role} (${usersByRole[role].length} users):</h4>`;
+                        usersByRole[role].forEach(user => {
+                            const roleClass = role.toLowerCase().replace('_', '-');
+                            html += `
+                                <div class="user-item role-${roleClass}">
+                                    <strong>${user.firstName} ${user.secondName}</strong><br>
+                                    Email: ${user.email}<br>
+                                    Role: <strong>${role}</strong><br>
+                                    User ID: ${user.userId}
+                                </div>
+                            `;
+                        });
+                    });
+                    
+                    userList.innerHTML = html;
+                })
+                .catch(error => {
+                    document.getElementById('userList').innerHTML = `<p style="color: red;">Error loading users: ${error.message}</p>`;
+                });
+        }
+
+        // Load users on page load
+        window.onload = function() {
+            loadUsers();
+        };
+    </script>
+</body>
+</html>

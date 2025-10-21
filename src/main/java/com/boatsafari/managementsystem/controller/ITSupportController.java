@@ -5,9 +5,7 @@ import com.boatsafari.managementsystem.model.Feedback;
 import com.boatsafari.managementsystem.model.User;
 import com.boatsafari.managementsystem.repository.BookingRepository;
 import com.boatsafari.managementsystem.service.FeedbackService;
-import com.boatsafari.managementsystem.service.BookingService;
 import com.boatsafari.managementsystem.repository.UserRepository;
-import com.boatsafari.managementsystem.util.CurrentUserUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +30,7 @@ public class ITSupportController {
     private FeedbackService feedbackService;
 
     @Autowired
-    private BookingService bookingService;
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private CurrentUserUtil currentUserUtil;
 
     // ================= Dashboard Overview Endpoints =================
 
@@ -72,17 +64,6 @@ public class ITSupportController {
                     .filter(u -> "CUSTOMER".equalsIgnoreCase(u.getRole()))
                     .collect(Collectors.toList());
             stats.put("totalCustomers", allCustomers.size());
-            
-            // Recent activity
-            stats.put("recentBookings", allBookings.stream()
-                    .sorted(Comparator.comparing(Booking::getBookingId).reversed())
-                    .limit(5)
-                    .collect(Collectors.toList()));
-            
-            stats.put("recentFeedbacks", allFeedbacks.stream()
-                    .sorted(Comparator.comparing(Feedback::getCreatedAt).reversed())
-                    .limit(5)
-                    .collect(Collectors.toList()));
                     
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
@@ -180,9 +161,11 @@ public class ITSupportController {
             @RequestParam(required = false) String search
     ) {
         try {
-        List<User> customers = userRepository.findAll().stream()
-                .filter(u -> "CUSTOMER".equalsIgnoreCase(u.getRole()))
-                .collect(Collectors.toList());            if (search != null && !search.trim().isEmpty()) {
+            List<User> customers = userRepository.findAll().stream()
+                    .filter(u -> "CUSTOMER".equalsIgnoreCase(u.getRole()))
+                    .collect(Collectors.toList());
+            
+            if (search != null && !search.trim().isEmpty()) {
                 String searchLower = search.toLowerCase();
                 customers = customers.stream()
                         .filter(c -> c.getFirstName().toLowerCase().contains(searchLower) ||
@@ -345,10 +328,10 @@ public class ITSupportController {
     private CustomerDetailDTO toCustomerDetailDTO(User customer) {
         CustomerDetailDTO dto = new CustomerDetailDTO();
         dto.setCustomerId(customer.getUserId());
-        dto.setFirstName(customer.getFirstName());
-        dto.setLastName(customer.getSecondName());
-        dto.setEmail(customer.getEmail());
-        dto.setPhone(customer.getContactNo());
+        dto.setFirstName(customer.getFirstName() != null ? customer.getFirstName() : "");
+        dto.setLastName(customer.getSecondName() != null ? customer.getSecondName() : "");
+        dto.setEmail(customer.getEmail() != null ? customer.getEmail() : "");
+        dto.setPhone(customer.getContactNo() != null ? customer.getContactNo() : "");
         dto.setRegistrationDate(LocalDateTime.now()); // Registration date not in model, using current time
         
         // Count bookings for this customer
