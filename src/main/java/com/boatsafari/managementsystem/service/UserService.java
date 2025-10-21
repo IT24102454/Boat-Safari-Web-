@@ -23,8 +23,19 @@ public class UserService {
     private BCryptPasswordEncoder passwordEncoder;
 
     public User register(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        // Create a Customer instance instead of generic User
+        Customer customer = new Customer();
+        customer.setFirstName(user.getFirstName());
+        customer.setSecondName(user.getSecondName());
+        customer.setEmail(user.getEmail());
+        customer.setPassword(passwordEncoder.encode(user.getPassword()));
+        customer.setContactNo(user.getContactNo());
+        customer.setAddress(user.getAddress());
+        customer.setCity(user.getCity());
+        customer.setStreet(user.getStreet());
+        customer.setPostalCode(user.getPostalCode());
+        
+        return userRepository.save(customer);
     }
 
     public User login(String email, String password) {
