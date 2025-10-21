@@ -1,0 +1,13 @@
+package com.example.boatsafariweb.dto;
+
+public class AssignStaffRequest {
+    private Long tripId;
+    private Long staffId;
+    private String message;
+
+    public Long getTripId() { return tripId; }
+    public void setTripId(Long tripId) { this.tripId = tripId; }
+    public Long getStaffId() { return staffId; }
+    public void setStaffId(Long staffId) { this.staffId = staffId; }
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
