@@ -1,0 +1,36 @@
+package com.example.boatsafariweb.controller;
+
+import com.example.boatsafariweb.dto.AssignStaffRequest;
+import com.example.boatsafariweb.model.StaffMember;
+import com.example.boatsafariweb.model.Trip;
+import com.example.boatsafariweb.repository.StaffMemberRepository;
+import com.example.boatsafariweb.service.AdminService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/admin")
+public class AdminController {
+
+    @Autowired
+    private AdminService adminService;
+
+    @Autowired
+    private StaffMemberRepository staffMemberRepository;
+
+    // Assign guide endpoint
+    @PostMapping("/assign")
+    public ResponseEntity<Trip> assignStaff(@RequestBody AssignStaffRequest req) {
+        Trip updated = adminService.assignGuideToTrip(req.getTripId(), req.getStaffId(), req.getMessage());
+        return ResponseEntity.ok(updated);
+    }
+
+    // helper endpoints for testing
+    @GetMapping("/staff")
+    public ResponseEntity<List<StaffMember>> getAllStaff() {
+        return ResponseEntity.ok(staffMemberRepository.findAll());
+    }
+}
