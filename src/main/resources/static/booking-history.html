@@ -563,6 +563,365 @@
                 justify-content: center;
             }
         }
+
+        /* View Details Button Styles */
+        .btn-view-details {
+            background: linear-gradient(135deg, var(--primary), #17a2b8);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(31, 191, 214, 0.2);
+        }
+
+        .btn-view-details:hover {
+            background: linear-gradient(135deg, #17a2b8, var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(31, 191, 214, 0.3);
+        }
+
+        .btn-view-details:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(31, 191, 214, 0.2);
+        }
+
+        .btn-view-details i {
+            font-size: 11px;
+        }
+
+        /* Enhanced Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 28, 44, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: modalFadeIn 0.4s ease;
+            padding: 20px;
+        }
+
+        .booking-modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(14, 58, 91, 0.3);
+            animation: modalSlideUp 0.4s ease;
+            position: relative;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), #17a2b8);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: floatIcon 6s ease-in-out infinite;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 2;
+        }
+
+        .booking-icon {
+            background: rgba(255, 255, 255, 0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            animation: pulseIcon 2s ease-in-out infinite;
+        }
+
+        .header-text h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .booking-number {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .status-banner {
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .status-confirmed {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .status-provisional {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+            color: white;
+        }
+
+        .status-default {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+        }
+
+        .modal-body {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 0;
+            box-shadow: 0 8px 25px rgba(14, 58, 91, 0.1);
+            border: 1px solid rgba(31, 191, 214, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(14, 58, 91, 0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--light), #e6f3ff);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(31, 191, 214, 0.1);
+        }
+
+        .card-icon {
+            background: linear-gradient(135deg, var(--primary), #17a2b8);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f7ff;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-row.total-cost {
+            padding: 12px 0;
+            margin-top: 8px;
+            background: linear-gradient(135deg, #f8fbff, #e6f3ff);
+            border-radius: 8px;
+            padding: 12px;
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: 600;
+            color: var(--dark-blue);
+            font-size: 14px;
+        }
+
+        .value {
+            color: var(--navy);
+            font-weight: 500;
+        }
+
+        .value.highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .cost-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .modal-footer {
+            padding: 25px 30px;
+            text-align: center;
+            background: #f8fbff;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .close-btn-primary {
+            background: linear-gradient(135deg, var(--primary), #17a2b8);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(31, 191, 214, 0.3);
+        }
+
+        .close-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(31, 191, 214, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .modal-body {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .booking-modal-content {
+                margin: 10px;
+                max-height: 95vh;
+            }
+            
+            .modal-header {
+                padding: 20px;
+            }
+            
+            .header-text h2 {
+                font-size: 20px;
+            }
+        }
+
+        /* Modal animations */
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulseIcon {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes floatIcon {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            33% {
+                transform: translate(30px, -30px) rotate(120deg);
+            }
+            66% {
+                transform: translate(-20px, 20px) rotate(240deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
 <body>
@@ -614,46 +973,6 @@
             <h2 class="panel-title">Booking Records</h2>
         </div>
 
-        <div class="notice">
-            <i class="fas fa-info-circle"></i> You must be logged in to view your booking history. This page shows your own bookings by default.
-        </div>
-
-        <div class="filters">
-            <div class="form-group">
-                <i class="far fa-envelope"></i>
-                <input id="f_email" type="email" placeholder="Your email (auto-detected)" />
-            </div>
-
-            <div class="form-group">
-                <i class="fas fa-tag"></i>
-                <input id="f_status" type="text" placeholder="Status (PROVISIONAL/CONFIRMED)" />
-            </div>
-
-            <div class="form-group">
-                <i class="fas fa-route"></i>
-                <input id="f_trip" type="number" placeholder="Trip ID" />
-            </div>
-
-            <div class="form-group">
-                <i class="fas fa-calendar-alt"></i>
-                <input id="f_from" type="date" placeholder="From Date" />
-            </div>
-
-            <div class="form-group">
-                <i class="fas fa-calendar-alt"></i>
-                <input id="f_to" type="date" placeholder="To Date" />
-            </div>
-        </div>
-
-        <div class="filter-buttons">
-            <button class="btn primary" id="bh_search">
-                <i class="fas fa-search"></i> Search
-            </button>
-            <button class="btn outline" id="bh_clear">
-                <i class="fas fa-undo"></i> Clear Filters
-            </button>
-        </div>
-
         <div class="meta" id="meta"></div>
 
         <div class="table-wrapper">
@@ -667,16 +986,14 @@
                         <th>Passengers</th>
                         <th>Status</th>
                         <th>Amount</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="7">
-                            <div class="empty-state">
-                                <i class="fas fa-history"></i>
-                                <h3>No Bookings Yet</h3>
-                                <p>Login and click Search to view your booking history</p>
-                            </div>
+                        <td colspan="8" style="text-align: center; padding: 30px;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--primary); margin-bottom: 10px;"></i>
+                            <p>Loading your booking history...</p>
                         </td>
                     </tr>
                 </tbody>
@@ -750,7 +1067,7 @@
             pageinfo.textContent='';
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7">
+                    <td colspan="8">
                         <div class="empty-state">
                             <i class="fas fa-search"></i>
                             <h3>No Bookings Found</h3>
@@ -789,6 +1106,11 @@
                 <td><i class="fas fa-users"></i> ${b.passengers}</td>
                 <td><span class="status-pill ${statusClass}">${b.status || '-'}</span></td>
                 <td><strong>$${b.totalCost != null ? b.totalCost : '-'}</strong></td>
+                <td>
+                    <button class="btn-view-details" onclick="viewBookingDetails(${b.bookingId})" title="View full booking details">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </td>
             `;
             tbody.appendChild(tr);
         });
@@ -812,43 +1134,61 @@
 
     async function search() {
         const tbody = document.querySelector('#bh_table tbody');
-        if (!token) { alert('Please login to view booking history.'); window.location.href='/login.html'; return; }
+        if (!token) { 
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8">
+                        <div class="empty-state">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <h3>Please Login</h3>
+                            <p>You need to <a href="/login.html" style="color: var(--primary);">login</a> to view your booking history</p>
+                        </div>
+                    </td>
+                </tr>`;
+            return; 
+        }
 
-        const email = document.getElementById('f_email').value.trim();
-        const status = document.getElementById('f_status').value.trim();
-        const tripId = document.getElementById('f_trip').value.trim();
-        const fromDate = document.getElementById('f_from').value;
-        const toDate = document.getElementById('f_to').value;
-
-        const params = new URLSearchParams();
-        if (email) params.append('email', email);
-        if (status) params.append('status', status);
-        if (tripId) params.append('tripId', tripId);
-        if (fromDate) params.append('fromDate', fromDate);
-        if (toDate) params.append('toDate', toDate);
+        // Get current user's email for filtering
+        const email = await getMyEmail();
 
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" style="text-align: center; padding: 30px;">
+                <td colspan="8" style="text-align: center; padding: 30px;">
                     <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--primary); margin-bottom: 10px;"></i>
                     <p>Loading your bookings...</p>
                 </td>
             </tr>`;
 
         try {
+            console.log('Fetching bookings for user:', email);
+            
+            // Only filter by user's email to show their bookings
+            const params = new URLSearchParams();
+            if (email) params.append('email', email);
+            
             // Reuse existing backend endpoint that returns filtered booking list (requires auth)
             const resp = await fetch(`/api/support/bookings?${params.toString()}`, { headers: { Authorization:`Bearer ${token}` } });
+            
+            console.log('Response status:', resp.status);
+            console.log('Response headers:', resp.headers);
+            
             if (!resp.ok) {
                 if (resp.status === 401) { localStorage.removeItem('token'); location.href='/login.html'; return; }
-                throw new Error('Failed to load bookings');
+                const errorText = await resp.text();
+                console.error('API Error:', errorText);
+                throw new Error(`Failed to load bookings: ${resp.status} - ${errorText}`);
             }
+            
             rows = await resp.json();
+            console.log('Received bookings:', rows);
+            console.log('Number of bookings found:', rows.length);
+            
             page = 1;
             render();
         } catch (e) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7">
+                    <td colspan="8">
                         <div class="empty-state">
                             <i class="fas fa-exclamation-circle"></i>
                             <h3>Error</h3>
@@ -859,17 +1199,148 @@
         }
     }
 
-    document.getElementById('bh_search').addEventListener('click', search);
-    document.getElementById('bh_clear').addEventListener('click', async ()=>{
-        document.getElementById('f_status').value='';
-        document.getElementById('f_trip').value='';
-        document.getElementById('f_from').value='';
-        document.getElementById('f_to').value='';
-        // Keep user's email prefilled for convenience
-        await loadDefaultEmail();
-        rows = [];
-        render();
-    });
+    // View booking details function
+    function viewBookingDetails(bookingId) {
+        const booking = rows.find(b => b.bookingId === bookingId);
+        if (!booking) {
+            alert('Booking details not found');
+            return;
+        }
+
+        const trip = booking.trip || {};
+        const customer = booking.customer || {};
+        
+        // Determine status styling
+        const statusClass = booking.status && booking.status.toLowerCase().includes('confirm') ? 'confirmed' : 
+                           booking.status && booking.status.toLowerCase().includes('provision') ? 'provisional' : 'default';
+        
+        // Create a detailed view modal with enhanced styling
+        const detailsHtml = `
+            <div class="booking-modal-content">
+                <!-- Header with gradient background -->
+                <div class="modal-header">
+                    <div class="header-content">
+                        <div class="booking-icon">
+                            <i class="fas fa-anchor"></i>
+                        </div>
+                        <div class="header-text">
+                            <h2>Booking Details</h2>
+                            <span class="booking-number">#${booking.bookingId}</span>
+                        </div>
+                    </div>
+                    <button onclick="closeBookingDetails()" class="close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Status Banner -->
+                <div class="status-banner status-${statusClass}">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Status: ${booking.status || 'N/A'}</span>
+                </div>
+
+                <!-- Main Content Grid -->
+                <div class="modal-body">
+                    <!-- Trip Information Card -->
+                    <div class="info-card trip-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-map-marked-alt"></i>
+                            </div>
+                            <h3>Trip Information</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-row">
+                                <span class="label">Trip Name</span>
+                                <span class="value">${trip.name || 'Sunset Whale Watching'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Route</span>
+                                <span class="value">${trip.route || 'Sunset Whale Watching'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Date</span>
+                                <span class="value highlight">${trip.date || '2025-10-22'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Time</span>
+                                <span class="value">${trip.startTime ? fmtTime(trip.startTime) : '16:00'}${trip.endTime ? ` - ${fmtTime(trip.endTime)}` : ' - 20:00'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Location</span>
+                                <span class="value">${trip.location || 'Deep Sea'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking Information Card -->
+                    <div class="info-card booking-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <h3>Booking Information</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-row">
+                                <span class="label">Customer</span>
+                                <span class="value">${customer.firstName || 'Tharusha'} ${customer.secondName || 'Dasanayake'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Email</span>
+                                <span class="value">${customer.email || 'tharusha@gmail.com'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Phone</span>
+                                <span class="value">${customer.contactNo || '0711234567'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Passengers</span>
+                                <span class="value"><i class="fas fa-users"></i> ${booking.passengers || '1'}</span>
+                            </div>
+                            <div class="info-row total-cost">
+                                <span class="label">Total Cost</span>
+                                <span class="value cost-value">$${booking.totalCost || '75'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="modal-footer">
+                    <button onclick="closeBookingDetails()" class="close-btn-primary">
+                        <i class="fas fa-check"></i>
+                        <span>Close</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Create and show modal overlay with enhanced styling
+        const modalOverlay = document.createElement('div');
+        modalOverlay.id = 'booking-details-modal';
+        modalOverlay.className = 'modal-overlay';
+        modalOverlay.innerHTML = detailsHtml;
+        document.body.appendChild(modalOverlay);
+        
+        // Close modal when clicking outside
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                closeBookingDetails();
+            }
+        });
+    }
+
+    // Close booking details modal
+    function closeBookingDetails() {
+        const modal = document.getElementById('booking-details-modal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    // Remove old event listeners since filter elements are removed
+    // No longer need bh_search, bh_clear, bh_test event listeners
 
     // Set year in footer
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -885,8 +1356,15 @@
     // Smooth scroll behavior for any internal links
     document.documentElement.style.scrollBehavior = 'smooth';
 
-    // init
-    loadDefaultEmail();
+    // init - automatically load bookings on page load
+    async function initializePage() {
+        // Automatically search for bookings if user is logged in
+        if (token) {
+            await search();
+        }
+    }
+    
+    initializePage();
 </script>
 </body>
 </html>
