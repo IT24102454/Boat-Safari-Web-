@@ -31,6 +31,18 @@
             background: var(--bg);
             color: var(--navy);
             line-height: 1.6;
+            animation: slideUpFadeIn 0.8s ease-out;
+        }
+
+        @keyframes slideUpFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         a {
@@ -861,6 +873,17 @@
 
     // Set year in footer
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Enhanced page load animation
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add a slight delay to ensure smooth animation
+        setTimeout(() => {
+            document.body.style.opacity = '1';
+        }, 50);
+    });
+
+    // Smooth scroll behavior for any internal links
+    document.documentElement.style.scrollBehavior = 'smooth';
 
     // init
     loadDefaultEmail();
