@@ -67,6 +67,41 @@ async function loadDashboardData() {
         console.error('Error loading dashboard data:', error);
         showNotification('Error loading dashboard data', 'error');
     }
+    
+    // Setup modal event listeners and forms
+    setupEditAssignmentForm();
+    setupModalEventListeners();
+}
+
+// Setup modal event listeners
+function setupModalEventListeners() {
+    // Close modal when clicking the X button
+    document.querySelectorAll('.close-modal').forEach(button => {
+        button.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            if (modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+    
+    // Close modal when clicking outside the modal content
+    window.addEventListener('click', function(event) {
+        if (event.target.classList.contains('modal')) {
+            closeModal(event.target.id);
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            document.querySelectorAll('.modal').forEach(modal => {
+                if (modal.style.display === 'block') {
+                    closeModal(modal.id);
+                }
+            });
+        }
+    });
 }
 
 // Load quick statistics
@@ -240,6 +275,42 @@ function showMockBoats() {
 // Load guides data
 async function loadGuides() {
     try {
+        console.log('Loading guides from dedicated API endpoint...');
+        const response = await fetch('/api/staff/guides', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            console.error('Failed to fetch guides from dedicated endpoint, status:', response.status);
+            console.log('Trying fallback method...');
+            // Fallback to the general staff endpoint
+            return loadGuidesFromAllStaff();
+        }
+
+        availableGuides = await response.json();
+        console.log('Guides loaded successfully from dedicated endpoint:', availableGuides);
+        
+        if (availableGuides.length === 0) {
+            console.log('No guides found in dedicated API response, using mock data');
+            showMockGuides();
+        } else {
+            populateGuideSelector();
+        }
+    } catch (error) {
+        console.error('Error loading guides from dedicated endpoint:', error);
+        console.log('Trying fallback method...');
+        loadGuidesFromAllStaff();
+    }
+}
+
+// Fallback method to load guides from the general staff endpoint
+async function loadGuidesFromAllStaff() {
+    try {
+        console.log('Loading guides from general staff API...');
         const response = await fetch('/api/staff/all', {
             method: 'GET',
             headers: {
@@ -249,26 +320,67 @@ async function loadGuides() {
         });
 
         if (!response.ok) {
+            console.error('Failed to fetch staff members, status:', response.status);
             throw new Error('Failed to fetch guides');
         }
 
         const allStaff = await response.json();
-        // Filter only guides (SafariGuide role)
-        availableGuides = allStaff.filter(user => user.role === 'SAFARI_GUIDE');
-        populateGuideSelector();
+        console.log('All staff loaded:', allStaff);
+        
+        // Filter only guides (SafariGuide role) - check multiple possible role fields
+        availableGuides = allStaff.filter(user => {
+            const role = user.role || user.roleType || user.discriminatorValue;
+            return role === 'SAFARI_GUIDE' || role === 'SafariGuide' || user.constructor?.name === 'SafariGuide';
+        });
+        console.log('Available guides after filtering:', availableGuides);
+        
+        if (availableGuides.length === 0) {
+            console.log('No guides found in general API response, using mock data');
+            showMockGuides();
+        } else {
+            populateGuideSelector();
+        }
     } catch (error) {
-        console.error('Error loading guides:', error);
+        console.error('Error loading guides from general staff endpoint:', error);
+        console.log('Using mock guides due to error');
         showMockGuides();
     }
 }
 
 // Show mock guides data
 function showMockGuides() {
+    console.log('Loading mock guides data...');
     availableGuides = [
-        { userId: 1, firstName: 'John', secondName: 'Doe', role: 'SAFARI_GUIDE' },
-        { userId: 2, firstName: 'Sarah', secondName: 'Wilson', role: 'SAFARI_GUIDE' },
-        { userId: 3, firstName: 'Mike', secondName: 'Johnson', role: 'SAFARI_GUIDE' }
+        { 
+            userId: 1, 
+            firstName: 'John', 
+            secondName: 'Doe', 
+            role: 'SAFARI_GUIDE',
+            experience: '5 years'
+        },
+        { 
+            userId: 2, 
+            firstName: 'Sarah', 
+            secondName: 'Wilson', 
+            role: 'SAFARI_GUIDE',
+            experience: '3 years'
+        },
+        { 
+            userId: 3, 
+            firstName: 'Mike', 
+            secondName: 'Johnson', 
+            role: 'SAFARI_GUIDE',
+            experience: '7 years'
+        },
+        { 
+            userId: 4, 
+            firstName: 'Emma', 
+            secondName: 'Thompson', 
+            role: 'SAFARI_GUIDE',
+            experience: '2 years'
+        }
     ];
+    console.log('Mock guides loaded:', availableGuides);
     populateGuideSelector();
 }
 
@@ -344,6 +456,7 @@ function populateGuideSelector() {
     console.log('Populating guide selector with guides:', availableGuides);
     
     if (!availableGuides || availableGuides.length === 0) {
+        console.log('No guides available for selector');
         selector.innerHTML += '<option value="" disabled>No guides available</option>';
         return;
     }
@@ -354,7 +467,10 @@ function populateGuideSelector() {
         option.value = guide.userId;
         const firstName = guide.firstName || 'Unknown';
         const lastName = guide.secondName || guide.lastName || '';
-        option.textContent = `${firstName} ${lastName}`.trim();
+        const fullName = `${firstName} ${lastName}`.trim();
+        const experience = guide.yearsOfExperience ? `${guide.yearsOfExperience} years` : (guide.experience || 'Not specified');
+        option.textContent = `${fullName} (${experience})`;
+        console.log(`Adding guide option: ${fullName} (ID: ${guide.userId})`);
         selector.appendChild(option);
     });
     
@@ -1075,9 +1191,151 @@ function deleteTrip(tripId) {
 
 // Assignment management functions
 function editAssignment(tripId) {
-    // Switch to assignments tab and load the assignment for editing
-    showTab('assignments');
-    document.getElementById('assignTripSelect').value = tripId;
+    // Find the assignment to edit
+    const assignment = currentAssignments.find(a => a.tripId === tripId);
+    
+    if (!assignment) {
+        showNotification('Assignment not found', 'error');
+        return;
+    }
+    
+    // Populate the modal with assignment data
+    populateEditAssignmentModal(assignment);
+    
+    // Show the modal
+    showModal('editAssignmentModal');
+}
+
+// Populate the edit assignment modal with current data
+function populateEditAssignmentModal(assignment) {
+    // Set hidden trip ID
+    document.getElementById('editAssignmentTripId').value = assignment.tripId;
+    
+    // Populate trip information header
+    document.getElementById('editTripInfoName').textContent = assignment.tripName || 'Unknown Trip';
+    document.getElementById('editTripInfoDate').textContent = new Date(assignment.date).toLocaleDateString();
+    document.getElementById('editTripInfoStatus').textContent = assignment.status || 'Unknown';
+    document.getElementById('editTripInfoStatus').className = `status-badge status-${(assignment.status || 'unknown').toLowerCase()}`;
+    
+    // Populate current assignment info
+    document.getElementById('currentBoatInfo').textContent = assignment.boatName || 'Not assigned';
+    document.getElementById('currentGuideInfo').textContent = assignment.guideName || 'Not assigned';
+    
+    // Populate boat dropdown
+    const boatSelect = document.getElementById('editAssignmentBoat');
+    boatSelect.innerHTML = '<option value="">Select a boat...</option>';
+    availableBoats.forEach(boat => {
+        const option = document.createElement('option');
+        option.value = boat.boatId || boat.id;
+        option.textContent = `${boat.name || boat.boatName} (Capacity: ${boat.capacity || 'Unknown'})`;
+        if (boat.name === assignment.boatName || boat.boatName === assignment.boatName) {
+            option.selected = true;
+        }
+        boatSelect.appendChild(option);
+    });
+    
+    // Populate guide dropdown
+    const guideSelect = document.getElementById('editAssignmentGuide');
+    guideSelect.innerHTML = '<option value="">Select a guide...</option>';
+    availableGuides.forEach(guide => {
+        const option = document.createElement('option');
+        option.value = guide.guideId || guide.id || guide.userId;
+        const guideName = guide.firstName && guide.secondName 
+            ? `${guide.firstName} ${guide.secondName}` 
+            : (guide.firstName && guide.lastName 
+                ? `${guide.firstName} ${guide.lastName}`
+                : (guide.name || guide.guideName || 'Unknown Guide'));
+        option.textContent = `${guideName} (Experience: ${guide.experience || 'Not specified'})`;
+        if (guideName === assignment.guideName || guide.name === assignment.guideName) {
+            option.selected = true;
+        }
+        guideSelect.appendChild(option);
+    });
+    
+    // Clear any existing notes
+    document.getElementById('editAssignmentNotes').value = '';
+}
+
+// Show modal function
+function showModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+// Close modal function
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restore scrolling
+}
+
+// Handle edit assignment form submission
+function setupEditAssignmentForm() {
+    const form = document.getElementById('editAssignmentForm');
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const tripId = document.getElementById('editAssignmentTripId').value;
+            const boatId = document.getElementById('editAssignmentBoat').value;
+            const guideId = document.getElementById('editAssignmentGuide').value;
+            const notes = document.getElementById('editAssignmentNotes').value;
+            
+            if (!boatId || !guideId) {
+                showNotification('Please select both a boat and a guide', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/staff/assignments/${tripId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        boatId: parseInt(boatId),
+                        guideId: parseInt(guideId),
+                        notes: notes
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to update assignment');
+                }
+                
+                const result = await response.json();
+                showNotification('Assignment updated successfully!', 'success');
+                closeModal('editAssignmentModal');
+                
+                // Reload assignments and trips to reflect changes
+                await loadAssignments();
+                await loadTrips();
+                
+            } catch (error) {
+                console.error('Error updating assignment:', error);
+                showNotification('Error updating assignment: ' + error.message, 'error');
+            }
+        });
+    }
+}
+
+// Reassign all resources function
+function reassignResources() {
+    if (confirm('This will clear the current assignments and allow you to select new resources. Continue?')) {
+        document.getElementById('editAssignmentBoat').value = '';
+        document.getElementById('editAssignmentGuide').value = '';
+        showNotification('Resources cleared. Please select new boat and guide.', 'info');
+    }
+}
+
+// Remove assignment from modal
+function removeAssignmentFromModal() {
+    const tripId = document.getElementById('editAssignmentTripId').value;
+    if (confirm('Are you sure you want to remove this resource assignment? This action cannot be undone.')) {
+        removeAssignment(tripId);
+        closeModal('editAssignmentModal');
+    }
 }
 
 function removeAssignment(tripId) {

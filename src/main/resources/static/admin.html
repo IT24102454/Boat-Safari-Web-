@@ -569,6 +569,125 @@
             margin-top: 1rem;
         }
 
+        /* Recent Exports Styles */
+        .no-exports {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .no-exports i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 1rem;
+        }
+
+        .recent-exports-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .recent-exports-header h4 {
+            margin: 0;
+            color: #333;
+        }
+
+        .exports-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .export-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .export-item:hover {
+            background: #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .export-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .export-header h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .export-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .export-badge.export-pdf {
+            background: #dc3545;
+            color: white;
+        }
+
+        .export-badge.export-excel {
+            background: #28a745;
+            color: white;
+        }
+
+        .export-badge.export-csv {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .export-badge.export-json {
+            background: #6c757d;
+            color: white;
+        }
+
+        .export-details {
+            margin-bottom: 1rem;
+        }
+
+        .export-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .export-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .export-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .export-actions .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
         /* Modals */
         .modal {
             display: none;

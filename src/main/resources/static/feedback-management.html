@@ -8,100 +8,173 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary: #1fbfd6;
+            --primary: #2a5298;
+            --primary-hover: #1e3c72;
             --secondary: #3498db;
-            --dark-blue: #0e3a5b;
-            --navy: #0b1c2c;
-            --light-blue: #e8f4fd;
-            --accent: #00d4ff;
-            --gradient-primary: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            --gradient-success: linear-gradient(135deg, #28a745, #20c997);
-            --gradient-warning: linear-gradient(135deg, #ffc107, #fd7e14);
-            --gradient-danger: linear-gradient(135deg, #dc3545, #e83e8c);
-            --gradient-info: linear-gradient(135deg, #17a2b8, #007bff);
-            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
-            --glass-bg: rgba(255, 255, 255, 0.1);
+            --secondary-hover: #2980b9;
+            --success: #27ae60;
+            --success-hover: #229954;
+            --warning: #f39c12;
+            --warning-hover: #e67e22;
+            --danger: #e74c3c;
+            --danger-hover: #c0392b;
+            --info: #1fbfd6;
+            --info-hover: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gradient-primary: linear-gradient(135deg, #1fbfd6 0%, #2a5298 100%);
+            --gradient-success: linear-gradient(135deg, #27ae60, #2ecc71);
+            --gradient-warning: linear-gradient(135deg, #f39c12, #e67e22);
+            --gradient-danger: linear-gradient(135deg, #e74c3c, #c0392b);
+            --gradient-info: linear-gradient(135deg, #1fbfd6, #3498db);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --glass-bg: rgba(255, 255, 255, 0.95);
             --glass-border: rgba(255, 255, 255, 0.2);
+            --border-radius: 15px;
+            --border-radius-small: 8px;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1fbfd6 0%, #2a5298 100%);
             min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
             margin: 0;
             padding: 0;
         }
 
-        .management-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-            animation: fadeInUp 0.8s ease-out;
+        /* Slide-up Animation Styles */
+        .slide-up {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .slide-up.animate {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .dashboard-header {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            color: white;
-            padding: 3rem 2rem;
-            border-radius: 20px;
-            margin-bottom: 3rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(30, 60, 114, 0.3);
-        }
+        .slide-up.delay-1 { transition-delay: 0.1s; }
+        .slide-up.delay-2 { transition-delay: 0.2s; }
+        .slide-up.delay-3 { transition-delay: 0.3s; }
+        .slide-up.delay-4 { transition-delay: 0.4s; }
+        .slide-up.delay-5 { transition-delay: 0.5s; }
+        .slide-up.delay-6 { transition-delay: 0.6s; }
 
-        .dashboard-header::before {
-            content: '';
-            position: absolute;
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1.5" fill="rgba(255,255,255,0.03)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.08)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            opacity: 0.6;
+            z-index: 1000;
         }
 
-        .dashboard-header .header-content {
-            position: relative;
-            z-index: 2;
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .dashboard-header h1 {
-            margin: 0 0 1rem 0;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2a5298;
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #2a5298;
+            background: rgba(42, 82, 152, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Main Container */
+        .main-container {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .dashboard-title {
             font-size: 2.5rem;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            color: #2a5298;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
         }
 
-        .dashboard-header .header-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.9;
-        }
-
-        .dashboard-header p {
+        .dashboard-subtitle {
+            color: #666;
             font-size: 1.1rem;
-            opacity: 0.9;
-            margin: 0;
-            font-weight: 300;
         }
+
+        /* Stats Cards */
 
         /* Navbar Styles */
         .navbar {
@@ -509,9 +582,9 @@
 
         .feedback-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 1.5rem;
-            padding: 1rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            padding: 0.5rem 0;
         }
 
         .feedback-card {
@@ -1012,28 +1085,31 @@
         /* Responsive Design */
         @media (max-width: 1200px) {
             .feedback-list {
-                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             }
         }
 
         @media (max-width: 768px) {
             .feedback-list {
                 grid-template-columns: 1fr;
-                padding: 0.5rem;
+                padding: 0.3rem;
             }
             
             .feedback-card {
-                margin: 0 0.5rem;
-                padding: 1.5rem;
+                margin: 0 0.3rem;
+                padding: 1rem;
+                max-width: none;
             }
             
             .feedback-actions {
                 flex-direction: column;
+                gap: 0.3rem;
             }
 
             .action-btn {
                 width: 100%;
                 justify-content: center;
+                padding: 0.5rem;
             }
 
             .feedback-tags {
@@ -1089,124 +1165,967 @@
                 justify-content: center;
             }
         }
+
+        /* Additional styles for admin layout compatibility */
+        
+        /* Enhanced Stats Cards with Admin Colors */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .stat-card:nth-child(1)::before {
+            background: var(--gradient-primary);
+        }
+
+        .stat-card:nth-child(2)::before {
+            background: var(--gradient-success);
+        }
+
+        .stat-card:nth-child(3)::before {
+            background: var(--gradient-warning);
+        }
+
+        .stat-card:nth-child(4)::before {
+            background: var(--gradient-info);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 50%;
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card:nth-child(1) .icon {
+            color: var(--primary);
+            background: rgba(42, 82, 152, 0.1);
+        }
+
+        .stat-card:nth-child(2) .icon {
+            color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .stat-card:nth-child(3) .icon {
+            color: var(--warning);
+            background: rgba(243, 156, 18, 0.1);
+        }
+
+        .stat-card:nth-child(4) .icon {
+            color: var(--info);
+            background: rgba(31, 191, 214, 0.1);
+        }
+
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Enhanced Filter Styles */
+        /* Enhanced Filter Styles */
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group select {
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: var(--border-radius-small);
+            background: white;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .filter-group select:hover {
+            border-color: var(--secondary);
+        }
+
+        /* Enhanced Content Cards */
+        .content-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+        }
+
+        .content-card h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .content-card h3 i {
+            color: var(--info);
+            font-size: 1.3rem;
+            padding: 0.5rem;
+            background: rgba(31, 191, 214, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Enhanced Feedback Cards */
+        .feedback-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            padding: 1.2rem;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            max-width: 400px;
+            margin: 0 auto 1rem auto;
+        }
+
+        .feedback-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-info);
+        }
+
+        .feedback-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feedback-card.priority-high::before {
+            background: var(--gradient-danger);
+        }
+
+        .feedback-card.priority-medium::before {
+            background: var(--gradient-warning);
+        }
+
+        .feedback-card.priority-low::before {
+            background: var(--gradient-success);
+        }
+
+        /* Feedback Content Text Visibility */
+        .feedback-card .feedback-content,
+        .feedback-card .feedback-message {
+            color: #2c3e50;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin: 0.8rem 0;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.8rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .feedback-card .feedback-title {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .feedback-card .feedback-author {
+            color: #34495e;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .feedback-card .feedback-date {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* Reply Message Visibility */
+        .feedback-card .reply-section,
+        .feedback-card .admin-reply {
+            background: rgba(39, 174, 96, 0.1);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            border-radius: 6px;
+            padding: 0.8rem;
+            margin-top: 0.8rem;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .feedback-card .reply-text,
+        .feedback-card .admin-reply-text {
+            color: #2c3e50;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin: 0.3rem 0;
+        }
+
+        .feedback-card .reply-author {
+            color: var(--success);
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .feedback-card .reply-date {
+            color: #7f8c8d;
+            font-size: 0.75rem;
+        }
+
+        /* General Text Visibility in Cards */
+        .feedback-card p,
+        .feedback-card .text-content {
+            color: #2c3e50;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 0.6rem;
+            border-radius: 4px;
+            margin: 0.4rem 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .feedback-card .meta-info {
+            color: #34495e;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 0.4rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* Rating and Status Text */
+        .feedback-card .rating-text {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .feedback-card .status-text {
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* User Information */
+        .feedback-card .user-info {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 0.6rem;
+            border-radius: 6px;
+            margin-bottom: 0.8rem;
+        }
+
+        .feedback-card .user-name {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .feedback-card .user-email {
+            color: #34495e;
+            font-size: 0.8rem;
+        }
+
+        /* Enhanced Action Buttons */
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: var(--border-radius-small);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin: 0 0.2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 0.8rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-btn.reply-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        .action-btn.reply-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .action-btn.toggle-btn {
+            background: var(--warning);
+            color: white;
+        }
+
+        .action-btn.toggle-btn:hover {
+            background: var(--warning-hover);
+        }
+
+        .action-btn.delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+
+        .action-btn.delete-btn:hover {
+            background: var(--danger-hover);
+        }
+
+        /* Creative Visual Enhancements */
+        .dashboard-header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="sparkles" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="0.8" fill="rgba(255,255,255,0.1)"/><circle cx="15" cy="15" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="10" cy="18" r="0.3" fill="rgba(255,255,255,0.08)"/></pattern></defs><rect width="100" height="100" fill="url(%23sparkles)"/></svg>');
+            animation: sparkle 20s linear infinite;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        @keyframes sparkle {
+            0% { transform: translateX(-50%) translateY(-50%) rotate(0deg); }
+            100% { transform: translateX(-50%) translateY(-50%) rotate(360deg); }
+        }
+
+        /* Enhanced Loading Spinner */
+        .loading-spinner .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-right: 4px solid var(--info);
+            border-bottom: 4px solid var(--success);
+            border-left: 4px solid var(--warning);
+            border-radius: 50%;
+            animation: rainbow-spin 1.5s linear infinite;
+        }
+
+        @keyframes rainbow-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Attractive Live Indicator */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.2));
+            color: var(--success);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-left: 1rem;
+            border: 2px solid rgba(39, 174, 96, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .live-indicator i {
+            animation: pulse-glow 2s infinite;
+            filter: drop-shadow(0 0 5px currentColor);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.6; 
+                transform: scale(1.1);
+            }
+        }
+
+        /* Category Tags */
+        .feedback-category {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0.2rem;
+        }
+
+        .feedback-category.general {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--secondary);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .feedback-category.service {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+        }
+
+        .feedback-category.booking {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(243, 156, 18, 0.3);
+        }
+
+        /* Rating Stars */
+        .rating-stars {
+            display: inline-flex;
+            gap: 0.2rem;
+            margin: 0.5rem 0;
+        }
+
+        .rating-stars .star {
+            color: #ffc107;
+            font-size: 1.1rem;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+        }
+
+        .rating-stars .star.empty {
+            color: #ddd;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Enhanced Button Styles - Admin Page Colors */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius-small);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-hover);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: var(--success-hover);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: var(--warning-hover);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-hover);
+        }
+
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: var(--info-hover);
+        }
+
+        /* Small action buttons */
+        .btn-small {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            min-width: 36px;
+            height: 36px;
+        }
+
+        .btn-small i {
+            font-size: 0.9rem;
+        }
+
+        /* Tab Buttons */
+        .tab-button {
+            background: transparent;
+            border: 2px solid #ddd;
+            color: #666;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 20px rgba(42, 82, 152, 0.3);
+        }
+
+        .tab-button:hover:not(.active) {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .live-indicator i {
+            animation: pulse 2s infinite;
+        }
+
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2a5298;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal Enhancements */
+        .modal {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-bottom: none;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .modal-content .form-group label {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-group textarea {
+            border: 2px solid #e1e5e9;
+            border-radius: var(--border-radius-small);
+            padding: 1rem;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 120px;
+            color: #2c3e50;
+            background: white;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+
+        .form-group textarea::placeholder {
+            color: #95a5a6;
+            font-style: italic;
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius-small);
+            color: white;
+            font-weight: 600;
+            z-index: 9999;
+            animation: slideInRight 0.3s ease;
+        }
+
+        .notification.success {
+            background: var(--gradient-success);
+        }
+
+        .notification.error {
+            background: var(--gradient-danger);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Enhanced Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .empty-state h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        /* Additional Text Visibility Fixes */
+        .feedback-list {
+            color: #2c3e50;
+        }
+
+        .feedback-list .feedback-item {
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .feedback-list .feedback-item h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback-list .feedback-item p {
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        /* Tab Content Text */
+        .tab-content {
+            color: #2c3e50;
+        }
+
+        .tab-content h3,
+        .tab-content h4 {
+            color: var(--primary);
+        }
+
+        .tab-content p {
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        /* Loading Text */
+        .loading-spinner p {
+            color: #2c3e50;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar">
+    <!-- Navigation -->
+    <nav class="navbar slide-up">
         <div class="nav-container">
-            <a href="index.html" class="nav-logo">
+            <div class="logo">
                 <i class="fas fa-ship"></i>
                 Boat Safari
-            </a>
-            <div class="nav-menu">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="admin.html" class="nav-link">Dashboard</a>
-                <a href="feedback-management.html" class="nav-link active">Feedback</a>
-                <a href="support.html" class="nav-link">Support</a>
-                <a href="profile.html" class="nav-link">
-                    <i class="fas fa-user"></i> Profile
-                </a>
+            </div>
+            <ul class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="admin.html">Dashboard</a>
+                <a href="feedback-management.html" class="active">Feedback</a>
+                <a href="support.html">Support</a>
+            </ul>
+            <div class="user-info">
+                <span id="userGreeting">Welcome, Admin</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
             </div>
         </div>
     </nav>
 
-    <main>
-        <div class="management-container">
-            <div class="dashboard-header">
-                <div class="header-content">
-                    <div class="header-icon">
-                        <i class="fas fa-comments-dollar"></i>
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header slide-up delay-1">
+            <div class="dashboard-title">
+                <i class="fas fa-comments-dollar"></i>
+                Feedback Management
+            </div>
+            <div class="dashboard-subtitle">
+                Monitor, respond to, and manage customer feedback efficiently
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-container slide-up delay-2">
+            <div class="stat-card">
+                <div class="icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="number" id="totalFeedbacks">-</div>
+                <div class="label">Total Feedbacks</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">
+                    <i class="fas fa-reply"></i>
+                </div>
+                <div class="number" id="repliedFeedbacks">-</div>
+                <div class="label">Replied</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="number" id="pendingReplies">-</div>
+                <div class="label">Pending Replies</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="number" id="averageRating">-</div>
+                <div class="label">Average Rating</div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="content-card slide-up delay-3">
+            <h3><i class="fas fa-filter"></i> Filter Options</h3>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="categoryFilter">Category</label>
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                        <option value="GENERAL">General</option>
+                        <option value="SERVICE">Service</option>
+                        <option value="BOOKING">Booking</option>
+                        <option value="WEBSITE">Website</option>
+                        <option value="TRIP">Trip</option>
+                        <option value="STAFF">Staff</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="statusFilter">Status</label>
+                    <select id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="replied">Replied</option>
+                        <option value="pending">Pending Reply</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="visibilityFilter">Visibility</label>
+                    <select id="visibilityFilter">
+                        <option value="">All</option>
+                        <option value="visible">Visible</option>
+                        <option value="hidden">Hidden</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" onclick="applyFilters()">
+                            <i class="fas fa-filter"></i> Apply
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
                     </div>
-                    <h1>Feedback Management</h1>
-                    <p>Monitor, respond to, and manage customer feedback</p>
                 </div>
             </div>
+        </div>
 
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <div class="stat-number" id="totalFeedbacks">-</div>
-                    <div class="stat-label">Total Feedbacks</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-reply"></i>
-                    </div>
-                    <div class="stat-number" id="repliedFeedbacks">-</div>
-                    <div class="stat-label">Replied</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="stat-number" id="pendingReplies">-</div>
-                    <div class="stat-label">Pending Replies</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="stat-number" id="averageRating">-</div>
-                    <div class="stat-label">Average Rating</div>
-                </div>
-            </div>
-
-            <div class="filters-section">
-                <h3><i class="fas fa-filter"></i> Filter Options</h3>
-                <div class="filters-grid">
-                    <div class="filter-group">
-                        <label for="categoryFilter">Category</label>
-                        <select id="categoryFilter">
-                            <option value="">All Categories</option>
-                            <option value="GENERAL">General</option>
-                            <option value="SERVICE">Service</option>
-                            <option value="BOOKING">Booking</option>
-                            <option value="WEBSITE">Website</option>
-                            <option value="TRIP">Trip</option>
-                            <option value="STAFF">Staff</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="statusFilter">Status</label>
-                        <select id="statusFilter">
-                            <option value="">All Status</option>
-                            <option value="replied">Replied</option>
-                            <option value="pending">Pending Reply</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="visibilityFilter">Visibility</label>
-                        <select id="visibilityFilter">
-                            <option value="">All</option>
-                            <option value="visible">Visible</option>
-                            <option value="hidden">Hidden</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>&nbsp;</label>
-                        <div class="filter-actions">
-                            <button class="btn btn-primary" onclick="applyFilters()">
-                                <i class="fas fa-filter"></i> Apply
-                            </button>
-                            <button class="btn btn-secondary" onclick="clearFilters()">
-                                <i class="fas fa-times"></i> Clear
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="feedback-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-comments"></i> Customer Feedback</h2>
-                    <div class="header-stats">
-                        <span class="live-indicator">
-                            <i class="fas fa-circle"></i> Live
-                        </span>
-                    </div>
-                </div>
+        <!-- Feedback Section -->
+        <div class="content-card slide-up delay-4">
+            <h3>
+                <i class="fas fa-comments"></i> Customer Feedback
+                <span class="live-indicator">
+                    <i class="fas fa-circle"></i> Live
+                </span>
+            </h3>
                 <div class="feedback-tabs">
                     <button class="tab-button active" onclick="switchTab('all')">
                         <i class="fas fa-list"></i> All Feedbacks
@@ -1229,7 +2148,7 @@
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -1580,7 +2499,7 @@
                     closeModal();
                     loadFeedbacks();
                     loadFeedbackStats();
-                    showSuccess('Reply sent successfully');
+                    // showSuccess('Reply sent successfully');
                 } else {
                     const error = await response.json();
                     throw new Error(error.message || 'Failed to send reply');
@@ -1605,7 +2524,7 @@
                     const result = await response.json();
                     loadFeedbacks();
                     loadFeedbackStats();
-                    showSuccess(`Feedback ${result.isVisible ? 'shown' : 'hidden'} successfully`);
+                    // showSuccess(`Feedback ${result.isVisible ? 'shown' : 'hidden'} successfully`);
                 } else {
                     const error = await response.json();
                     throw new Error(error.message || 'Failed to update visibility');
@@ -1633,7 +2552,7 @@
                 if (response.ok) {
                     loadFeedbacks();
                     loadFeedbackStats();
-                    showSuccess('Feedback deleted successfully');
+                    // showSuccess('Feedback deleted successfully');
                 } else {
                     const error = await response.json();
                     throw new Error(error.message || 'Failed to delete feedback');
@@ -1673,6 +2592,45 @@
                 closeModal();
             }
         }
+
+        // Slide-up animations
+        function initializeAnimations() {
+            const slideUpElements = document.querySelectorAll('.slide-up');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            slideUpElements.forEach(element => {
+                observer.observe(element);
+            });
+
+            // Trigger immediate animation for elements in viewport
+            setTimeout(() => {
+                slideUpElements.forEach(element => {
+                    const rect = element.getBoundingClientRect();
+                    if (rect.top < window.innerHeight && rect.bottom > 0) {
+                        element.classList.add('animate');
+                    }
+                });
+            }, 100);
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            window.location.href = 'login.html';
+        }
+
+        // Initialize animations when page loads
+        document.addEventListener('DOMContentLoaded', initializeAnimations);
     </script>
 </body>
 </html>

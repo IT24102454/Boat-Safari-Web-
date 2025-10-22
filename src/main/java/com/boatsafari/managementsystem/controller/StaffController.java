@@ -548,6 +548,16 @@ public class StaffController {
         return ResponseEntity.ok(staffMembers);
     }
 
+    @GetMapping("/guides")
+    public ResponseEntity<List<SafariGuide>> getAllGuides() {
+        try {
+            List<SafariGuide> guides = userService.getAllGuides();
+            return ResponseEntity.ok(guides);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<User> getStaffMemberById(@PathVariable Long id) {
         return userRepository.findById(id)

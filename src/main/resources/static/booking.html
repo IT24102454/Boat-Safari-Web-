@@ -809,7 +809,6 @@
             }
 
             const booking = await resp.json();
-            alert('Booking created. Redirecting to payment…');
             window.location.href = `/payment.html?bookingId=${booking.bookingId}`;
         } catch(e2){
             errorBox.textContent = e2.message;
