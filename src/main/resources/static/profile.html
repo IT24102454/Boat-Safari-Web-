@@ -6,6 +6,7 @@
     <title>Boat Safari | My Profile</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/user-profile.css">
     <style>
         :root {
             --primary: #1fbfd6;
@@ -272,6 +273,47 @@
             background: var(--navy);
         }
 
+        /* Back Button */
+        .back-button {
+            position: fixed;
+            top: 120px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--dark-blue);
+            border: none;
+            padding: 12px 16px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(14, 58, 91, 0.15);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(31, 191, 214, 0.3);
+        }
+
+        .back-button i {
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .back-button {
+                position: static;
+                margin: 20px auto 0;
+                width: fit-content;
+            }
+        }
+
         /* Footer */
         footer {
             background: rgba(0, 0, 0, 0.2);
@@ -434,13 +476,19 @@
             <a href="/index.html">Home</a>
             <a href="/trips.html">Trips</a>
             <a href="/boat.html">Boats</a>
+            <a href="/feedback.html" class="auth-required">Feedback</a>
             <a href="/support.html">Support</a>
-            <a href="/booking-history.html">My Bookings</a>
-            <a href="/profile.html" class="active">My Profile</a>
-            <a href="#" id="logoutBtn">Logout</a>
+            <a href="/booking-history.html" class="auth-required">My Bookings</a>
+            <!-- User profile will be inserted here by the user-profile.js script -->
         </div>
     </div>
 </header>
+
+<!-- Back Button -->
+<button class="back-button slide-in-element" onclick="goBack()" title="Go back to previous page">
+    <i class="fas fa-arrow-left"></i>
+    <span>Back</span>
+</button>
 
 <!-- Profile Form -->
 <main class="wrap slide-in-element">
@@ -518,6 +566,17 @@
 
 <script src="/assets/js/auth.js"></script>
 <script>
+    // Back button functionality
+    function goBack() {
+        // Check if there's a previous page in history
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            // If no history, redirect to home page
+            window.location.href = '/index.html';
+        }
+    }
+
     document.getElementById('year').textContent = new Date().getFullYear();
 
     // Check if user is logged in
@@ -530,13 +589,6 @@
 
         // Load user profile data
         await loadUserProfile();
-
-        // Setup logout button
-        document.getElementById('logoutBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            logout();
-            window.location.href = '/index.html';
-        });
 
         // Setup change password button
         document.getElementById('changePasswordBtn').addEventListener('click', function() {
@@ -753,5 +805,6 @@
         });
     });
 </script>
+<script src="/assets/js/user-profile.js"></script>
 </body>
 </html>

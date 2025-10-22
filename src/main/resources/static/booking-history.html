@@ -6,6 +6,7 @@
     <title>Boat Safari | Booking History</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/user-profile.css">
     <style>
         :root {
             --primary: #1fbfd6;
@@ -952,9 +953,10 @@
             <a href="/index.html">Home</a>
             <a href="/trips.html">Trips</a>
             <a href="/boat.html">Boats</a>
+            <a href="/feedback.html" class="auth-required">Feedback</a>
             <a href="/support.html">Support</a>
-            <a href="/login.html">Login</a>
-            <a href="/register.html">Register</a>
+            <a href="/booking-history.html" class="active auth-required">My Bookings</a>
+            <!-- User profile will be inserted here by the user-profile.js script -->
         </div>
     </div>
 </header>
@@ -1366,5 +1368,7 @@
     
     initializePage();
 </script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/user-profile.js"></script>
 </body>
 </html>

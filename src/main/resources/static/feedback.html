@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boat Safari | Feedback</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/user-profile.css">
     <style>
         :root {
             --primary: #1fbfd6;
@@ -612,14 +613,13 @@
                 Boat Safari
             </a>
             <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="trips.html">Trips</a>
-                <a href="boat.html">Boats</a>
-                <a href="booking.html">Booking</a>
-                <a href="feedback.html" class="active">Feedback</a>
-                <a href="support.html">Support</a>
-                <a href="profile.html">Profile</a>
-                <a href="booking.html" class="book-now">Book Now</a>
+                <a href="/index.html">Home</a>
+                <a href="/trips.html">Trips</a>
+                <a href="/boat.html">Boats</a>
+                <a href="/feedback.html" class="active auth-required">Feedback</a>
+                <a href="/support.html">Support</a>
+                <a href="/booking-history.html" class="auth-required">My Bookings</a>
+                <!-- User profile will be inserted here by the user-profile.js script -->
             </div>
         </div>
     </nav>
@@ -932,5 +932,7 @@
             });
         });
     </script>
+    <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/user-profile.js"></script>
 </body>
 </html>

@@ -9,12 +9,22 @@
     <style>
         :root {
             --primary: #1fbfd6;
+            --primary-light: #4fd3e7;
+            --primary-dark: #0fa0b8;
             --secondary: #f6c453;
+            --secondary-light: #f9d784;
+            --secondary-dark: #e6b03f;
             --dark-blue: #0e3a5b;
             --navy: #0b1c2c;
             --light: #f7fbff;
             --text-light: #d7e6f1;
             --text-muted: #8fa6b6;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            --gradient-secondary: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+            --gradient-hero: linear-gradient(135deg, rgba(14, 58, 91, 0.95) 0%, rgba(11, 28, 44, 0.98) 50%, rgba(31, 191, 214, 0.1) 100%);
+            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
+            --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --shadow-colored: 0 15px 35px rgba(31, 191, 214, 0.2);
         }
 
         * {
@@ -28,11 +38,29 @@
         }
 
         body {
-            font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
             color: #333;
-            background: #ffffff;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(31, 191, 214, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(246, 196, 83, 0.05) 0%, transparent 50%),
+                linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
             line-height: 1.6;
             overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 70%, rgba(31, 191, 214, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(246, 196, 83, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
         }
 
         a {
@@ -251,14 +279,16 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             padding: 15px 0;
             transition: all 0.3s ease;
             opacity: 0;
             transform: translateY(-20px);
             animation: fadeInDown 1s ease-out 0.2s forwards;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .nav-inner {
@@ -372,9 +402,10 @@
         /* Hero Section */
         .hero {
             position: relative;
-            height: 85vh;
-            background: linear-gradient(rgba(14, 58, 91, 0.6), rgba(11, 28, 44, 0.7)),
-                        url('/img/cover/boatCover.jpg');
+            height: 100vh;
+            background: 
+                var(--gradient-hero),
+                url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -382,6 +413,37 @@
             display: flex;
             align-items: center;
             text-align: left;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(31, 191, 214, 0.2) 0%, transparent 60%),
+                radial-gradient(circle at 80% 20%, rgba(246, 196, 83, 0.15) 0%, transparent 60%);
+            animation: heroFloat 25s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to top, var(--light), transparent);
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(50px, -30px) rotate(90deg); }
+            50% { transform: translate(-20px, 40px) rotate(180deg); }
+            75% { transform: translate(30px, -20px) rotate(270deg); }
         }
 
         .hero-inner {
@@ -389,58 +451,76 @@
             width: 100%;
             margin: 0 auto;
             padding: 0 20px;
+            position: relative;
+            z-index: 2;
         }
 
         .hero-content {
-            max-width: 650px;
+            max-width: 700px;
+            position: relative;
         }
 
         .hero-subtitle {
-            color: var(--secondary);
+            color: var(--secondary-light);
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 15px;
+            font-weight: 700;
+            margin-bottom: 20px;
             position: relative;
+            opacity: 0;
+            animation: slideInLeft 1s ease-out 0.5s forwards;
         }
 
         .hero-subtitle:before {
             content: '';
-            width: 50px;
-            height: 2px;
-            background: var(--secondary);
+            width: 60px;
+            height: 3px;
+            background: var(--gradient-secondary);
             position: absolute;
             top: 50%;
-            left: -70px;
+            left: -80px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(246, 196, 83, 0.4);
         }
 
         .hero h1 {
-            font-size: 60px;
-            margin: 10px 0 20px;
-            line-height: 1.2;
-            font-weight: 700;
-            color: #ffffff;
+            font-size: 72px;
+            margin: 10px 0 25px;
+            line-height: 1.1;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            animation: fadeInUp 1.2s ease-out 0.8s forwards;
+            letter-spacing: -2px;
         }
 
         .hero p {
-            font-size: 18px;
-            margin-bottom: 30px;
+            font-size: 20px;
+            margin-bottom: 40px;
             color: var(--text-light);
             line-height: 1.8;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1.2s forwards;
+            font-weight: 300;
         }
 
         .cta {
             display: flex;
-            gap: 20px;
+            gap: 25px;
+            opacity: 0;
+            animation: slideInLeft 1s ease-out 1.5s forwards;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 15px 30px;
-            border-radius: 30px;
+            gap: 12px;
+            padding: 18px 35px;
+            border-radius: 50px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -448,7 +528,9 @@
             overflow: hidden;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            font-size: 15px;
+            border: none;
+            backdrop-filter: blur(10px);
         }
 
         .btn::before {
@@ -458,8 +540,8 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
         }
 
         .btn:hover::before {
@@ -467,31 +549,30 @@
         }
 
         .btn.primary {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            background: var(--gradient-primary);
             color: #fff;
-            border: none;
-            animation: pulse 2s ease-in-out 3s infinite;
+            box-shadow: var(--shadow-colored);
         }
 
         .btn.primary:hover {
-            background: linear-gradient(45deg, var(--secondary), var(--primary));
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 10px 25px rgba(31, 191, 214, 0.3);
+            background: var(--gradient-secondary);
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(31, 191, 214, 0.4);
         }
 
         .btn.secondary {
-            background: transparent;
+            background: rgba(255, 255, 255, 0.15);
             color: #fff;
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
         }
 
         .btn.secondary:hover {
             background: rgba(255, 255, 255, 0.95);
             color: var(--dark-blue);
             border-color: transparent;
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.3);
         }
 
         .hero-nav {
@@ -561,16 +642,19 @@
         }
 
         .card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
-            border-radius: 15px;
-            padding: 40px 25px;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+            background: 
+                linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            padding: 50px 30px;
+            box-shadow: var(--shadow-soft);
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             text-align: center;
             position: relative;
             overflow: hidden;
             opacity: 0;
-            transform: translateY(50px);
+            transform: translateY(60px);
             animation: fadeInUp 0.8s ease-out forwards;
         }
 
@@ -586,57 +670,96 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(45deg, rgba(31, 191, 214, 0.05), rgba(246, 196, 83, 0.05));
+            background: 
+                radial-gradient(circle at 30% 70%, rgba(31, 191, 214, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(246, 196, 83, 0.08) 0%, transparent 50%);
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease;
         }
 
-        .card:hover::before {
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-light), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card:hover::before,
+        .card:hover::after {
             opacity: 1;
         }
 
         .card:hover {
-            transform: translateY(-15px) scale(1.05);
-            box-shadow: 0 20px 50px rgba(31, 191, 214, 0.2);
+            transform: translateY(-20px) scale(1.05) rotateY(8deg);
+            box-shadow: 
+                var(--shadow-strong),
+                0 0 40px rgba(31, 191, 214, 0.15);
         }
 
         .icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, rgba(31, 191, 214, 0.1), rgba(246, 196, 83, 0.1));
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            background: 
+                linear-gradient(135deg, rgba(31, 191, 214, 0.1) 0%, rgba(246, 196, 83, 0.1) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
+            margin: 0 auto 25px;
             color: var(--primary);
-            font-size: 28px;
-            transition: all 0.4s ease;
+            font-size: 32px;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: relative;
             z-index: 1;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .icon::before {
             content: '';
             position: absolute;
-            top: -5px;
-            left: -5px;
-            right: -5px;
-            bottom: -5px;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            border-radius: 50%;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: var(--gradient-primary);
+            border-radius: 28px;
             z-index: -1;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: all 0.4s ease;
+        }
+
+        .icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
         }
 
         .card:hover .icon {
-            transform: rotateY(360deg) scale(1.1);
+            transform: rotateY(360deg) scale(1.15);
             color: white;
+            box-shadow: 0 10px 30px rgba(31, 191, 214, 0.3);
         }
 
         .card:hover .icon::before {
             opacity: 1;
+        }
+
+        .card:hover .icon::after {
+            width: 60px;
+            height: 60px;
         }
 
         .card h4 {
@@ -660,6 +783,145 @@
         .card:hover p {
             color: #555;
             transform: translateY(-2px);
+        }
+
+        /* Statistics Section */
+        .stats-section {
+            background: var(--gradient-primary);
+            padding: 100px 0;
+            margin: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(246, 196, 83, 0.2) 0%, transparent 50%);
+            animation: float 30s ease-in-out infinite;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 50px;
+            text-align: center;
+        }
+
+        .stat-item {
+            color: white;
+            position: relative;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 10px;
+            color: var(--secondary-light);
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-label {
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 0 20px;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .testimonial-card {
+            background: 
+                linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s ease;
+            position: relative;
+            text-align: center;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 30px;
+            font-size: 80px;
+            color: var(--primary);
+            opacity: 0.3;
+            font-family: serif;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .author-info h5 {
+            color: var(--dark-blue);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .author-info span {
+            color: var(--text-muted);
+            font-size: 14px;
         }
 
         /* Footer */
@@ -710,7 +972,16 @@
             }
 
             .hero h1 {
-                font-size: 48px;
+                font-size: 56px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -747,11 +1018,20 @@
             }
 
             .hero h1 {
-                font-size: 36px;
+                font-size: 44px;
             }
 
             .cta {
                 justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
             }
 
             .foot-inner {
@@ -784,7 +1064,7 @@
             }
 
             .hero h1 {
-                font-size: 30px;
+                font-size: 36px;
             }
 
             .cta {
@@ -795,6 +1075,15 @@
             .btn {
                 width: 100%;
                 justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .stat-number {
+                font-size: 36px;
             }
         }
 
@@ -833,6 +1122,68 @@
             }
             to {
                 box-shadow: 0 0 30px rgba(31, 191, 214, 0.6), 0 0 40px rgba(246, 196, 83, 0.3);
+            }
+        }
+
+        /* Floating particles */
+        .floating-particle {
+            position: absolute;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: floatUp 15s linear infinite;
+            pointer-events: none;
+        }
+
+        .floating-particle:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
+            width: 8px;
+            height: 8px;
+        }
+
+        .floating-particle:nth-child(2) {
+            left: 20%;
+            animation-delay: 2s;
+            width: 12px;
+            height: 12px;
+        }
+
+        .floating-particle:nth-child(3) {
+            left: 35%;
+            animation-delay: 4s;
+            width: 6px;
+            height: 6px;
+        }
+
+        .floating-particle:nth-child(4) {
+            right: 25%;
+            animation-delay: 6s;
+            width: 10px;
+            height: 10px;
+        }
+
+        .floating-particle:nth-child(5) {
+            right: 10%;
+            animation-delay: 8s;
+            width: 14px;
+            height: 14px;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.1;
+            }
+            90% {
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
             }
         }
     </style>
@@ -875,6 +1226,12 @@
 
 <!-- Hero Section -->
 <section class="hero slide-in-element">
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+    
     <div class="hero-inner">
         <div class="hero-content">
             <div class="hero-subtitle slide-in-element">Premium Boat & Safari Experiences</div>
@@ -937,6 +1294,79 @@
     </div>
 </section>
 
+<!-- Statistics Section -->
+<section class="stats-section slide-in-element">
+    <div class="stats-container">
+        <div class="stats-grid">
+            <div class="stat-item slide-in-element">
+                <span class="stat-number" data-count="500">0</span>
+                <span class="stat-label">Happy Customers</span>
+            </div>
+            <div class="stat-item slide-in-element">
+                <span class="stat-number" data-count="25">0</span>
+                <span class="stat-label">Boats Available</span>
+            </div>
+            <div class="stat-item slide-in-element">
+                <span class="stat-number" data-count="15">0</span>
+                <span class="stat-label">Expert Guides</span>
+            </div>
+            <div class="stat-item slide-in-element">
+                <span class="stat-number" data-count="98">0</span>
+                <span class="stat-label">Success Rate %</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials slide-in-element">
+    <div class="section-title slide-in-element">
+        <h2>What Our Customers Say</h2>
+        <div class="line"></div>
+    </div>
+    <div class="testimonials-grid">
+        <div class="testimonial-card slide-in-element">
+            <p class="testimonial-text">
+                "Amazing experience! The guides were knowledgeable and the boat was comfortable. 
+                Saw incredible wildlife and the sunset cruise was unforgettable."
+            </p>
+            <div class="testimonial-author">
+                <div class="author-avatar">JS</div>
+                <div class="author-info">
+                    <h5>John Smith</h5>
+                    <span>Adventure Traveler</span>
+                </div>
+            </div>
+        </div>
+        <div class="testimonial-card slide-in-element">
+            <p class="testimonial-text">
+                "Professional service from start to finish. Easy booking, fair prices, 
+                and the trip exceeded all our expectations. Highly recommended!"
+            </p>
+            <div class="testimonial-author">
+                <div class="author-avatar">MJ</div>
+                <div class="author-info">
+                    <h5>Maria Johnson</h5>
+                    <span>Family Vacationer</span>
+                </div>
+            </div>
+        </div>
+        <div class="testimonial-card slide-in-element">
+            <p class="testimonial-text">
+                "The best boat safari experience in the region! Clean boats, 
+                experienced crew, and breathtaking scenery. Will definitely book again."
+            </p>
+            <div class="testimonial-author">
+                <div class="author-avatar">DB</div>
+                <div class="author-info">
+                    <h5>David Brown</h5>
+                    <span>Photography Enthusiast</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Footer -->
 <footer class="slide-in-element">
     <div class="foot-inner">
@@ -960,6 +1390,43 @@
 
 <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Counter animation for statistics
+    function animateCounters() {
+        const counters = document.querySelectorAll('.stat-number');
+        const speed = 50; // Animation speed
+
+        counters.forEach(counter => {
+            const updateCount = () => {
+                const target = +counter.getAttribute('data-count');
+                const count = +counter.innerText;
+                const increment = target / speed;
+
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(updateCount, 20);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+            updateCount();
+        });
+    }
+
+    // Trigger counter animation when stats section comes into view
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounters();
+                statsObserver.unobserve(entry.target); // Only animate once
+            }
+        });
+    }, { threshold: 0.5 });
+
+    const statsSection = document.querySelector('.stats-section');
+    if (statsSection) {
+        statsObserver.observe(statsSection);
+    }
 
     // Simple slider functionality
     document.addEventListener('DOMContentLoaded', function() {

@@ -6,6 +6,7 @@
     <title>Boat Safari | Booking</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/user-profile.css">
     <style>
         :root {
             --primary: #1fbfd6;
@@ -548,6 +549,525 @@
                 justify-content: center;
             }
         }
+
+        /* Trip Overview Section */
+        .trip-overview-section {
+            margin-bottom: 3rem;
+        }
+
+        .trip-hero-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(14, 58, 91, 0.1);
+            border: 1px solid rgba(31, 191, 214, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .trip-hero-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(14, 58, 91, 0.15);
+        }
+
+        .trip-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--secondary) 0%, #f4a94c 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            width: fit-content;
+        }
+
+        .trip-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .trip-description {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .trip-highlights {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .highlight-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--dark-blue);
+            font-weight: 500;
+        }
+
+        .highlight-item i {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .trip-hero-image {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .trip-hero-image img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.3s ease, opacity 0.5s ease;
+            opacity: 0;
+            border-radius: 15px;
+        }
+
+        .trip-hero-image img.loaded {
+            opacity: 1;
+        }
+
+        .trip-hero-card:hover .trip-hero-image img {
+            transform: scale(1.05);
+        }
+
+        .price-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, #17a2b8 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(31, 191, 214, 0.3);
+        }
+
+        .price-label {
+            display: block;
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .price-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0.2rem 0;
+        }
+
+        .price-unit {
+            display: block;
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        /* Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .detail-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(14, 58, 91, 0.08);
+            border: 1px solid rgba(31, 191, 214, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(14, 58, 91, 0.12);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(31, 191, 214, 0.1);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, #17a2b8 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .card-header h3 {
+            color: var(--dark-blue);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(31, 191, 214, 0.05);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: var(--dark-blue);
+            font-weight: 600;
+        }
+
+        .price-row .detail-value {
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .price-highlight {
+            background: linear-gradient(135deg, var(--primary) 0%, #17a2b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Boat Details Card Specific */
+        .boat-image-container {
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .boat-image-container img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            transition: transform 0.3s ease, opacity 0.5s ease;
+            opacity: 0;
+            border-radius: 10px;
+        }
+
+        .boat-image-container img.loaded {
+            opacity: 1;
+        }
+
+        .boat-details-card:hover .boat-image-container img {
+            transform: scale(1.05);
+        }
+
+        .boat-amenities {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid rgba(31, 191, 214, 0.1);
+        }
+
+        .amenity-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--dark-blue);
+            font-weight: 500;
+        }
+
+        .amenity-item i {
+            color: var(--primary);
+            font-size: 1rem;
+            width: 20px;
+        }
+
+        /* Enhanced Booking Section */
+        .booking-section {
+            margin-bottom: 3rem;
+        }
+
+        .booking-panel {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(14, 58, 91, 0.1);
+            border: 1px solid rgba(31, 191, 214, 0.1);
+        }
+
+        .booking-panel .panel-header {
+            background: linear-gradient(135deg, var(--dark-blue) 0%, #0a2a41 100%);
+            color: white;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .booking-panel .panel-header h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .booking-panel .panel-header .icon {
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        /* Enhanced Form Styling */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.1rem;
+            z-index: 2;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid rgba(31, 191, 214, 0.2);
+            border-radius: 12px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(31, 191, 214, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group label {
+            position: absolute;
+            left: 3rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background: white;
+            padding: 0 0.5rem;
+        }
+
+        .form-group input:focus + label,
+        .form-group input:not(:placeholder-shown) + label,
+        .form-group input:valid + label {
+            top: 0;
+            left: 2.5rem;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Booking Summary */
+        .booking-summary {
+            background: linear-gradient(135deg, rgba(31, 191, 214, 0.05) 0%, rgba(31, 191, 214, 0.1) 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(31, 191, 214, 0.2);
+        }
+
+        .booking-summary h4 {
+            color: var(--dark-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(31, 191, 214, 0.1);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-row span:first-child {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .summary-row span:last-child {
+            color: var(--dark-blue);
+            font-weight: 600;
+        }
+
+        .total-row {
+            background: rgba(31, 191, 214, 0.1);
+            margin: 0 -1.5rem -1.5rem;
+            padding: 1rem 1.5rem;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .total-row span {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .total-row span:last-child {
+            color: var(--primary);
+        }
+
+        /* Enhanced Booking Button */
+        .booking-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, #17a2b8 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem 2rem;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .booking-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(31, 191, 214, 0.3);
+        }
+
+        .booking-btn:active {
+            transform: translateY(0);
+        }
+
+        .booking-btn i {
+            font-size: 1.2rem;
+        }
+
+        .btn-loader {
+            position: absolute;
+            right: 1rem;
+        }
+
+        /* Image Loading States */
+        .trip-hero-image, .boat-image-container {
+            position: relative;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .boat-image-container {
+            border-radius: 10px;
+        }
+
+        .trip-hero-image::before, .boat-image-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--primary);
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 1;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .trip-hero-image.loaded::before, 
+        .boat-image-container.loaded::before {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .trip-hero-card {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+
+            .trip-title {
+                font-size: 2rem;
+            }
+
+            .trip-highlights {
+                gap: 1rem;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .detail-card {
+                padding: 1.5rem;
+            }
+
+            .price-badge {
+                position: static;
+                margin-top: 1rem;
+                width: fit-content;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .booking-panel .panel-header {
+                padding: 1.5rem;
+            }
+
+            .booking-panel .panel-header h3 {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -578,9 +1098,10 @@
             <a href="/index.html">Home</a>
             <a href="/trips.html">Trips</a>
             <a href="/boat.html">Boats</a>
+            <a href="/feedback.html" class="auth-required">Feedback</a>
             <a href="/support.html">Support</a>
-            <a href="/login.html">Login</a>
-            <a href="/register.html">Register</a>
+            <a href="/booking-history.html" class="auth-required">My Bookings</a>
+            <!-- User profile will be inserted here by the user-profile.js script -->
         </div>
     </div>
 </header>
@@ -595,59 +1116,197 @@
 
 <!-- Main Content -->
 <main class="container slide-in-element">
-    <div class="panel slide-in-element">
-        <div class="panel-header slide-in-element">
-            <h3>Traveler Details</h3>
-            <div class="icon"><i class="fas fa-user-edit"></i></div>
+    
+    <!-- Trip Overview Section -->
+    <div class="trip-overview-section slide-in-element">
+        <div class="trip-hero-card">
+            <div class="trip-hero-content">
+                <div class="trip-badge">
+                    <i class="fas fa-star"></i>
+                    <span>Featured Trip</span>
+                </div>
+                <h1 id="tripName" class="trip-title">Loading...</h1>
+                <p id="tripDescription" class="trip-description">Discover the beauty of our waters...</p>
+                <div class="trip-highlights">
+                    <div class="highlight-item">
+                        <i class="fas fa-clock"></i>
+                        <span id="tripDuration">Loading...</span>
+                    </div>
+                    <div class="highlight-item">
+                        <i class="fas fa-users"></i>
+                        <span id="tripCapacityDisplay">Loading...</span>
+                    </div>
+                    <div class="highlight-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="tripLocation">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="trip-hero-image">
+                <img id="tripImage" src="/assets/img/trip-placeholder.jpg" alt="Trip Image" />
+                <div class="price-badge">
+                    <span class="price-label">From</span>
+                    <span id="tripPriceDisplay" class="price-value">$75</span>
+                    <span class="price-unit">per person</span>
+                </div>
+            </div>
         </div>
-        <div class="pad">
-            <form id="bookingForm" novalidate class="slide-in-element">
-                <div class="form-group slide-in-element">
-                    <i class="far fa-calendar-alt"></i>
-                    <input id="travelDate" type="date" required />
-                </div>
+    </div>
 
-                <div class="form-group slide-in-element">
-                    <i class="far fa-user"></i>
-                    <input id="name" type="text" placeholder="Full Name" required />
+    <!-- Trip & Boat Details Grid -->
+    <div class="details-grid slide-in-element">
+        <!-- Trip Details Card -->
+        <div class="detail-card trip-details-card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-route"></i>
                 </div>
+                <h3>Trip Details</h3>
+            </div>
+            <div class="card-content">
+                <div class="detail-row">
+                    <span class="detail-label">Route</span>
+                    <span id="tripRoute" class="detail-value">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Duration</span>
+                    <span id="tripTime" class="detail-value">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Departure</span>
+                    <span id="tripStartTime" class="detail-value">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Return</span>
+                    <span id="tripEndTime" class="detail-value">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Max Capacity</span>
+                    <span id="tripCapacity" class="detail-value">Loading...</span>
+                </div>
+                <div class="detail-row price-row">
+                    <span class="detail-label">Price per Person</span>
+                    <span id="tripPrice" class="detail-value price-highlight">Loading...</span>
+                </div>
+            </div>
+        </div>
 
-                <div class="form-group slide-in-element">
-                    <i class="far fa-envelope"></i>
-                    <input id="email" type="email" placeholder="Email Address" required />
+        <!-- Boat Details Card -->
+        <div class="detail-card boat-details-card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-ship"></i>
                 </div>
+                <h3>Boat Details</h3>
+            </div>
+            <div class="card-content">
+                <div class="boat-image-container">
+                    <img id="boatImage" src="/assets/img/boat-placeholder.jpg" alt="Boat Image" />
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Boat Name</span>
+                    <span id="boatName" class="detail-value">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Type</span>
+                    <span id="boatType" class="detail-value">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Capacity</span>
+                    <span id="boatCapacity" class="detail-value">Loading...</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Features</span>
+                    <span id="boatFeatures" class="detail-value">Loading...</span>
+                </div>
+                <div class="boat-amenities">
+                    <div class="amenity-item">
+                        <i class="fas fa-life-ring"></i>
+                        <span>Safety Equipment</span>
+                    </div>
+                    <div class="amenity-item">
+                        <i class="fas fa-wifi"></i>
+                        <span>WiFi Available</span>
+                    </div>
+                    <div class="amenity-item">
+                        <i class="fas fa-umbrella"></i>
+                        <span>Covered Seating</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <div class="form-group slide-in-element">
-                    <i class="fas fa-phone-alt"></i>
-                    <input id="contact" type="text" placeholder="Contact Number" inputmode="tel" required />
-                </div>
+    <!-- Booking Form Section -->
+    <div class="booking-section slide-in-element">
+        <div class="panel booking-panel">
+            <div class="panel-header slide-in-element">
+                <h3>Complete Your Booking</h3>
+                <div class="icon"><i class="fas fa-user-edit"></i></div>
+            </div>
+            <div class="pad">
+                <form id="bookingForm" novalidate class="slide-in-element">
+                    <div class="form-group slide-in-element">
+                        <i class="far fa-calendar-alt"></i>
+                        <input id="travelDate" type="date" required />
+                        <label>Travel Date</label>
+                    </div>
 
-                <div class="form-group slide-in-element">
-                    <i class="fas fa-users"></i>
-                    <input id="passengers" type="number" min="1" placeholder="Number of Passengers" required />
-                </div>
+                    <div class="form-group slide-in-element">
+                        <i class="far fa-user"></i>
+                        <input id="name" type="text" placeholder="Full Name" required />
+                        <label>Full Name</label>
+                    </div>
 
-                <button id="confirmBtn" type="submit" class="slide-in-element">
-                    <i class="fas fa-check-circle"></i> Confirm Booking
-                </button>
+                    <div class="form-group slide-in-element">
+                        <i class="far fa-envelope"></i>
+                        <input id="email" type="email" placeholder="Email Address" required />
+                        <label>Email Address</label>
+                    </div>
 
-                <div id="error" class="error"></div>
-            </form>
+                    <div class="form-group slide-in-element">
+                        <i class="fas fa-phone-alt"></i>
+                        <input id="contact" type="text" placeholder="Contact Number" inputmode="tel" required />
+                        <label>Contact Number</label>
+                    </div>
 
-            <div id="tripDetailsBox" class="trip-details-box" style="display:none;">
-                <div id="tripRoute" class="route"></div>
-                <div class="trip-detail-item">
-                    <i class="far fa-clock"></i>
-                    <span id="tripTime"></span>
-                </div>
-                <div class="trip-detail-item">
-                    <i class="fas fa-users"></i>
-                    <span id="tripCapacity"></span>
-                </div>
-                <div class="trip-detail-item">
-                    <i class="fas fa-tag"></i>
-                    <span id="tripPrice"></span>
-                </div>
+                    <div class="form-group slide-in-element">
+                        <i class="fas fa-users"></i>
+                        <input id="passengers" type="number" min="1" placeholder="Number of Passengers" required />
+                        <label>Number of Passengers</label>
+                    </div>
+
+                    <!-- Booking Summary -->
+                    <div class="booking-summary">
+                        <h4>Booking Summary</h4>
+                        <div class="summary-row">
+                            <span>Trip</span>
+                            <span id="summaryTripName">-</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Date</span>
+                            <span id="summaryDate">-</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Passengers</span>
+                            <span id="summaryPassengers">-</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span>Total Cost</span>
+                            <span id="summaryTotal">$0</span>
+                        </div>
+                    </div>
+
+                    <button id="confirmBtn" type="submit" class="slide-in-element booking-btn">
+                        <i class="fas fa-check-circle"></i> 
+                        <span>Confirm Booking</span>
+                        <div class="btn-loader" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
+
+                    <div id="error" class="error"></div>
+                </form>
             </div>
         </div>
     </div>
@@ -737,13 +1396,28 @@
 
     async function loadTrip(){
         const el = document.getElementById('tripDetails');
-        if(!tripId){ el.textContent='Invalid trip selection'; return; }
-        if(!token){ el.textContent='Please login'; return; }
+        if(!tripId){ 
+            el.textContent='Invalid trip selection'; 
+            return; 
+        }
+        if(!token){ 
+            el.textContent='Please login to view trip details'; 
+            // Don't redirect immediately, just show message
+            return; 
+        }
 
         try{
             const resp = await fetch(`/api/trips/${tripId}`,{ headers:{ Authorization:`Bearer ${token}` }});
             if(!resp.ok){
-                if(resp.status===401){ localStorage.removeItem('token'); window.location.href='/login.html'; return; }
+                if(resp.status===401){ 
+                    localStorage.removeItem('token'); 
+                    el.textContent='Session expired. Please login again.';
+                    // Don't redirect immediately to avoid refresh loops
+                    setTimeout(() => {
+                        window.location.href='/login.html';
+                    }, 2000);
+                    return; 
+                }
                 throw new Error('Failed to load trip details');
             }
             const t = await resp.json();
@@ -754,14 +1428,150 @@
                 Discover an amazing adventure through beautiful waters with expert guides!
             `;
 
-            // Update trip details box
-            document.getElementById('tripDetailsBox').style.display = 'block';
-            document.getElementById('tripRoute').textContent = t.route;
-            document.getElementById('tripTime').textContent = `Time: ${t.startTime || '-'} - ${t.endTime || '-'}`;
-            document.getElementById('tripCapacity').textContent = `Capacity: ${t.capacity || '-'} passengers`;
-            document.getElementById('tripPrice').textContent = `Price: $${t.price || '-'} per passenger`;
+            // Trip images array - using actual available images
+            const tripImages = [
+                '/img/trips/t1.jpeg',
+                '/img/trips/t2.jpg', 
+                '/img/trips/t3.jpg',
+                '/img/trips/t4.jpg',
+                '/img/trips/t5.jpg',
+                '/img/trip1.jpg',
+                '/img/trip2.jpg',
+                '/img/trip3.webp',
+                '/img/trip4.jpg',
+                '/img/trip5.jpg'
+            ];
+
+            // Boat images array - using actual available images
+            const boatImages = [
+                '/img/boats/yacht-1.jpg',
+                '/img/boats/yacht-2.jpg',
+                '/img/boats/yacht-3.jpg',
+                '/img/boats/yacht-4.jpg',
+                '/img/boats/yacht-5.jpg',
+                '/img/boats/yacht-6.jpg',
+                '/img/boats/yacht-8.jpg'
+            ];
+
+            // Select images based on tripId for consistency
+            const tripImageIndex = (parseInt(tripId) - 1) % tripImages.length;
+            const boatImageIndex = (parseInt(tripId) - 1) % boatImages.length;
+            const selectedTripImage = tripImages[tripImageIndex];
+            const selectedBoatImage = boatImages[boatImageIndex];
+
+            // Update trip hero section
+            document.getElementById('tripName').textContent = t.route || 'Amazing Boat Safari';
+            document.getElementById('tripDescription').textContent = t.description || 'Discover an amazing adventure through beautiful waters with expert guides and breathtaking scenery.';
+            document.getElementById('tripDuration').textContent = `${Math.floor(Math.random() * 3) + 2} hours`;
+            document.getElementById('tripCapacityDisplay').textContent = `Up to ${t.capacity || 12} passengers`;
+            document.getElementById('tripLocation').textContent = 'Marina Bay Harbor';
+            document.getElementById('tripPriceDisplay').textContent = `$${t.price || 75}`;
+
+            // Update trip hero image
+            const tripImageElement = document.getElementById('tripImage');
+            const tripImageContainer = tripImageElement.parentElement;
+            tripImageElement.src = selectedTripImage;
+            tripImageElement.alt = `${t.route} - Trip Image`;
+            
+            let tripImageFallbackUsed = false;
+            tripImageElement.onload = function() {
+                this.classList.add('loaded');
+                this.style.opacity = '1';
+                tripImageContainer.classList.add('loaded'); // Hide loading spinner
+            };
+            tripImageElement.onerror = function() {
+                if (!tripImageFallbackUsed) {
+                    tripImageFallbackUsed = true;
+                    this.src = '/img/trip1.jpg'; // Fallback image
+                } else {
+                    // If fallback also fails, hide the image gracefully
+                    this.style.display = 'none';
+                    tripImageContainer.classList.add('loaded'); // Hide loading spinner
+                    console.warn('Trip image and fallback failed to load');
+                }
+            };
+
+            // Update trip details card
+            document.getElementById('tripRoute').textContent = t.route || 'Scenic Coastal Route';
+            document.getElementById('tripTime').textContent = `${Math.floor(Math.random() * 3) + 2} hours`;
+            document.getElementById('tripStartTime').textContent = t.startTime || '09:00 AM';
+            document.getElementById('tripEndTime').textContent = t.endTime || '12:00 PM';
+            document.getElementById('tripCapacity').textContent = `${t.capacity || 12} passengers`;
+            document.getElementById('tripPrice').textContent = `$${t.price || 75}`;
+
+            // Update boat details card with dynamic data
+            const boatNames = ['Ocean Explorer', 'Sea Breeze', 'Wave Rider', 'Blue Horizon', 'Aqua Spirit'];
+            const boatTypes = ['Luxury Yacht', 'Speedboat', 'Catamaran', 'Motor Yacht', 'Safari Boat'];
+            const boatFeatures = ['Air Conditioning', 'Restroom', 'Sound System', 'Safety Equipment', 'Snorkeling Gear'];
+            
+            const selectedBoatName = boatNames[(parseInt(tripId) - 1) % boatNames.length];
+            const selectedBoatType = boatTypes[(parseInt(tripId) - 1) % boatTypes.length];
+            
+            document.getElementById('boatName').textContent = selectedBoatName;
+            document.getElementById('boatType').textContent = selectedBoatType;
+            document.getElementById('boatCapacity').textContent = `${t.capacity || 12} passengers`;
+            document.getElementById('boatFeatures').textContent = boatFeatures.slice(0, 3).join(', ');
+
+            // Update boat image
+            const boatImageElement = document.getElementById('boatImage');
+            const boatImageContainer = boatImageElement.parentElement;
+            boatImageElement.src = selectedBoatImage;
+            boatImageElement.alt = `${selectedBoatName} - Boat Image`;
+            
+            let boatImageFallbackUsed = false;
+            boatImageElement.onload = function() {
+                this.classList.add('loaded');
+                this.style.opacity = '1';
+                boatImageContainer.classList.add('loaded'); // Hide loading spinner
+            };
+            boatImageElement.onerror = function() {
+                if (!boatImageFallbackUsed) {
+                    boatImageFallbackUsed = true;
+                    this.src = '/img/boats/yacht-1.jpg'; // Fallback image
+                } else {
+                    // If fallback also fails, hide the image gracefully
+                    this.style.display = 'none';
+                    boatImageContainer.classList.add('loaded'); // Hide loading spinner
+                    console.warn('Boat image and fallback failed to load');
+                }
+            };
+
+            // Store trip data for booking summary
+            window.tripData = {
+                name: t.route || 'Amazing Boat Safari',
+                price: t.price || 75
+            };
+
+            // Update booking summary initially
+            updateBookingSummary();
+
         } catch(e) {
             el.textContent = e.message;
+        }
+    }
+
+    function updateBookingSummary() {
+        try {
+            const tripName = window.tripData?.name || '-';
+            const travelDate = document.getElementById('travelDate')?.value || '-';
+            const passengersInput = document.getElementById('passengers');
+            const passengers = passengersInput ? parseInt(passengersInput.value) || 0 : 0;
+            const pricePerPerson = window.tripData?.price || 75;
+            const totalCost = passengers * pricePerPerson;
+
+            const summaryElements = {
+                tripName: document.getElementById('summaryTripName'),
+                date: document.getElementById('summaryDate'),
+                passengers: document.getElementById('summaryPassengers'),
+                total: document.getElementById('summaryTotal')
+            };
+
+            if (summaryElements.tripName) summaryElements.tripName.textContent = tripName;
+            if (summaryElements.date) summaryElements.date.textContent = travelDate ? new Date(travelDate).toLocaleDateString() : '-';
+            if (summaryElements.passengers) summaryElements.passengers.textContent = passengers > 0 ? passengers : '-';
+            if (summaryElements.total) summaryElements.total.textContent = passengers > 0 ? `$${totalCost}` : '$0';
+        } catch (error) {
+            console.warn('Error updating booking summary:', error);
         }
     }
 
@@ -769,6 +1579,8 @@
         e.preventDefault();
         const errorBox = document.getElementById('error');
         const btn = document.getElementById('confirmBtn');
+        const btnLoader = btn.querySelector('.btn-loader');
+        const btnText = btn.querySelector('span');
         errorBox.textContent='';
         if(!tripId){ errorBox.textContent='Invalid trip selection'; return; }
         if(!token){ alert('Please login'); window.location.href='/login.html'; return; }
@@ -787,7 +1599,9 @@
 
         try{
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            btnText.textContent = 'Processing...';
+            btnLoader.style.display = 'block';
+            
             const resp = await fetch('/api/bookings',{
                 method:'POST',
                 headers:{ 'Content-Type':'application/json', Accept:'application/json', Authorization:`Bearer ${token}` },
@@ -814,46 +1628,77 @@
             errorBox.textContent = e2.message;
         } finally{
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Booking';
+            btnText.textContent = 'Confirm Booking';
+            btnLoader.style.display = 'none';
         }
     });
 
-    // Set year in footer
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // Add event listeners for booking summary updates
+    try {
+        const travelDateEl = document.getElementById('travelDate');
+        const passengersEl = document.getElementById('passengers');
+        
+        if (travelDateEl) {
+            travelDateEl.addEventListener('change', updateBookingSummary);
+        }
+        if (passengersEl) {
+            passengersEl.addEventListener('input', updateBookingSummary);
+        }
+    } catch (error) {
+        console.warn('Error setting up event listeners:', error);
+    }
 
-    setDateBounds();
-    loadTrip();
+    // Set year in footer
+    try {
+        const yearEl = document.getElementById('year');
+        if (yearEl) {
+            yearEl.textContent = new Date().getFullYear();
+        }
+    } catch (error) {
+        console.warn('Error setting footer year:', error);
+    }
+
+    // Initialize page
+    try {
+        setDateBounds();
+        loadTrip();
+    } catch (error) {
+        console.error('Error initializing page:', error);
+    }
 
     // Slide-up animation on page load
     window.addEventListener('load', function() {
-        const slideElements = document.querySelectorAll('.slide-in-element');
-        
-        // Trigger animations with staggered delays
-        slideElements.forEach((element, index) => {
-            // Add delay based on element position and type
-            let delay = index * 80; // Base delay
+        // Add a small delay to ensure DOM is fully ready
+        setTimeout(() => {
+            const slideElements = document.querySelectorAll('.slide-in-element');
             
-            // Different delays for different sections
-            if (element.classList.contains('head')) {
-                element.classList.add('animate-slide-up');
-            } else if (element.tagName === 'H2') {
-                setTimeout(() => element.classList.add('animate-fade-up'), 200);
-            } else if (element.classList.contains('muted')) {
-                setTimeout(() => element.classList.add('animate-fade-up-delay-1'), 400);
-            } else if (element.classList.contains('container')) {
-                setTimeout(() => element.classList.add('animate-slide-up-delay-1'), 600);
-            } else if (element.classList.contains('panel')) {
-                setTimeout(() => element.classList.add('animate-slide-up-delay-2'), 800 + (index * 150));
-            } else if (element.classList.contains('panel-header')) {
-                setTimeout(() => element.classList.add('animate-fade-up-delay-2'), 1000 + (index * 100));
-            } else if (element.classList.contains('form-group') || element.tagName === 'FORM') {
-                setTimeout(() => element.classList.add('animate-fade-up'), 1200 + (index * 80));
-            } else if (element.tagName === 'BUTTON') {
-                setTimeout(() => element.classList.add('animate-slide-up-delay-3'), 1600);
-            } else {
-                setTimeout(() => element.classList.add('animate-fade-up'), delay + 800);
-            }
-        });
+            // Trigger animations with staggered delays
+            slideElements.forEach((element, index) => {
+                // Add delay based on element position and type
+                let delay = index * 80; // Base delay
+                
+                // Different delays for different sections
+                if (element.classList.contains('head')) {
+                    element.classList.add('animate-slide-up');
+                } else if (element.tagName === 'H2') {
+                    setTimeout(() => element.classList.add('animate-fade-up'), 200);
+                } else if (element.classList.contains('muted')) {
+                    setTimeout(() => element.classList.add('animate-fade-up-delay-1'), 400);
+                } else if (element.classList.contains('container')) {
+                    setTimeout(() => element.classList.add('animate-slide-up-delay-1'), 600);
+                } else if (element.classList.contains('panel')) {
+                    setTimeout(() => element.classList.add('animate-slide-up-delay-2'), 800 + (index * 150));
+                } else if (element.classList.contains('panel-header')) {
+                    setTimeout(() => element.classList.add('animate-fade-up-delay-2'), 1000 + (index * 100));
+                } else if (element.classList.contains('form-group') || element.tagName === 'FORM') {
+                    setTimeout(() => element.classList.add('animate-fade-up'), 1200 + (index * 80));
+                } else if (element.tagName === 'BUTTON') {
+                    setTimeout(() => element.classList.add('animate-slide-up-delay-3'), 1600);
+                } else {
+                    setTimeout(() => element.classList.add('animate-fade-up'), delay + 800);
+                }
+            });
+        }, 100);
 
         // Add hover effects to form elements
         const formGroups = document.querySelectorAll('.form-group');
@@ -868,5 +1713,7 @@
         });
     });
 </script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/user-profile.js"></script>
 </body>
 </html>
