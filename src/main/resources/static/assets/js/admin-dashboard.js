@@ -2514,27 +2514,45 @@ async function editTrip(tripId) {
 }
 
 async function deleteTrip(tripId) {
-    if (confirm('Are you sure you want to delete this trip? This action cannot be undone.')) {
-        try {
-            const response = await fetch(`/api/trips/${tripId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                }
-            });
+    // Store the trip ID for deletion confirmation
+    window.pendingDeleteTripId = tripId;
+    
+    // Show the custom confirmation modal
+    openModal('deleteConfirmationModal');
+}
 
-            if (response.ok) {
-                showNotification('Trip deleted successfully', 'success');
-                loadTrips(); // Reload trips list
-                loadDashboardStats(); // Update stats
-            } else {
-                const errorText = await response.text();
-                showNotification('Failed to delete trip: ' + errorText, 'error');
+// Function to confirm and execute trip deletion
+async function confirmTripDeletion() {
+    const tripId = window.pendingDeleteTripId;
+    
+    if (!tripId) {
+        showNotification('Error: No trip selected for deletion', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/trips/${tripId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
             }
-        } catch (error) {
-            console.error('Error deleting trip:', error);
-            showNotification('Failed to delete trip: ' + error.message, 'error');
+        });
+
+        if (response.ok) {
+            showNotification('Trip deleted successfully', 'success');
+            loadTrips(); // Reload trips list
+            loadDashboardStats(); // Update stats
+            closeModal('deleteConfirmationModal');
+            
+            // Clear the pending delete ID
+            window.pendingDeleteTripId = null;
+        } else {
+            const errorText = await response.text();
+            showNotification('Failed to delete trip: ' + errorText, 'error');
         }
+    } catch (error) {
+        console.error('Error deleting trip:', error);
+        showNotification('Failed to delete trip: ' + error.message, 'error');
     }
 }
 
@@ -2551,32 +2569,56 @@ function editBooking(bookingId) {
 }
 
 function cancelBooking(bookingId) {
-    // Find booking from current bookings data (fix variable name)
+    // Find booking from current bookings data
     const booking = currentBookings.find(b => b.bookingId === bookingId);
     const customerName = booking ? (booking.name || booking.customerName) : 'Unknown Customer';
     
-    if (confirm(`Are you sure you want to cancel the booking for ${customerName}? This action cannot be undone.`)) {
-        fetch(`/api/bookings/${bookingId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-            },
-            body: JSON.stringify({ status: 'CANCELLED' })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to cancel booking');
-            }
-            loadBookings();
-            loadDashboardStats();
-            showNotification('Booking cancelled successfully', 'success');
-        })
-        .catch(error => {
-            console.error('Error cancelling booking:', error);
-            showNotification('Failed to cancel booking: ' + error.message, 'error');
-        });
+    // Store the booking ID and customer name for cancellation confirmation
+    window.pendingCancelBookingId = bookingId;
+    window.pendingCancelCustomerName = customerName;
+    
+    // Update the modal with customer name
+    document.getElementById('customerNameToCancel').textContent = customerName;
+    
+    // Show the custom confirmation modal
+    openModal('cancelBookingConfirmationModal');
+}
+
+// Function to confirm and execute booking cancellation
+function confirmBookingCancellation() {
+    const bookingId = window.pendingCancelBookingId;
+    const customerName = window.pendingCancelCustomerName;
+    
+    if (!bookingId) {
+        showNotification('Error: No booking selected for cancellation', 'error');
+        return;
     }
+    
+    fetch(`/api/bookings/${bookingId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        body: JSON.stringify({ status: 'CANCELLED' })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to cancel booking');
+        }
+        loadBookings();
+        loadDashboardStats();
+        showNotification('Booking cancelled successfully', 'success');
+        closeModal('cancelBookingConfirmationModal');
+        
+        // Clear the pending cancel data
+        window.pendingCancelBookingId = null;
+        window.pendingCancelCustomerName = null;
+    })
+    .catch(error => {
+        console.error('Error cancelling booking:', error);
+        showNotification('Failed to cancel booking: ' + error.message, 'error');
+    });
 }
 
 function editStaffMember(userId) {
@@ -2646,27 +2688,51 @@ function deleteStaffMember(userId) {
     const staffMember = currentStaffData.find(staff => staff.userId === userId);
     const staffName = staffMember ? (staffMember.firstName + ' ' + staffMember.secondName) : 'Unknown Staff';
     
-    if (confirm(`Are you sure you want to delete ${staffName}? This action cannot be undone.`)) {
-        fetch(`/api/admin/users/${userId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to delete staff member');
-            }
-            loadStaffMembers();
-            loadUsers();
-            loadDashboardStats();
-            showNotification('Staff member deleted successfully', 'success');
-        })
-        .catch(error => {
-            console.error('Error deleting staff member:', error);
-            showNotification('Failed to delete staff member: ' + error.message, 'error');
-        });
+    // Store the staff ID and name for deletion confirmation
+    window.pendingDeleteStaffId = userId;
+    window.pendingDeleteStaffName = staffName;
+    
+    // Update the modal with staff name
+    document.getElementById('staffNameToDelete').textContent = staffName;
+    
+    // Show the custom confirmation modal
+    openModal('deleteStaffConfirmationModal');
+}
+
+// Function to confirm and execute staff deletion
+function confirmStaffDeletion() {
+    const userId = window.pendingDeleteStaffId;
+    const staffName = window.pendingDeleteStaffName;
+    
+    if (!userId) {
+        showNotification('Error: No staff member selected for deletion', 'error');
+        return;
     }
+    
+    fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to delete staff member');
+        }
+        loadStaffMembers();
+        loadUsers();
+        loadDashboardStats();
+        showNotification('Staff member deleted successfully', 'success');
+        closeModal('deleteStaffConfirmationModal');
+        
+        // Clear the pending delete data
+        window.pendingDeleteStaffId = null;
+        window.pendingDeleteStaffName = null;
+    })
+    .catch(error => {
+        console.error('Error deleting staff member:', error);
+        showNotification('Failed to delete staff member: ' + error.message, 'error');
+    });
 }
 
 function generateBookingReport() {
@@ -2912,10 +2978,27 @@ async function confirmStatusUpdate() {
 
 // Delete boat
 async function deleteBoat(boatId, boatName) {
-    if (!confirm(`Are you sure you want to delete boat "${boatName}"? This action cannot be undone.`)) {
+    // Store the boat ID and name for deletion confirmation
+    window.pendingDeleteBoatId = boatId;
+    window.pendingDeleteBoatName = boatName;
+    
+    // Update the modal with boat name
+    document.getElementById('boatNameToDelete').textContent = `"${boatName}"`;
+    
+    // Show the custom confirmation modal
+    openModal('deleteBoatConfirmationModal');
+}
+
+// Function to confirm and execute boat deletion
+async function confirmBoatDeletion() {
+    const boatId = window.pendingDeleteBoatId;
+    const boatName = window.pendingDeleteBoatName;
+    
+    if (!boatId) {
+        showNotification('Error: No boat selected for deletion', 'error');
         return;
     }
-
+    
     try {
         const response = await fetch(`/api/admin/boats/${boatId}`, {
             method: 'DELETE',
@@ -2932,6 +3015,11 @@ async function deleteBoat(boatId, boatName) {
         showNotification('Boat deleted successfully', 'success');
         loadBoats(); // Refresh the boats list
         loadDashboardStats(); // Update stats
+        closeModal('deleteBoatConfirmationModal');
+        
+        // Clear the pending delete data
+        window.pendingDeleteBoatId = null;
+        window.pendingDeleteBoatName = null;
         
     } catch (error) {
         console.error('Error deleting boat:', error);
