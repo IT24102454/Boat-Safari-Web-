@@ -454,6 +454,126 @@
             color: #333;
         }
 
+        /* Edit Assignment Modal Specific Styles */
+        #editAssignmentModal .modal-content {
+            max-width: 700px;
+        }
+
+        .assignment-info-header {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            border-left: 4px solid #1fbfd6;
+        }
+
+        .trip-info-card h3 {
+            color: #2a5298;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .trip-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+
+        .detail-item i {
+            color: #1fbfd6;
+            width: 20px;
+            text-align: center;
+        }
+
+        .current-assignment {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid #28a745;
+        }
+
+        .assignment-actions {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-buttons .btn {
+            min-width: 140px;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-buttons .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1fbfd6 0%, #2a5298 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+            border: none;
+            color: #212529;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            border: none;
+            color: white;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #2a5298;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group label i {
+            color: #1fbfd6;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .main-container {
@@ -958,6 +1078,95 @@
                         <i class="fas fa-times"></i>
                         Cancel
                     </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Resource Assignment Modal -->
+    <div id="editAssignmentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editAssignmentModal')">&times;</span>
+            <h2><i class="fas fa-edit"></i> Edit Resource Assignment</h2>
+            <form id="editAssignmentForm">
+                <input type="hidden" id="editAssignmentTripId">
+                
+                <div class="assignment-info-header">
+                    <div class="trip-info-card">
+                        <h3 id="editTripInfoTitle">Trip Information</h3>
+                        <div class="trip-details">
+                            <div class="detail-item">
+                                <i class="fas fa-route"></i>
+                                <span><strong>Trip:</strong> <span id="editTripInfoName">-</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                <span><strong>Date:</strong> <span id="editTripInfoDate">-</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-clock"></i>
+                                <span><strong>Status:</strong> <span id="editTripInfoStatus" class="status-badge">-</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="editAssignmentBoat">
+                            <i class="fas fa-ship"></i>
+                            Assigned Boat:
+                        </label>
+                        <select class="form-control" id="editAssignmentBoat" required>
+                            <option value="">Select a boat...</option>
+                        </select>
+                        <div class="current-assignment">
+                            Current: <span id="currentBoatInfo">None</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editAssignmentGuide">
+                            <i class="fas fa-user-tie"></i>
+                            Assigned Guide:
+                        </label>
+                        <select class="form-control" id="editAssignmentGuide" required>
+                            <option value="">Select a guide...</option>
+                        </select>
+                        <div class="current-assignment">
+                            Current: <span id="currentGuideInfo">None</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editAssignmentNotes">
+                        <i class="fas fa-sticky-note"></i>
+                        Assignment Notes:
+                    </label>
+                    <textarea class="form-control" id="editAssignmentNotes" rows="3" 
+                              placeholder="Add any special notes or instructions for this assignment..."></textarea>
+                </div>
+
+                <div class="assignment-actions">
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Update Assignment
+                        </button>
+                        <button type="button" class="btn btn-warning" onclick="reassignResources()">
+                            <i class="fas fa-exchange-alt"></i>
+                            Reassign All
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="removeAssignmentFromModal()">
+                            <i class="fas fa-trash"></i>
+                            Remove Assignment
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editAssignmentModal')">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>

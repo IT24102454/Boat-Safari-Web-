@@ -46,12 +46,167 @@ public class SupportController {
         t.setMessage(req.getMessage().trim());
         t.setPreferredContact(opt(req.getPreferredContact()));
         t.setStatus("NEW");
+        t.setPriority("MEDIUM"); // Default priority
+        t.setCategory(determineCategory(req.getSubject(), req.getMessage()));
         t.setCreatedAt(LocalDateTime.now());
+        t.setUpdatedAt(LocalDateTime.now());
         SupportTicket saved = supportTicketRepository.save(t);
         return ResponseEntity.ok(Map.of(
                 "message", "Ticket created successfully. Our team will contact you soon.",
                 "ticketId", saved.getTicketId()
         ));
+    }
+
+    // IT Support: Get all support tickets
+    @GetMapping("/tickets")
+    public ResponseEntity<List<SupportTicket>> getAllTickets(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String priority,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String assignedTo
+    ) {
+        List<SupportTicket> all = supportTicketRepository.findAll();
+        
+        List<SupportTicket> filtered = all.stream()
+                .filter(t -> isEmpty(status) || status.equalsIgnoreCase(opt(t.getStatus())))
+                .filter(t -> isEmpty(priority) || priority.equalsIgnoreCase(opt(t.getPriority())))
+                .filter(t -> isEmpty(category) || category.equalsIgnoreCase(opt(t.getCategory())))
+                .filter(t -> isEmpty(assignedTo) || opt(t.getAssignedTo()).toLowerCase().contains(assignedTo.toLowerCase()))
+                .sorted(Comparator.comparing(SupportTicket::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+                
+        return ResponseEntity.ok(filtered);
+    }
+
+    // IT Support: Get ticket by ID
+    @GetMapping("/tickets/{id}")
+    public ResponseEntity<SupportTicket> getTicketById(@PathVariable Long id) {
+        Optional<SupportTicket> ticket = supportTicketRepository.findById(id);
+        if (ticket.isPresent()) {
+            return ResponseEntity.ok(ticket.get());
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    // IT Support: Update ticket (assign, change status, priority)
+    @PutMapping("/tickets/{id}")
+    public ResponseEntity<Map<String, Object>> updateTicket(@PathVariable Long id, @RequestBody UpdateTicketRequest req) {
+        Optional<SupportTicket> optTicket = supportTicketRepository.findById(id);
+        if (!optTicket.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        SupportTicket ticket = optTicket.get();
+        
+        if (!isEmpty(req.getStatus())) {
+            ticket.setStatus(req.getStatus());
+        }
+        if (!isEmpty(req.getPriority())) {
+            ticket.setPriority(req.getPriority());
+        }
+        if (!isEmpty(req.getAssignedTo())) {
+            ticket.setAssignedTo(req.getAssignedTo());
+        }
+        if (!isEmpty(req.getCategory())) {
+            ticket.setCategory(req.getCategory());
+        }
+        
+        ticket.setUpdatedAt(LocalDateTime.now());
+        
+        SupportTicket saved = supportTicketRepository.save(ticket);
+        
+        return ResponseEntity.ok(Map.of(
+                "message", "Ticket updated successfully",
+                "ticket", saved
+        ));
+    }
+
+    // IT Support: Reply to ticket
+    @PostMapping("/tickets/{id}/reply")
+    public ResponseEntity<Map<String, Object>> replyToTicket(@PathVariable Long id, @RequestBody ReplyRequest req) {
+        if (isBlank(req.getReply())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Reply message cannot be empty."));
+        }
+        
+        Optional<SupportTicket> optTicket = supportTicketRepository.findById(id);
+        if (!optTicket.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        SupportTicket ticket = optTicket.get();
+        ticket.setReply(req.getReply().trim());
+        ticket.setRepliedAt(LocalDateTime.now());
+        ticket.setUpdatedAt(LocalDateTime.now());
+        
+        if (!isEmpty(req.getAssignedTo())) {
+            ticket.setAssignedTo(req.getAssignedTo());
+        }
+        
+        // Auto-update status based on reply
+        if ("NEW".equals(ticket.getStatus())) {
+            ticket.setStatus("IN_PROGRESS");
+        }
+        
+        SupportTicket saved = supportTicketRepository.save(ticket);
+        
+        return ResponseEntity.ok(Map.of(
+                "message", "Reply sent successfully",
+                "ticket", saved
+        ));
+    }
+
+    // IT Support: Get ticket statistics
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Object>> getTicketStats() {
+        List<SupportTicket> all = supportTicketRepository.findAll();
+        
+        Map<String, Long> statusCounts = all.stream()
+                .collect(Collectors.groupingBy(
+                    t -> opt(t.getStatus()),
+                    Collectors.counting()
+                ));
+                
+        Map<String, Long> priorityCounts = all.stream()
+                .collect(Collectors.groupingBy(
+                    t -> opt(t.getPriority()),
+                    Collectors.counting()
+                ));
+                
+        Map<String, Long> categoryCounts = all.stream()
+                .collect(Collectors.groupingBy(
+                    t -> opt(t.getCategory()),
+                    Collectors.counting()
+                ));
+        
+        long totalTickets = all.size();
+        long newTickets = statusCounts.getOrDefault("NEW", 0L);
+        long openTickets = statusCounts.getOrDefault("OPEN", 0L) + statusCounts.getOrDefault("IN_PROGRESS", 0L);
+        long resolvedTickets = statusCounts.getOrDefault("RESOLVED", 0L) + statusCounts.getOrDefault("CLOSED", 0L);
+        
+        return ResponseEntity.ok(Map.of(
+                "totalTickets", totalTickets,
+                "newTickets", newTickets,
+                "openTickets", openTickets,
+                "resolvedTickets", resolvedTickets,
+                "statusBreakdown", statusCounts,
+                "priorityBreakdown", priorityCounts,
+                "categoryBreakdown", categoryCounts
+        ));
+    }
+
+    // Helper method to determine category based on subject and message
+    private String determineCategory(String subject, String message) {
+        String content = (subject + " " + message).toLowerCase();
+        
+        if (content.contains("booking") || content.contains("reservation") || content.contains("trip")) {
+            return "BOOKING";
+        } else if (content.contains("payment") || content.contains("billing") || content.contains("refund")) {
+            return "PAYMENT";
+        } else if (content.contains("website") || content.contains("login") || content.contains("error") || content.contains("bug")) {
+            return "TECHNICAL";
+        } else {
+            return "GENERAL";
+        }
     }
 
     // Public: list IT staff directory (IT_ASSISTANT, IT_SUPPORT)
@@ -115,6 +270,20 @@ public class SupportController {
         private String subject;
         private String message;
         private String preferredContact; // email | phone
+    }
+
+    @Data
+    public static class UpdateTicketRequest {
+        private String status;
+        private String priority;
+        private String assignedTo;
+        private String category;
+    }
+
+    @Data
+    public static class ReplyRequest {
+        private String reply;
+        private String assignedTo;
     }
 
     @Data
