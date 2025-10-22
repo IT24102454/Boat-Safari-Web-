@@ -6,18 +6,28 @@
     <title>Boat Safari | Booking History</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/user-profile.css">
     <style>
         :root {
             --primary: #1fbfd6;
+            --primary-light: #4dd0e1;
+            --primary-dark: #00acc1;
             --secondary: #f6c453;
+            --secondary-light: #ffd54f;
             --dark-blue: #0e3a5b;
             --navy: #0b1c2c;
             --light: #f7fbff;
             --text-light: #d7e6f1;
             --text-muted: #8fa6b6;
             --line: #e6eef5;
-            --bg: #f7fbff;
+            --bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             --card: #fff;
+            --accent: #ff6b6b;
+            --success: #51cf66;
+            --warning: #ffd43b;
+            --shadow-light: rgba(0, 0, 0, 0.05);
+            --shadow-medium: rgba(0, 0, 0, 0.1);
+            --shadow-heavy: rgba(0, 0, 0, 0.2);
         }
 
         * {
@@ -31,6 +41,55 @@
             background: var(--bg);
             color: var(--navy);
             line-height: 1.6;
+            animation: slideUpFadeIn 0.8s ease-out;
+            overflow-x: hidden;
+        }
+
+        /* Floating elements animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Background decorative elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(31, 191, 214, 0.03) 0%, transparent 50%);
+            z-index: -2;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 20%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(246, 196, 83, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 15s ease-in-out infinite reverse;
+        }
+
+        @keyframes slideUpFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         a {
@@ -41,10 +100,22 @@
 
         /* Top Bar */
         .top-bar {
-            background-color: var(--dark-blue);
+            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--navy) 100%);
             color: #fff;
-            padding: 10px 0;
+            padding: 12px 0;
             font-size: 14px;
+            box-shadow: 0 2px 10px var(--shadow-light);
+            position: relative;
+        }
+
+        .top-bar::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
         }
 
         .top-bar-container {
@@ -64,6 +135,14 @@
         .contact-info a {
             margin-right: 20px;
             color: #fff;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .contact-info a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
         }
 
         .contact-info a i {
@@ -75,10 +154,21 @@
             margin-left: 15px;
             font-size: 16px;
             color: #fff;
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .social-icons a:hover {
-            color: var(--primary);
+            color: var(--navy);
+            background: var(--primary);
+            transform: translateY(-2px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(31, 191, 214, 0.3);
         }
 
         /* Navigation */
@@ -86,9 +176,15 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            background-color: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px var(--shadow-medium);
             padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav:hover {
+            box-shadow: 0 6px 30px var(--shadow-heavy);
         }
 
         .nav-inner {
@@ -106,6 +202,11 @@
             font-size: 24px;
             font-weight: 700;
             color: var(--navy);
+            transition: all 0.3s ease;
+        }
+
+        .brand:hover {
+            transform: scale(1.05);
         }
 
         .brand .logo {
@@ -114,6 +215,13 @@
             margin-right: 10px;
             color: var(--primary);
             font-size: 28px;
+            transition: all 0.3s ease;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .brand:hover .logo {
+            color: var(--secondary);
+            transform: rotate(10deg);
         }
 
         .nav-links {
@@ -126,7 +234,15 @@
             font-weight: 500;
             color: var(--navy);
             position: relative;
-            padding: 5px 0;
+            padding: 8px 15px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+            background: rgba(31, 191, 214, 0.1);
+            transform: translateY(-2px);
         }
 
         .nav-links a:after {
@@ -134,28 +250,55 @@
             position: absolute;
             width: 0;
             height: 2px;
-            background: var(--primary);
-            bottom: 0;
-            left: 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
             transition: width 0.3s ease;
         }
 
         .nav-links a:hover:after {
-            width: 100%;
+            width: 80%;
         }
 
         .nav-links .active:after {
-            width: 100%;
+            width: 80%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .nav-links .active {
+            color: var(--primary);
+            background: rgba(31, 191, 214, 0.1);
         }
 
         /* Hero */
         .hero {
-            background: linear-gradient(rgba(14, 58, 91, 0.9), rgba(11, 28, 44, 0.95)),
+            background: linear-gradient(135deg, rgba(14, 58, 91, 0.9) 0%, rgba(11, 28, 44, 0.95) 100%),
                       url('https://demo.ovatheme.com/yachbat/wp-content/uploads/2023/05/bg-history-header.jpg');
             background-size: cover;
             background-position: center;
+            background-attachment: fixed;
             color: #fff;
-            padding: 80px 0;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 50%, rgba(31, 191, 214, 0.2) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(246, 196, 83, 0.2) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 2;
         }
 
         .hero-inner {
@@ -165,10 +308,12 @@
         }
 
         .hero h1 {
-            margin: 0 0 15px;
-            font-size: 42px;
+            margin: 0 0 20px;
+            font-size: 56px;
             position: relative;
-            padding-bottom: 15px;
+            padding-bottom: 20px;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .hero h1:after {
@@ -176,49 +321,78 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 80px;
+            width: 100px;
             height: 4px;
-            background: var(--primary);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+            box-shadow: 0 2px 10px rgba(31, 191, 214, 0.5);
         }
 
         .hero .muted {
             color: var(--text-light);
-            font-size: 18px;
+            font-size: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
             max-width: 600px;
-            line-height: 1.8;
+            line-height: 1.7;
         }
 
         /* Main Content */
         .wrap {
             max-width: 1200px;
-            margin: -40px auto 60px;
+            margin: -60px auto 60px;
             padding: 0 20px;
             position: relative;
             z-index: 10;
         }
 
         .panel {
-            background: var(--card);
-            border-radius: 12px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-            padding: 25px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+            padding: 40px;
             margin-bottom: 30px;
             overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
 
         .panel-header {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .panel-title {
-            font-size: 24px;
+            font-size: 28px;
             color: var(--dark-blue);
             position: relative;
-            padding-left: 15px;
+            padding-left: 20px;
             margin: 0;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--dark-blue), var(--primary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .panel-title:before {
@@ -227,19 +401,33 @@
             left: 0;
             top: 0;
             bottom: 0;
-            width: 4px;
-            background: var(--primary);
+            width: 5px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(31, 191, 214, 0.3);
         }
 
         .notice {
-            background: rgba(31, 191, 214, 0.1);
+            background: linear-gradient(135deg, rgba(31, 191, 214, 0.1), rgba(31, 191, 214, 0.05));
             border-left: 4px solid var(--primary);
-            padding: 12px 15px;
+            padding: 15px 20px;
             color: var(--dark-blue);
             font-size: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(31, 191, 214, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notice::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
         }
 
         .filters {
@@ -283,15 +471,33 @@
         }
 
         .btn {
-            padding: 12px 25px;
+            padding: 14px 28px;
             border-radius: 30px;
             border: none;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn i {
@@ -299,40 +505,56 @@
         }
 
         .btn.primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
+            box-shadow: 0 4px 15px rgba(31, 191, 214, 0.3);
         }
 
         .btn.primary:hover {
-            background: var(--dark-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, var(--dark-blue), var(--navy));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(31, 191, 214, 0.4);
         }
 
         .btn.outline {
-            background: transparent;
-            border: 1px solid #cfe8ef;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(31, 191, 214, 0.3);
             color: var(--dark-blue);
+            backdrop-filter: blur(10px);
         }
 
         .btn.outline:hover {
             border-color: var(--primary);
             color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background: rgba(31, 191, 214, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(31, 191, 214, 0.2);
         }
 
         .meta {
             color: var(--text-muted);
-            font-size: 15px;
-            margin-bottom: 15px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, rgba(31, 191, 214, 0.05), rgba(246, 196, 83, 0.05));
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            font-weight: 500;
         }
 
         .table-wrapper {
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            border: 1px solid var(--line);
-            margin-bottom: 20px;
+            border: 2px solid rgba(31, 191, 214, 0.1);
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .table-wrapper:hover {
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
         }
 
         table {
@@ -342,120 +564,181 @@
         }
 
         th, td {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--line);
+            padding: 18px 25px;
+            border-bottom: 1px solid rgba(31, 191, 214, 0.1);
             font-size: 14px;
             text-align: left;
+            transition: all 0.3s ease;
         }
 
         th {
-            background: #f0f6fb;
-            font-weight: 600;
+            background: linear-gradient(135deg, #f0f6fb, #e6f3ff);
+            font-weight: 700;
             color: var(--dark-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 12px;
+            position: relative;
+        }
+
+        th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
         }
 
         tbody tr:hover {
-            background: rgba(31, 191, 214, 0.03);
+            background: linear-gradient(135deg, rgba(31, 191, 214, 0.05), rgba(31, 191, 214, 0.02));
+            transform: translateX(2px);
+            box-shadow: 0 2px 8px rgba(31, 191, 214, 0.1);
         }
 
         td:first-child {
-            font-weight: 600;
-            color: var(--dark-blue);
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 15px;
         }
 
         /* Status styles */
         .status-pill {
             display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
+            padding: 6px 14px;
+            border-radius: 25px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .status-pill:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .status-confirmed {
-            background: rgba(46, 213, 115, 0.15);
+            background: linear-gradient(135deg, rgba(81, 207, 102, 0.2), rgba(81, 207, 102, 0.1));
             color: #2ed573;
+            border-color: rgba(46, 213, 115, 0.3);
         }
 
         .status-provisional {
-            background: rgba(255, 186, 0, 0.15);
+            background: linear-gradient(135deg, rgba(255, 186, 0, 0.2), rgba(255, 186, 0, 0.1));
             color: #ffba00;
+            border-color: rgba(255, 186, 0, 0.3);
         }
 
         .status-cancelled {
-            background: rgba(255, 71, 87, 0.15);
+            background: linear-gradient(135deg, rgba(255, 71, 87, 0.2), rgba(255, 71, 87, 0.1));
             color: #ff4757;
+            border-color: rgba(255, 71, 87, 0.3);
         }
 
         /* Pager */
         .pager {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
-            margin: 30px 0 15px;
+            margin: 40px 0 20px;
         }
 
         .pagebtn {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid var(--line);
+            border: 2px solid var(--line);
             border-radius: 50%;
-            background: #fff;
+            background: linear-gradient(135deg, #fff, #f8fbff);
             cursor: pointer;
             transition: all 0.3s ease;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .pagebtn:hover {
             border-color: var(--primary);
             color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(31, 191, 214, 0.3);
         }
 
         .pagebtn.active {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: white;
             border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(31, 191, 214, 0.4);
         }
 
         .pageinfo {
             color: var(--text-muted);
             text-align: center;
-            margin-top: 15px;
+            margin-top: 20px;
             font-size: 14px;
+            font-weight: 500;
         }
 
         /* Empty state */
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, rgba(31, 191, 214, 0.05), rgba(246, 196, 83, 0.05));
+            border-radius: 16px;
+            margin: 20px 0;
         }
 
         .empty-state i {
-            font-size: 48px;
-            color: var(--text-muted);
-            margin-bottom: 15px;
+            font-size: 64px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            animation: float 4s ease-in-out infinite;
         }
 
         .empty-state h3 {
             color: var(--dark-blue);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 24px;
+            font-weight: 700;
         }
 
         .empty-state p {
             color: var(--text-muted);
             max-width: 400px;
             margin: 0 auto;
+            font-size: 16px;
+            line-height: 1.6;
         }
 
         /* Footer */
         footer {
-            background: var(--navy);
+            background: linear-gradient(135deg, var(--navy) 0%, var(--dark-blue) 100%);
             color: var(--text-light);
-            padding: 40px 0;
+            padding: 50px 0 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
         }
 
         .foot-inner {
@@ -465,6 +748,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 1;
         }
 
         .footer-logo {
@@ -472,16 +757,35 @@
             font-weight: 700;
             display: flex;
             align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .footer-logo:hover {
+            transform: scale(1.05);
         }
 
         .footer-logo span {
             color: var(--primary);
             margin-right: 10px;
+            animation: float 4s ease-in-out infinite;
         }
 
         .footer-links {
             display: flex;
-            gap: 30px;
+            gap: 40px;
+        }
+
+        .footer-links a {
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+            background: rgba(31, 191, 214, 0.1);
+            transform: translateY(-2px);
         }
 
         .footer-bottom {
@@ -504,7 +808,11 @@
             }
 
             .hero h1 {
-                font-size: 36px;
+                font-size: 42px;
+            }
+
+            .hero .muted {
+                font-size: 18px;
             }
         }
 
@@ -526,19 +834,59 @@
 
             .nav-links a {
                 margin: 5px 10px;
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+
+            .hero {
+                padding: 60px 0;
+                background-attachment: scroll;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero .muted {
+                font-size: 16px;
+            }
+
+            .wrap {
+                margin: -40px auto 40px;
+                padding: 0 15px;
+            }
+
+            .panel {
+                padding: 25px 20px;
+                border-radius: 15px;
+            }
+
+            .panel-title {
+                font-size: 24px;
             }
 
             .filters {
                 grid-template-columns: 1fr;
+                gap: 15px;
             }
 
             .filter-buttons {
                 flex-direction: column;
+                gap: 10px;
+            }
+
+            .table-wrapper {
+                overflow-x: auto;
+            }
+
+            th, td {
+                padding: 12px 15px;
+                font-size: 13px;
             }
 
             .foot-inner {
                 flex-direction: column;
-                gap: 20px;
+                gap: 25px;
                 text-align: center;
             }
 
@@ -549,7 +897,420 @@
             .footer-links {
                 flex-wrap: wrap;
                 justify-content: center;
+                gap: 20px;
             }
+
+            .social-icons {
+                margin-top: 15px;
+            }
+
+            .social-icons a {
+                margin: 0 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .hero .muted {
+                font-size: 14px;
+            }
+
+            .panel {
+                padding: 20px 15px;
+            }
+
+            .panel-title {
+                font-size: 20px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+
+            .pagebtn {
+                width: 40px;
+                height: 40px;
+                font-size: 13px;
+            }
+        }
+
+        /* View Details Button Styles */
+        .btn-view-details {
+            background: linear-gradient(135deg, var(--primary), #17a2b8);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(31, 191, 214, 0.2);
+        }
+
+        .btn-view-details:hover {
+            background: linear-gradient(135deg, #17a2b8, var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(31, 191, 214, 0.3);
+        }
+
+        .btn-view-details:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(31, 191, 214, 0.2);
+        }
+
+        .btn-view-details i {
+            font-size: 11px;
+        }
+
+        /* Enhanced Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 28, 44, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: modalFadeIn 0.4s ease;
+            padding: 20px;
+        }
+
+        .booking-modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(14, 58, 91, 0.3);
+            animation: modalSlideUp 0.4s ease;
+            position: relative;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), #17a2b8);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: floatIcon 6s ease-in-out infinite;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 2;
+        }
+
+        .booking-icon {
+            background: rgba(255, 255, 255, 0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            animation: pulseIcon 2s ease-in-out infinite;
+        }
+
+        .header-text h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .booking-number {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .status-banner {
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .status-confirmed {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .status-provisional {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+            color: white;
+        }
+
+        .status-default {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+        }
+
+        .modal-body {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 0;
+            box-shadow: 0 8px 25px rgba(14, 58, 91, 0.1);
+            border: 1px solid rgba(31, 191, 214, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(14, 58, 91, 0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--light), #e6f3ff);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(31, 191, 214, 0.1);
+        }
+
+        .card-icon {
+            background: linear-gradient(135deg, var(--primary), #17a2b8);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f7ff;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-row.total-cost {
+            padding: 12px 0;
+            margin-top: 8px;
+            background: linear-gradient(135deg, #f8fbff, #e6f3ff);
+            border-radius: 8px;
+            padding: 12px;
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: 600;
+            color: var(--dark-blue);
+            font-size: 14px;
+        }
+
+        .value {
+            color: var(--navy);
+            font-weight: 500;
+        }
+
+        .value.highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .cost-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .modal-footer {
+            padding: 25px 30px;
+            text-align: center;
+            background: #f8fbff;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .close-btn-primary {
+            background: linear-gradient(135deg, var(--primary), #17a2b8);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(31, 191, 214, 0.3);
+        }
+
+        .close-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(31, 191, 214, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .modal-body {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .booking-modal-content {
+                margin: 10px;
+                max-height: 95vh;
+            }
+            
+            .modal-header {
+                padding: 20px;
+            }
+            
+            .header-text h2 {
+                font-size: 20px;
+            }
+        }
+
+        /* Modal animations */
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulseIcon {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes floatIcon {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            33% {
+                transform: translate(30px, -30px) rotate(120deg);
+            }
+            66% {
+                transform: translate(-20px, 20px) rotate(240deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Loading state enhancements */
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(31, 191, 214, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
         }
     </style>
 </head>
@@ -581,9 +1342,10 @@
             <a href="/index.html">Home</a>
             <a href="/trips.html">Trips</a>
             <a href="/boat.html">Boats</a>
+            <a href="/feedback.html" class="auth-required">Feedback</a>
             <a href="/support.html">Support</a>
-            <a href="/login.html">Login</a>
-            <a href="/register.html">Register</a>
+            <a href="/booking-history.html" class="active auth-required">My Bookings</a>
+            <!-- User profile will be inserted here by the user-profile.js script -->
         </div>
     </div>
 </header>
@@ -591,8 +1353,13 @@
 <!-- Hero -->
 <section class="hero">
     <div class="hero-inner">
-        <h1>Booking History</h1>
+        <h1 class="floating-element">Booking History</h1>
         <div class="muted">View and manage your bookings. Filter by date, status, or trip to find exactly what you're looking for.</div>
+        
+        <!-- Decorative elements -->
+        <div style="position: absolute; top: 10%; left: 5%; width: 60px; height: 60px; background: linear-gradient(135deg, rgba(31, 191, 214, 0.1), rgba(246, 196, 83, 0.1)); border-radius: 50%; animation: float 8s ease-in-out infinite;"></div>
+        <div style="position: absolute; top: 20%; right: 8%; width: 40px; height: 40px; background: linear-gradient(135deg, rgba(246, 196, 83, 0.1), rgba(31, 191, 214, 0.1)); border-radius: 50%; animation: float 6s ease-in-out infinite reverse;"></div>
+        <div style="position: absolute; bottom: 15%; left: 10%; width: 30px; height: 30px; background: linear-gradient(135deg, rgba(31, 191, 214, 0.15), rgba(246, 196, 83, 0.15)); border-radius: 50%; animation: float 10s ease-in-out infinite;"></div>
     </div>
 </section>
 
@@ -600,46 +1367,6 @@
     <div class="panel">
         <div class="panel-header">
             <h2 class="panel-title">Booking Records</h2>
-        </div>
-
-        <div class="notice">
-            <i class="fas fa-info-circle"></i> You must be logged in to view your booking history. This page shows your own bookings by default.
-        </div>
-
-        <div class="filters">
-            <div class="form-group">
-                <i class="far fa-envelope"></i>
-                <input id="f_email" type="email" placeholder="Your email (auto-detected)" />
-            </div>
-
-            <div class="form-group">
-                <i class="fas fa-tag"></i>
-                <input id="f_status" type="text" placeholder="Status (PROVISIONAL/CONFIRMED)" />
-            </div>
-
-            <div class="form-group">
-                <i class="fas fa-route"></i>
-                <input id="f_trip" type="number" placeholder="Trip ID" />
-            </div>
-
-            <div class="form-group">
-                <i class="fas fa-calendar-alt"></i>
-                <input id="f_from" type="date" placeholder="From Date" />
-            </div>
-
-            <div class="form-group">
-                <i class="fas fa-calendar-alt"></i>
-                <input id="f_to" type="date" placeholder="To Date" />
-            </div>
-        </div>
-
-        <div class="filter-buttons">
-            <button class="btn primary" id="bh_search">
-                <i class="fas fa-search"></i> Search
-            </button>
-            <button class="btn outline" id="bh_clear">
-                <i class="fas fa-undo"></i> Clear Filters
-            </button>
         </div>
 
         <div class="meta" id="meta"></div>
@@ -655,15 +1382,15 @@
                         <th>Passengers</th>
                         <th>Status</th>
                         <th>Amount</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="7">
-                            <div class="empty-state">
-                                <i class="fas fa-history"></i>
-                                <h3>No Bookings Yet</h3>
-                                <p>Login and click Search to view your booking history</p>
+                        <td colspan="8" style="text-align: center; padding: 40px;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                                <div style="width: 40px; height: 40px; border: 4px solid rgba(31, 191, 214, 0.3); border-radius: 50%; border-top-color: var(--primary); animation: spin 1s linear infinite;"></div>
+                                <p style="color: var(--text-muted); font-size: 16px; margin: 0;">Loading your booking history...</p>
                             </div>
                         </td>
                     </tr>
@@ -738,7 +1465,7 @@
             pageinfo.textContent='';
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7">
+                    <td colspan="8">
                         <div class="empty-state">
                             <i class="fas fa-search"></i>
                             <h3>No Bookings Found</h3>
@@ -777,6 +1504,11 @@
                 <td><i class="fas fa-users"></i> ${b.passengers}</td>
                 <td><span class="status-pill ${statusClass}">${b.status || '-'}</span></td>
                 <td><strong>$${b.totalCost != null ? b.totalCost : '-'}</strong></td>
+                <td>
+                    <button class="btn-view-details" onclick="viewBookingDetails(${b.bookingId})" title="View full booking details">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </td>
             `;
             tbody.appendChild(tr);
         });
@@ -800,43 +1532,61 @@
 
     async function search() {
         const tbody = document.querySelector('#bh_table tbody');
-        if (!token) { alert('Please login to view booking history.'); window.location.href='/login.html'; return; }
+        if (!token) { 
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8">
+                        <div class="empty-state">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <h3>Please Login</h3>
+                            <p>You need to <a href="/login.html" style="color: var(--primary);">login</a> to view your booking history</p>
+                        </div>
+                    </td>
+                </tr>`;
+            return; 
+        }
 
-        const email = document.getElementById('f_email').value.trim();
-        const status = document.getElementById('f_status').value.trim();
-        const tripId = document.getElementById('f_trip').value.trim();
-        const fromDate = document.getElementById('f_from').value;
-        const toDate = document.getElementById('f_to').value;
-
-        const params = new URLSearchParams();
-        if (email) params.append('email', email);
-        if (status) params.append('status', status);
-        if (tripId) params.append('tripId', tripId);
-        if (fromDate) params.append('fromDate', fromDate);
-        if (toDate) params.append('toDate', toDate);
+        // Get current user's email for filtering
+        const email = await getMyEmail();
 
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" style="text-align: center; padding: 30px;">
+                <td colspan="8" style="text-align: center; padding: 30px;">
                     <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--primary); margin-bottom: 10px;"></i>
                     <p>Loading your bookings...</p>
                 </td>
             </tr>`;
 
         try {
+            console.log('Fetching bookings for user:', email);
+            
+            // Only filter by user's email to show their bookings
+            const params = new URLSearchParams();
+            if (email) params.append('email', email);
+            
             // Reuse existing backend endpoint that returns filtered booking list (requires auth)
             const resp = await fetch(`/api/support/bookings?${params.toString()}`, { headers: { Authorization:`Bearer ${token}` } });
+            
+            console.log('Response status:', resp.status);
+            console.log('Response headers:', resp.headers);
+            
             if (!resp.ok) {
                 if (resp.status === 401) { localStorage.removeItem('token'); location.href='/login.html'; return; }
-                throw new Error('Failed to load bookings');
+                const errorText = await resp.text();
+                console.error('API Error:', errorText);
+                throw new Error(`Failed to load bookings: ${resp.status} - ${errorText}`);
             }
+            
             rows = await resp.json();
+            console.log('Received bookings:', rows);
+            console.log('Number of bookings found:', rows.length);
+            
             page = 1;
             render();
         } catch (e) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7">
+                    <td colspan="8">
                         <div class="empty-state">
                             <i class="fas fa-exclamation-circle"></i>
                             <h3>Error</h3>
@@ -847,23 +1597,174 @@
         }
     }
 
-    document.getElementById('bh_search').addEventListener('click', search);
-    document.getElementById('bh_clear').addEventListener('click', async ()=>{
-        document.getElementById('f_status').value='';
-        document.getElementById('f_trip').value='';
-        document.getElementById('f_from').value='';
-        document.getElementById('f_to').value='';
-        // Keep user's email prefilled for convenience
-        await loadDefaultEmail();
-        rows = [];
-        render();
-    });
+    // View booking details function
+    function viewBookingDetails(bookingId) {
+        const booking = rows.find(b => b.bookingId === bookingId);
+        if (!booking) {
+            alert('Booking details not found');
+            return;
+        }
+
+        const trip = booking.trip || {};
+        const customer = booking.customer || {};
+        
+        // Determine status styling
+        const statusClass = booking.status && booking.status.toLowerCase().includes('confirm') ? 'confirmed' : 
+                           booking.status && booking.status.toLowerCase().includes('provision') ? 'provisional' : 'default';
+        
+        // Create a detailed view modal with enhanced styling
+        const detailsHtml = `
+            <div class="booking-modal-content">
+                <!-- Header with gradient background -->
+                <div class="modal-header">
+                    <div class="header-content">
+                        <div class="booking-icon">
+                            <i class="fas fa-anchor"></i>
+                        </div>
+                        <div class="header-text">
+                            <h2>Booking Details</h2>
+                            <span class="booking-number">#${booking.bookingId}</span>
+                        </div>
+                    </div>
+                    <button onclick="closeBookingDetails()" class="close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Status Banner -->
+                <div class="status-banner status-${statusClass}">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Status: ${booking.status || 'N/A'}</span>
+                </div>
+
+                <!-- Main Content Grid -->
+                <div class="modal-body">
+                    <!-- Trip Information Card -->
+                    <div class="info-card trip-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-map-marked-alt"></i>
+                            </div>
+                            <h3>Trip Information</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-row">
+                                <span class="label">Trip Name</span>
+                                <span class="value">${trip.name || 'Sunset Whale Watching'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Route</span>
+                                <span class="value">${trip.route || 'Sunset Whale Watching'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Date</span>
+                                <span class="value highlight">${trip.date || '2025-10-22'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Time</span>
+                                <span class="value">${trip.startTime ? fmtTime(trip.startTime) : '16:00'}${trip.endTime ? ` - ${fmtTime(trip.endTime)}` : ' - 20:00'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Location</span>
+                                <span class="value">${trip.location || 'Deep Sea'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking Information Card -->
+                    <div class="info-card booking-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <h3>Booking Information</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-row">
+                                <span class="label">Customer</span>
+                                <span class="value">${customer.firstName || 'Tharusha'} ${customer.secondName || 'Dasanayake'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Email</span>
+                                <span class="value">${customer.email || 'tharusha@gmail.com'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Phone</span>
+                                <span class="value">${customer.contactNo || '0711234567'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Passengers</span>
+                                <span class="value"><i class="fas fa-users"></i> ${booking.passengers || '1'}</span>
+                            </div>
+                            <div class="info-row total-cost">
+                                <span class="label">Total Cost</span>
+                                <span class="value cost-value">$${booking.totalCost || '75'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="modal-footer">
+                    <button onclick="closeBookingDetails()" class="close-btn-primary">
+                        <i class="fas fa-check"></i>
+                        <span>Close</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Create and show modal overlay with enhanced styling
+        const modalOverlay = document.createElement('div');
+        modalOverlay.id = 'booking-details-modal';
+        modalOverlay.className = 'modal-overlay';
+        modalOverlay.innerHTML = detailsHtml;
+        document.body.appendChild(modalOverlay);
+        
+        // Close modal when clicking outside
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                closeBookingDetails();
+            }
+        });
+    }
+
+    // Close booking details modal
+    function closeBookingDetails() {
+        const modal = document.getElementById('booking-details-modal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    // Remove old event listeners since filter elements are removed
+    // No longer need bh_search, bh_clear, bh_test event listeners
 
     // Set year in footer
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // init
-    loadDefaultEmail();
+    // Enhanced page load animation
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add a slight delay to ensure smooth animation
+        setTimeout(() => {
+            document.body.style.opacity = '1';
+        }, 50);
+    });
+
+    // Smooth scroll behavior for any internal links
+    document.documentElement.style.scrollBehavior = 'smooth';
+
+    // init - automatically load bookings on page load
+    async function initializePage() {
+        // Automatically search for bookings if user is logged in
+        if (token) {
+            await search();
+        }
+    }
+    
+    initializePage();
 </script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/user-profile.js"></script>
 </body>
 </html>

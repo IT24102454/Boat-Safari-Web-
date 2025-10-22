@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Patterns Demo - Boat Safari</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .pattern-section {
+            background: #f8f9fa;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .pattern-title {
+            color: #2980b9;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .demo-form {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+        
+        input, select, button {
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .pattern-explanation {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .pattern-explanation h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .benefits {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .benefits li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .benefits li::before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Design Patterns Demo</h1>
+        <p style="text-align: center; font-size: 1.2em; color: #7f8c8d;">
+            Demonstrating <strong>Strategy Pattern</strong> and <strong>Observer Pattern</strong> in Boat Safari Project
+        </p>
+
+        <!-- Strategy Pattern Demo -->
+        <div class="pattern-section">
+            <div class="pattern-title">🔧 Strategy Pattern - Payment Processing</div>
+            
+            <div class="pattern-explanation">
+                <h3>What is Strategy Pattern?</h3>
+                <p>Strategy pattern allows you to define a family of algorithms, encapsulate each one, and make them interchangeable at runtime.</p>
+                <h4>Benefits in our project:</h4>
+                <ul class="benefits">
+                    <li>Easy to add new payment methods without changing existing code</li>
+                    <li>Each payment method has its own validation and processing logic</li>
+                    <li>Runtime selection of payment strategy</li>
+                    <li>Follows Open/Closed Principle</li>
+                </ul>
+            </div>
+
+            <div class="demo-form">
+                <div class="form-group">
+                    <label>Payment Method:</label>
+                    <select id="paymentMethod">
+                        <option value="">Select Payment Method</option>
+                        <option value="CREDIT_CARD">Credit Card</option>
+                        <option value="PAYPAL">PayPal</option>
+                        <option value="BANK_TRANSFER">Bank Transfer</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Amount ($):</label>
+                    <input type="number" id="amount" placeholder="100.00" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label>Customer Email:</label>
+                    <input type="email" id="customerEmail" placeholder="customer@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Payment Details:</label>
+                    <input type="text" id="paymentDetails" placeholder="Card: 1234567890123456 | PayPal: email@domain.com | Bank: 1234567890">
+                </div>
+                
+                <button onclick="processPayment()">Process Payment (Strategy Pattern)</button>
+                <button onclick="getPaymentMethods()">Get Available Methods</button>
+                <button onclick="calculateFees()">Calculate Processing Fees</button>
+            </div>
+            
+            <div id="strategyResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Observer Pattern Demo -->
+        <div class="pattern-section">
+            <div class="pattern-title">👀 Observer Pattern - Booking Notifications</div>
+            
+            <div class="pattern-explanation">
+                <h3>What is Observer Pattern?</h3>
+                <p>Observer pattern defines a one-to-many dependency between objects so that when one object changes state, all dependents are notified automatically.</p>
+                <h4>Benefits in our project:</h4>
+                <ul class="benefits">
+                    <li>Automatic email notifications when booking status changes</li>
+                    <li>Inventory updates when bookings are confirmed/cancelled</li>
+                    <li>Audit logging for all booking changes</li>
+                    <li>Loose coupling between booking service and notification systems</li>
+                </ul>
+            </div>
+
+            <div class="demo-form">
+                <div class="form-group">
+                    <label>Booking ID:</label>
+                    <input type="number" id="bookingId" placeholder="1" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label>New Status:</label>
+                    <select id="newStatus">
+                        <option value="">Select Status</option>
+                        <option value="PROVISIONAL">Provisional</option>
+                        <option value="CONFIRMED">Confirmed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="REFUNDED">Refunded</option>
+                    </select>
+                </div>
+                
+                <button onclick="updateBookingStatus()">Update Status (Observer Pattern)</button>
+            </div>
+            
+            <div id="observerResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/design-patterns/demo';
+
+        async function processPayment() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const customerEmail = document.getElementById('customerEmail').value;
+            const paymentDetails = document.getElementById('paymentDetails').value;
+
+            if (!paymentMethod || !amount || !customerEmail || !paymentDetails) {
+                showResult('strategyResult', 'Please fill all fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/payment/process`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        paymentMethod,
+                        amount,
+                        customerEmail,
+                        paymentDetails
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showResult('strategyResult', 
+                        `🎉 Payment Successful!\n` +
+                        `Method: ${paymentMethod}\n` +
+                        `Amount: $${amount}\n` +
+                        `Processing Fee: $${result.processingFee}\n` +
+                        `Total: $${result.totalAmount}\n` +
+                        `Transaction ID: ${result.transactionId}\n` +
+                        `Message: ${result.message}`, 
+                        'success'
+                    );
+                } else {
+                    showResult('strategyResult', `❌ Payment Failed: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('strategyResult', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getPaymentMethods() {
+            try {
+                const response = await fetch(`${API_BASE}/payment/methods`);
+                const methods = await response.json();
+                
+                showResult('strategyResult', 
+                    `📋 Available Payment Methods:\n${methods.map(m => `• ${m}`).join('\n')}`, 
+                    'info'
+                );
+            } catch (error) {
+                showResult('strategyResult', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function calculateFees() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            
+            if (!amount) {
+                showResult('strategyResult', 'Please enter an amount', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/payment/fees?amount=${amount}`);
+                const fees = await response.json();
+                
+                let feeText = `💰 Processing Fees for $${amount}:\n`;
+                Object.entries(fees).forEach(([method, fee]) => {
+                    feeText += `• ${method}: $${fee}\n`;
+                });
+                
+                showResult('strategyResult', feeText, 'info');
+            } catch (error) {
+                showResult('strategyResult', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function updateBookingStatus() {
+            const bookingId = parseInt(document.getElementById('bookingId').value);
+            const newStatus = document.getElementById('newStatus').value;
+
+            if (!bookingId || !newStatus) {
+                showResult('observerResult', 'Please fill all fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/booking/${bookingId}/status?newStatus=${newStatus}`, {
+                    method: 'PUT'
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showResult('observerResult', 
+                        `🎯 Observer Pattern in Action!\n` +
+                        `Booking ID: ${result.bookingId}\n` +
+                        `New Status: ${result.newStatus}\n` +
+                        `${result.observersNotified}\n\n` +
+                        `Check the console logs to see:\n` +
+                        `• Email notifications being sent\n` +
+                        `• Inventory being updated\n` +
+                        `• Audit logs being created`, 
+                        'success'
+                    );
+                } else {
+                    showResult('observerResult', `❌ Update Failed: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('observerResult', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${type}`;
+            element.style.display = 'block';
+        }
+
+        // Initialize page
+        window.onload = function() {
+            console.log('🎯 Design Patterns Demo Page Loaded');
+            console.log('Check the browser console and server logs to see the patterns in action!');
+        };
+    </script>
+</body>
+</html>

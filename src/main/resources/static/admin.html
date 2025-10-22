@@ -9,6 +9,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
+        :root {
+            --primary: #1fbfd6;
+            --primary-light: #4dd0e1;
+            --primary-dark: #00acc1;
+            --secondary: #f6c453;
+            --secondary-light: #ffd54f;
+            --dark-blue: #0e3a5b;
+            --navy: #0b1c2c;
+            --light: #f7fbff;
+            --text-light: #d7e6f1;
+            --text-muted: #8fa6b6;
+            --card: #ffffff;
+            --line: #e6eef5;
+            --bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --accent: #ff6b6b;
+            --success: #51cf66;
+            --warning: #ffd43b;
+            --danger: #ff6b6b;
+            --info: #339af0;
+            --shadow-light: rgba(0, 0, 0, 0.05);
+            --shadow-medium: rgba(0, 0, 0, 0.1);
+            --shadow-heavy: rgba(0, 0, 0, 0.2);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -16,11 +40,48 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1fbfd6 0%, #2a5298 100%);
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
             min-height: 100vh;
             color: #333;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background decorative elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(31, 191, 214, 0.05) 0%, transparent 50%);
+            z-index: -2;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 20%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(246, 196, 83, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 15s ease-in-out infinite reverse;
+        }
+
+        /* Floating elements animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
         }
 
         /* Slide-up Animation Styles */
@@ -45,14 +106,20 @@
         /* Navigation */
         .navbar {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 1000;
+            border-bottom: 2px solid rgba(31, 191, 214, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .navbar:hover {
+            box-shadow: 0 6px 40px rgba(0, 0, 0, 0.2);
         }
 
         .nav-container {
@@ -66,14 +133,27 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #2a5298;
+            gap: 12px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--dark-blue));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
         }
 
         .logo i {
-            font-size: 2rem;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: float 4s ease-in-out infinite;
         }
 
         .nav-links {
@@ -85,12 +165,33 @@
         .nav-links a {
             text-decoration: none;
             color: #333;
-            font-weight: 500;
-            transition: color 0.3s ease;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         .nav-links a:hover {
-            color: #2a5298;
+            color: var(--primary);
+            background: rgba(31, 191, 214, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            bottom: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 70%;
         }
 
         .user-info {
@@ -100,18 +201,38 @@
         }
 
         .logout-btn {
-            background: #e74c3c;
+            background: linear-gradient(135deg, var(--danger), #c0392b);
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border-radius: 25px;
             cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logout-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .logout-btn:hover::before {
+            left: 100%;
         }
 
         .logout-btn:hover {
-            background: #c0392b;
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
         }
 
         /* Main Container */
@@ -126,77 +247,249 @@
         /* Dashboard Header */
         .dashboard-header {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            padding: 3rem;
+            border-radius: 20px;
             margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dashboard-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
 
         .dashboard-title {
-            font-size: 2.5rem;
-            color: #2a5298;
-            margin-bottom: 0.5rem;
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--dark-blue), var(--primary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.8rem;
+            font-weight: 800;
         }
 
         .dashboard-subtitle {
-            color: #666;
-            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            font-weight: 500;
         }
 
         /* Quick Stats */
         .quick-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
             margin-bottom: 2rem;
         }
 
         .stat-card {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 1.2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
             text-align: center;
-            transition: transform 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, currentColor, transparent);
+            opacity: 0.4;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+            z-index: 0;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+        }
+
+        .stat-card:hover::after {
+            width: 120px;
+            height: 120px;
         }
 
         .stat-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            font-size: 2.2rem;
+            margin-bottom: 0.8rem;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            z-index: 2;
         }
 
-        .stat-card.users .stat-icon { color: #3498db; }
-        .stat-card.trips .stat-icon { color: #2ecc71; }
-        .stat-card.bookings .stat-icon { color: #f39c12; }
-        .stat-card.revenue .stat-icon { color: #e74c3c; }
-        .stat-card.staff .stat-icon { color: #9b59b6; }
+        .stat-card:hover .stat-icon {
+            transform: scale(1.15) rotate(8deg);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-card.users .stat-icon { 
+            color: var(--info);
+            background: linear-gradient(135deg, rgba(51, 154, 240, 0.1), rgba(51, 154, 240, 0.05));
+        }
+        .stat-card.trips .stat-icon { 
+            color: var(--success);
+            background: linear-gradient(135deg, rgba(81, 207, 102, 0.1), rgba(81, 207, 102, 0.05));
+        }
+        .stat-card.bookings .stat-icon { 
+            color: var(--warning);
+            background: linear-gradient(135deg, rgba(255, 212, 59, 0.1), rgba(255, 212, 59, 0.05));
+        }
+        .stat-card.revenue .stat-icon { 
+            color: var(--danger);
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 107, 107, 0.05));
+        }
+        .stat-card.staff .stat-icon { 
+            color: #9b59b6;
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(155, 89, 182, 0.05));
+        }
+
+        /* Responsive adjustments for stat cards */
+        @media (max-width: 1200px) {
+            .quick-stats {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 0.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+                min-height: 120px;
+            }
+            
+            .stat-icon {
+                font-size: 1.8rem;
+                width: 48px;
+                height: 48px;
+                margin-bottom: 0.6rem;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem;
+            }
+            
+            .stat-label {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-stats {
+                grid-template-columns: 1fr;
+                gap: 0.6rem;
+            }
+            
+            .stat-card {
+                padding: 0.8rem;
+                min-height: 100px;
+                border-radius: 12px;
+            }
+            
+            .stat-icon {
+                font-size: 1.6rem;
+                width: 40px;
+                height: 40px;
+                margin-bottom: 0.4rem;
+            }
+            
+            .stat-number {
+                font-size: 1.3rem;
+                margin-bottom: 0.2rem;
+            }
+            
+            .stat-label {
+                font-size: 0.65rem;
+            }
+        }
 
         .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #2a5298;
-            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--dark-blue), var(--primary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.4rem;
+            line-height: 1;
+            position: relative;
+            z-index: 2;
         }
 
         .stat-label {
-            color: #666;
-            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            line-height: 1.2;
+            position: relative;
+            z-index: 2;
         }
 
         /* Tab Navigation */
         .tab-navigation {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem;
-            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            padding: 1.5rem;
+            border-radius: 20px;
             margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .tab-buttons {
@@ -206,38 +499,61 @@
         }
 
         .tab-btn {
-            background: transparent;
-            border: 2px solid #ddd;
-            color: #666;
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(31, 191, 214, 0.2);
+            color: var(--text-muted);
+            padding: 12px 24px;
+            border-radius: 25px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .tab-btn:hover::before {
+            left: 100%;
         }
 
         .tab-btn.active {
-            background: #2a5298;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            border-color: #2a5298;
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(31, 191, 214, 0.3);
         }
 
         .tab-btn:hover:not(.active) {
-            border-color: #2a5298;
-            color: #2a5298;
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(31, 191, 214, 0.1);
+            transform: translateY(-2px);
         }
 
         /* Tab Content */
         .tab-content {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
             min-height: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
         }
 
         .tab-pane {
@@ -259,11 +575,15 @@
         }
 
         .section-title {
-            font-size: 1.5rem;
-            color: #2a5298;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--dark-blue), var(--primary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 10px;
+            font-weight: 700;
         }
 
         /* Action Buttons */
@@ -275,62 +595,94 @@
         }
 
         .btn {
-            padding: 0.75rem 1.5rem;
+            padding: 12px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 25px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 700;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-size: 14px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn-primary {
-            background: #2a5298;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
+            box-shadow: 0 4px 15px rgba(31, 191, 214, 0.3);
         }
 
         .btn-primary:hover {
-            background: #1e3c72;
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, var(--dark-blue), var(--navy));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(31, 191, 214, 0.4);
         }
 
         .btn-success {
-            background: #27ae60;
+            background: linear-gradient(135deg, var(--success), #2ecc71);
             color: white;
+            box-shadow: 0 4px 15px rgba(81, 207, 102, 0.3);
         }
 
         .btn-success:hover {
-            background: #229954;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(81, 207, 102, 0.4);
         }
 
         .btn-warning {
-            background: #f39c12;
+            background: linear-gradient(135deg, var(--warning), #f39c12);
             color: white;
+            box-shadow: 0 4px 15px rgba(255, 212, 59, 0.3);
         }
 
         .btn-warning:hover {
-            background: #e67e22;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 212, 59, 0.4);
         }
 
         .btn-danger {
-            background: #e74c3c;
+            background: linear-gradient(135deg, var(--danger), #e74c3c);
             color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
         }
 
         .btn-danger:hover {
-            background: #c0392b;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
         }
 
         .btn-info {
-            background: #3498db;
+            background: linear-gradient(135deg, var(--info), #3498db);
             color: white;
+            box-shadow: 0 4px 15px rgba(51, 154, 240, 0.3);
         }
 
         .btn-info:hover {
-            background: #2980b9;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(51, 154, 240, 0.4);
         }
 
         /* Small action buttons */
@@ -414,35 +766,70 @@
             width: 100%;
             border-collapse: collapse;
             background: white;
-            border-radius: 10px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 2px solid rgba(31, 191, 214, 0.1);
         }
 
         .data-table th {
-            background: #2a5298;
+            background: linear-gradient(135deg, var(--dark-blue), var(--primary));
             color: white;
-            padding: 1rem;
+            padding: 18px 25px;
             text-align: left;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .data-table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
         }
 
         .data-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
+            padding: 18px 25px;
+            border-bottom: 1px solid rgba(31, 191, 214, 0.1);
+            transition: all 0.3s ease;
         }
 
-        .data-table tr:hover {
-            background: #f8f9fa;
+        .data-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .data-table tbody tr:hover {
+            background: linear-gradient(135deg, rgba(31, 191, 214, 0.05), rgba(31, 191, 214, 0.02));
+            transform: translateX(3px);
+            box-shadow: 0 4px 15px rgba(31, 191, 214, 0.1);
+        }
+
+        .data-table tbody tr:nth-child(even) {
+            background: rgba(247, 251, 255, 0.5);
         }
 
         /* Status Badges */
         .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 25px;
+            font-size: 11px;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .status-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .status-active {
@@ -516,40 +903,66 @@
 
         .form-control {
             width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border: 2px solid rgba(31, 191, 214, 0.2);
+            border-radius: 12px;
             font-size: 1rem;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
         }
 
         .form-control:focus {
             outline: none;
-            border-color: #2a5298;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(31, 191, 214, 0.1), 0 4px 20px rgba(31, 191, 214, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .form-control:hover {
+            border-color: var(--primary-light);
         }
 
         /* Charts */
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
         }
 
         .chart-container {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 1.2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
         }
 
         .chart-title {
-            font-size: 1.2rem;
-            color: #2a5298;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, var(--dark-blue), var(--primary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
+            font-weight: 700;
+        }
+
+        .chart-container canvas {
+            max-height: 250px !important;
+            width: 100% !important;
         }
 
         /* Export Panel */
@@ -1125,6 +1538,38 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
+        .filter-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 2rem;
+            border-radius: 16px;
+            margin: 2rem 0;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .filter-section h4 {
+            color: var(--dark-blue);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--dark-blue), var(--primary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .filter-section .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr 200px 200px auto;
+            gap: 1.5rem;
+            align-items: end;
+        }
+
         .filters-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1458,24 +1903,21 @@
                 </div>
 
                 <!-- User Filter Section -->
-                <div class="filter-section" style="background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 10px; margin: 20px 0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
-                    <h4 style="color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <div class="filter-section">
+                    <h4>
                         <i class="fas fa-filter"></i>
                         Filter Users
                     </h4>
-                    <div style="display: grid; grid-template-columns: 1fr 200px 200px auto; gap: 15px; align-items: end;">
+                    <div class="filter-grid">
                         <div>
-                            <label for="userSearchInput" style="display: block; margin-bottom: 5px; color: #555; font-weight: 500;">Search by Name or Email:</label>
+                            <label for="userSearchInput" class="form-label">Search by Name or Email:</label>
                             <input type="text" id="userSearchInput" placeholder="Type to search users..." 
-                                   style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; transition: border-color 0.3s;"
-                                   onkeyup="filterUsers()"
-                                   onfocus="this.style.borderColor='#3498db'" 
-                                   onblur="this.style.borderColor='#ddd'">
+                                   class="form-control" 
+                                   onkeyup="filterUsers()">
                         </div>
                         <div>
-                            <label for="roleFilter" style="display: block; margin-bottom: 5px; color: #555; font-weight: 500;">Role:</label>
-                            <select id="roleFilter" onchange="filterUsers()" 
-                                    style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; background: white;">
+                            <label for="roleFilter" class="form-label">Role:</label>
+                            <select id="roleFilter" onchange="filterUsers()" class="form-control">
                                 <option value="">All Roles</option>
                                 <option value="ADMIN">Admin</option>
                                 <option value="CUSTOMER">Customer</option>
@@ -1486,19 +1928,15 @@
                             </select>
                         </div>
                         <div>
-                            <label for="statusFilter" style="display: block; margin-bottom: 5px; color: #555; font-weight: 500;">Status:</label>
-                            <select id="statusFilter" onchange="filterUsers()" 
-                                    style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; background: white;">
+                            <label for="statusFilter" class="form-label">Status:</label>
+                            <select id="statusFilter" onchange="filterUsers()" class="form-control">
                                 <option value="">All Status</option>
                                 <option value="ACTIVE">Active</option>
                                 <option value="INACTIVE">Inactive</option>
                             </select>
                         </div>
                         <div>
-                            <button onclick="clearUserFilters()" 
-                                    style="padding: 10px 15px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; transition: background 0.3s;"
-                                    onmouseover="this.style.background='#c0392b'" 
-                                    onmouseout="this.style.background='#e74c3c'">
+                            <button onclick="clearUserFilters()" class="btn btn-danger">
                                 <i class="fas fa-times"></i> Clear
                             </button>
                         </div>
@@ -1659,24 +2097,21 @@
                 </div>
 
                 <!-- Boat Filter Section -->
-                <div class="filter-section" style="background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 10px; margin: 20px 0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
-                    <h4 style="color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <div class="filter-section">
+                    <h4>
                         <i class="fas fa-filter"></i>
                         Filter Boats
                     </h4>
-                    <div style="display: grid; grid-template-columns: 1fr 200px 200px auto; gap: 15px; align-items: end;">
+                    <div class="filter-grid">
                         <div>
-                            <label for="boatSearchInput" style="display: block; margin-bottom: 5px; color: #555; font-weight: 500;">Search by Name or Registration:</label>
+                            <label for="boatSearchInput" class="form-label">Search by Name or Registration:</label>
                             <input type="text" id="boatSearchInput" placeholder="Type to search boats..." 
-                                   style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; transition: border-color 0.3s;"
-                                   onkeyup="filterBoats()"
-                                   onfocus="this.style.borderColor='#3498db'" 
-                                   onblur="this.style.borderColor='#ddd'">
+                                   class="form-control"
+                                   onkeyup="filterBoats()">
                         </div>
                         <div>
-                            <label for="boatStatusFilter" style="display: block; margin-bottom: 5px; color: #555; font-weight: 500;">Status:</label>
-                            <select id="boatStatusFilter" onchange="filterBoats()" 
-                                    style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; background: white;">
+                            <label for="boatStatusFilter" class="form-label">Status:</label>
+                            <select id="boatStatusFilter" onchange="filterBoats()" class="form-control">
                                 <option value="">All Status</option>
                                 <option value="AVAILABLE">Available</option>
                                 <option value="MAINTENANCE">Maintenance</option>
@@ -1684,9 +2119,8 @@
                             </select>
                         </div>
                         <div>
-                            <label for="boatTypeFilter" style="display: block; margin-bottom: 5px; color: #555; font-weight: 500;">Type:</label>
-                            <select id="boatTypeFilter" onchange="filterBoats()" 
-                                    style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; background: white;">
+                            <label for="boatTypeFilter" class="form-label">Type:</label>
+                            <select id="boatTypeFilter" onchange="filterBoats()" class="form-control">
                                 <option value="">All Types</option>
                                 <option value="Safari Boat">Safari Boat</option>
                                 <option value="Speed Boat">Speed Boat</option>
@@ -1695,8 +2129,7 @@
                             </select>
                         </div>
                         <div>
-                            <button onclick="clearBoatFilters()" 
-                                    style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                            <button onclick="clearBoatFilters()" class="btn btn-danger">
                                 <i class="fas fa-times"></i> Clear
                             </button>
                         </div>
@@ -1804,24 +2237,21 @@
                 </div>
 
                 <!-- Boat Filter Section -->
-                <div class="filter-section" style="background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 10px; margin: 20px 0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
-                    <h4 style="color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <div class="filter-section">
+                    <h4>
                         <i class="fas fa-filter"></i>
                         Filter Boats
                     </h4>
-                    <div style="display: grid; grid-template-columns: 1fr 200px 200px auto; gap: 15px; align-items: end;">
+                    <div class="filter-grid">
                         <div>
-                            <label for="boatSearchInput" style="display: block; margin-bottom: 5px; color: #555; font-weight: 500;">Search by Name or Model:</label>
+                            <label for="boatSearchInput" class="form-label">Search by Name or Model:</label>
                             <input type="text" id="boatSearchInput" placeholder="Type to search boats..." 
-                                   style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; transition: border-color 0.3s;"
-                                   onkeyup="filterBoats()"
-                                   onfocus="this.style.borderColor='#3498db'" 
-                                   onblur="this.style.borderColor='#ddd'">
+                                   class="form-control"
+                                   onkeyup="filterBoats()">
                         </div>
                         <div>
-                            <label for="boatStatusFilter" style="display: block; margin-bottom: 5px; color: #555; font-weight: 500;">Status:</label>
-                            <select id="boatStatusFilter" onchange="filterBoats()" 
-                                    style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; background: white;">
+                            <label for="boatStatusFilter" class="form-label">Status:</label>
+                            <select id="boatStatusFilter" onchange="filterBoats()" class="form-control">
                                 <option value="">All Status</option>
                                 <option value="AVAILABLE">Available</option>
                                 <option value="MAINTENANCE">Maintenance</option>
@@ -1829,9 +2259,8 @@
                             </select>
                         </div>
                         <div>
-                            <label for="boatTypeFilter" style="display: block; margin-bottom: 5px; color: #555; font-weight: 500;">Type:</label>
-                            <select id="boatTypeFilter" onchange="filterBoats()" 
-                                    style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; background: white;">
+                            <label for="boatTypeFilter" class="form-label">Type:</label>
+                            <select id="boatTypeFilter" onchange="filterBoats()" class="form-control">
                                 <option value="">All Types</option>
                                 <option value="Safari Boat">Safari Boat</option>
                                 <option value="Speed Boat">Speed Boat</option>
@@ -1840,10 +2269,8 @@
                             </select>
                         </div>
                         <div>
-                            <button onclick="clearBoatFilters()" 
-                                    style="padding: 10px 20px; background: #95a5a6; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500; transition: background-color 0.3s;"
-                                    onmouseover="this.style.backgroundColor='#7f8c8d'" 
-                                    onmouseout="this.style.backgroundColor='#95a5a6'">
+                            <button onclick="clearBoatFilters()" class="btn btn-warning">
+                                <i class="fas fa-times"></i>
                                 Clear Filters
                             </button>
                         </div>
@@ -2493,6 +2920,139 @@
                 <button type="button" class="btn-modal btn-primary" onclick="confirmStatusUpdate()">
                     <i class="fas fa-check"></i>
                     Update Status
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmationModal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                    Confirm Delete
+                </h3>
+                <button class="close" onclick="closeModal('deleteConfirmationModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; font-size: 16px; margin-bottom: 1.5rem; color: var(--dark-blue);">
+                    Are you sure you want to delete this trip?
+                </p>
+                <p style="text-align: center; font-size: 14px; color: var(--text-muted);">
+                    <strong>This action cannot be undone.</strong>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-cancel" onclick="closeModal('deleteConfirmationModal')">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button type="button" class="btn-modal btn-danger" onclick="confirmTripDeletion()" style="background: var(--danger); border-color: var(--danger);">
+                    <i class="fas fa-trash"></i>
+                    Delete Trip
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Boat Confirmation Modal -->
+    <div id="deleteBoatConfirmationModal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                    Confirm Delete
+                </h3>
+                <button class="close" onclick="closeModal('deleteBoatConfirmationModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; font-size: 16px; margin-bottom: 1rem; color: var(--dark-blue);">
+                    Are you sure you want to delete boat
+                </p>
+                <p style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 1.5rem; color: var(--primary);" id="boatNameToDelete">
+                    <!-- Boat name will be inserted here -->
+                </p>
+                <p style="text-align: center; font-size: 14px; color: var(--text-muted);">
+                    <strong>This action cannot be undone.</strong>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-cancel" onclick="closeModal('deleteBoatConfirmationModal')">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button type="button" class="btn-modal btn-danger" onclick="confirmBoatDeletion()" style="background: var(--danger); border-color: var(--danger);">
+                    <i class="fas fa-trash"></i>
+                    Delete Boat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Booking Confirmation Modal -->
+    <div id="cancelBookingConfirmationModal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                    Confirm Booking Cancellation
+                </h3>
+                <button class="close" onclick="closeModal('cancelBookingConfirmationModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; font-size: 16px; margin-bottom: 1rem; color: var(--dark-blue);">
+                    Are you sure you want to cancel the booking for
+                </p>
+                <p style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 1.5rem; color: var(--primary);" id="customerNameToCancel">
+                    <!-- Customer name will be inserted here -->
+                </p>
+                <p style="text-align: center; font-size: 14px; color: var(--text-muted);">
+                    <strong>This action cannot be undone.</strong>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-cancel" onclick="closeModal('cancelBookingConfirmationModal')">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button type="button" class="btn-modal btn-danger" onclick="confirmBookingCancellation()" style="background: var(--danger); border-color: var(--danger);">
+                    <i class="fas fa-ban"></i>
+                    Cancel Booking
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Staff Confirmation Modal -->
+    <div id="deleteStaffConfirmationModal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                    Confirm Staff Deletion
+                </h3>
+                <button class="close" onclick="closeModal('deleteStaffConfirmationModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; font-size: 16px; margin-bottom: 1rem; color: var(--dark-blue);">
+                    Are you sure you want to delete staff member
+                </p>
+                <p style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 1.5rem; color: var(--primary);" id="staffNameToDelete">
+                    <!-- Staff name will be inserted here -->
+                </p>
+                <p style="text-align: center; font-size: 14px; color: var(--text-muted);">
+                    <strong>This action cannot be undone.</strong>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-cancel" onclick="closeModal('deleteStaffConfirmationModal')">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button type="button" class="btn-modal btn-danger" onclick="confirmStaffDeletion()" style="background: var(--danger); border-color: var(--danger);">
+                    <i class="fas fa-user-times"></i>
+                    Delete Staff
                 </button>
             </div>
         </div>
