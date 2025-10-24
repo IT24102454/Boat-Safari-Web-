@@ -507,6 +507,55 @@
             border-left: 3px solid #28a745;
         }
 
+        .assignment-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .assignment-detail-section h4 {
+            color: #1fbfd6;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-display-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .assignment-notes-section {
+            margin: 1.5rem 0;
+        }
+
+        .assignment-notes-section h4 {
+            color: #1fbfd6;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notes-display-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .notes-display-card p {
+            margin: 0;
+            color: #495057;
+            line-height: 1.5;
+        }
+
         .assignment-actions {
             margin-top: 2rem;
             padding-top: 1.5rem;
@@ -1084,91 +1133,81 @@
     </div>
 
     <!-- Edit Resource Assignment Modal -->
-    <div id="editAssignmentModal" class="modal">
+    <div id="viewAssignmentDetailsModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('editAssignmentModal')">&times;</span>
-            <h2><i class="fas fa-edit"></i> Edit Resource Assignment</h2>
-            <form id="editAssignmentForm">
-                <input type="hidden" id="editAssignmentTripId">
+            <span class="close" onclick="closeModal('viewAssignmentDetailsModal')">&times;</span>
+            <h2><i class="fas fa-eye"></i> View Assignment Details</h2>
+            <div class="assignment-details-container">
+                <input type="hidden" id="viewAssignmentTripId">
                 
                 <div class="assignment-info-header">
                     <div class="trip-info-card">
-                        <h3 id="editTripInfoTitle">Trip Information</h3>
+                        <h3 id="viewTripInfoTitle">Trip Information</h3>
                         <div class="trip-details">
                             <div class="detail-item">
                                 <i class="fas fa-route"></i>
-                                <span><strong>Trip:</strong> <span id="editTripInfoName">-</span></span>
+                                <span><strong>Trip:</strong> <span id="viewTripInfoName">-</span></span>
                             </div>
                             <div class="detail-item">
                                 <i class="fas fa-calendar"></i>
-                                <span><strong>Date:</strong> <span id="editTripInfoDate">-</span></span>
+                                <span><strong>Date:</strong> <span id="viewTripInfoDate">-</span></span>
                             </div>
                             <div class="detail-item">
                                 <i class="fas fa-clock"></i>
-                                <span><strong>Status:</strong> <span id="editTripInfoStatus" class="status-badge">-</span></span>
+                                <span><strong>Status:</strong> <span id="viewTripInfoStatus" class="status-badge">-</span></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="editAssignmentBoat">
-                            <i class="fas fa-ship"></i>
-                            Assigned Boat:
-                        </label>
-                        <select class="form-control" id="editAssignmentBoat" required>
-                            <option value="">Select a boat...</option>
-                        </select>
-                        <div class="current-assignment">
-                            Current: <span id="currentBoatInfo">None</span>
+                <div class="assignment-details-grid">
+                    <div class="assignment-detail-section">
+                        <h4><i class="fas fa-ship"></i> Assigned Boat</h4>
+                        <div class="detail-display-card">
+                            <div class="detail-item">
+                                <span><strong>Boat Name:</strong> <span id="viewBoatName">-</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <span><strong>Capacity:</strong> <span id="viewBoatCapacity">-</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <span><strong>Type:</strong> <span id="viewBoatType">-</span></span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="editAssignmentGuide">
-                            <i class="fas fa-user-tie"></i>
-                            Assigned Guide:
-                        </label>
-                        <select class="form-control" id="editAssignmentGuide" required>
-                            <option value="">Select a guide...</option>
-                        </select>
-                        <div class="current-assignment">
-                            Current: <span id="currentGuideInfo">None</span>
+                    <div class="assignment-detail-section">
+                        <h4><i class="fas fa-user-tie"></i> Assigned Guide</h4>
+                        <div class="detail-display-card">
+                            <div class="detail-item">
+                                <span><strong>Guide Name:</strong> <span id="viewGuideName">-</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <span><strong>Experience:</strong> <span id="viewGuideExperience">-</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <span><strong>Languages:</strong> <span id="viewGuideLanguages">-</span></span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="editAssignmentNotes">
-                        <i class="fas fa-sticky-note"></i>
-                        Assignment Notes:
-                    </label>
-                    <textarea class="form-control" id="editAssignmentNotes" rows="3" 
-                              placeholder="Add any special notes or instructions for this assignment..."></textarea>
+                <div class="assignment-notes-section">
+                    <h4><i class="fas fa-sticky-note"></i> Assignment Notes</h4>
+                    <div class="notes-display-card">
+                        <p id="viewAssignmentNotes">No notes available</p>
+                    </div>
                 </div>
 
                 <div class="assignment-actions">
                     <div class="action-buttons">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i>
-                            Update Assignment
-                        </button>
-                        <button type="button" class="btn btn-warning" onclick="reassignResources()">
-                            <i class="fas fa-exchange-alt"></i>
-                            Reassign All
-                        </button>
-                        <button type="button" class="btn btn-danger" onclick="removeAssignmentFromModal()">
-                            <i class="fas fa-trash"></i>
-                            Remove Assignment
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="closeModal('editAssignmentModal')">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('viewAssignmentDetailsModal')">
                             <i class="fas fa-times"></i>
-                            Cancel
+                            Close
                         </button>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 

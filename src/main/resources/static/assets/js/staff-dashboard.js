@@ -68,8 +68,7 @@ async function loadDashboardData() {
         showNotification('Error loading dashboard data', 'error');
     }
     
-    // Setup modal event listeners and forms
-    setupEditAssignmentForm();
+    // Setup modal event listeners
     setupModalEventListeners();
 }
 
@@ -580,8 +579,8 @@ function displayAssignments() {
             <td>${assignment.guideName}</td>
             <td><span class="status-badge status-assigned">${assignment.status}</span></td>
             <td class="action-buttons">
-                <button class="btn btn-warning btn-sm" onclick="editAssignment(${assignment.tripId})">
-                    <i class="fas fa-edit"></i>
+                <button class="btn btn-info btn-sm" onclick="viewAssignmentDetails(${assignment.tripId})">
+                    <i class="fas fa-eye"></i>
                 </button>
                 <button class="btn btn-danger btn-sm" onclick="removeAssignment(${assignment.tripId})">
                     <i class="fas fa-times"></i>
@@ -1190,8 +1189,8 @@ function deleteTrip(tripId) {
 }
 
 // Assignment management functions
-function editAssignment(tripId) {
-    // Find the assignment to edit
+function viewAssignmentDetails(tripId) {
+    // Find the assignment to view
     const assignment = currentAssignments.find(a => a.tripId === tripId);
     
     if (!assignment) {
@@ -1200,60 +1199,35 @@ function editAssignment(tripId) {
     }
     
     // Populate the modal with assignment data
-    populateEditAssignmentModal(assignment);
+    populateViewAssignmentDetailsModal(assignment);
     
     // Show the modal
-    showModal('editAssignmentModal');
+    showModal('viewAssignmentDetailsModal');
 }
 
-// Populate the edit assignment modal with current data
-function populateEditAssignmentModal(assignment) {
+// Populate the view assignment details modal with current data (read-only)
+function populateViewAssignmentDetailsModal(assignment) {
     // Set hidden trip ID
-    document.getElementById('editAssignmentTripId').value = assignment.tripId;
+    document.getElementById('viewAssignmentTripId').value = assignment.tripId;
     
     // Populate trip information header
-    document.getElementById('editTripInfoName').textContent = assignment.tripName || 'Unknown Trip';
-    document.getElementById('editTripInfoDate').textContent = new Date(assignment.date).toLocaleDateString();
-    document.getElementById('editTripInfoStatus').textContent = assignment.status || 'Unknown';
-    document.getElementById('editTripInfoStatus').className = `status-badge status-${(assignment.status || 'unknown').toLowerCase()}`;
+    document.getElementById('viewTripInfoName').textContent = assignment.tripName || 'Unknown Trip';
+    document.getElementById('viewTripInfoDate').textContent = new Date(assignment.date).toLocaleDateString();
+    document.getElementById('viewTripInfoStatus').textContent = assignment.status || 'Unknown';
+    document.getElementById('viewTripInfoStatus').className = `status-badge status-${(assignment.status || 'unknown').toLowerCase()}`;
     
-    // Populate current assignment info
-    document.getElementById('currentBoatInfo').textContent = assignment.boatName || 'Not assigned';
-    document.getElementById('currentGuideInfo').textContent = assignment.guideName || 'Not assigned';
+    // Populate boat details
+    document.getElementById('viewBoatName').textContent = assignment.boatName || 'Not assigned';
+    document.getElementById('viewBoatCapacity').textContent = assignment.boatCapacity || 'Unknown';
+    document.getElementById('viewBoatType').textContent = assignment.boatType || 'Unknown';
     
-    // Populate boat dropdown
-    const boatSelect = document.getElementById('editAssignmentBoat');
-    boatSelect.innerHTML = '<option value="">Select a boat...</option>';
-    availableBoats.forEach(boat => {
-        const option = document.createElement('option');
-        option.value = boat.boatId || boat.id;
-        option.textContent = `${boat.name || boat.boatName} (Capacity: ${boat.capacity || 'Unknown'})`;
-        if (boat.name === assignment.boatName || boat.boatName === assignment.boatName) {
-            option.selected = true;
-        }
-        boatSelect.appendChild(option);
-    });
+    // Populate guide details
+    document.getElementById('viewGuideName').textContent = assignment.guideName || 'Not assigned';
+    document.getElementById('viewGuideExperience').textContent = assignment.guideExperience || 'Not specified';
+    document.getElementById('viewGuideLanguages').textContent = assignment.guideLanguages || 'Not specified';
     
-    // Populate guide dropdown
-    const guideSelect = document.getElementById('editAssignmentGuide');
-    guideSelect.innerHTML = '<option value="">Select a guide...</option>';
-    availableGuides.forEach(guide => {
-        const option = document.createElement('option');
-        option.value = guide.guideId || guide.id || guide.userId;
-        const guideName = guide.firstName && guide.secondName 
-            ? `${guide.firstName} ${guide.secondName}` 
-            : (guide.firstName && guide.lastName 
-                ? `${guide.firstName} ${guide.lastName}`
-                : (guide.name || guide.guideName || 'Unknown Guide'));
-        option.textContent = `${guideName} (Experience: ${guide.experience || 'Not specified'})`;
-        if (guideName === assignment.guideName || guide.name === assignment.guideName) {
-            option.selected = true;
-        }
-        guideSelect.appendChild(option);
-    });
-    
-    // Clear any existing notes
-    document.getElementById('editAssignmentNotes').value = '';
+    // Populate assignment notes
+    document.getElementById('viewAssignmentNotes').textContent = assignment.notes || 'No notes available';
 }
 
 // Show modal function
@@ -1266,76 +1240,6 @@ function showModal(modalId) {
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
     document.body.style.overflow = 'auto'; // Restore scrolling
-}
-
-// Handle edit assignment form submission
-function setupEditAssignmentForm() {
-    const form = document.getElementById('editAssignmentForm');
-    if (form) {
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const tripId = document.getElementById('editAssignmentTripId').value;
-            const boatId = document.getElementById('editAssignmentBoat').value;
-            const guideId = document.getElementById('editAssignmentGuide').value;
-            const notes = document.getElementById('editAssignmentNotes').value;
-            
-            if (!boatId || !guideId) {
-                showNotification('Please select both a boat and a guide', 'error');
-                return;
-            }
-            
-            try {
-                const response = await fetch(`/api/staff/assignments/${tripId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        boatId: parseInt(boatId),
-                        guideId: parseInt(guideId),
-                        notes: notes
-                    })
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || 'Failed to update assignment');
-                }
-                
-                const result = await response.json();
-                showNotification('Assignment updated successfully!', 'success');
-                closeModal('editAssignmentModal');
-                
-                // Reload assignments and trips to reflect changes
-                await loadAssignments();
-                await loadTrips();
-                
-            } catch (error) {
-                console.error('Error updating assignment:', error);
-                showNotification('Error updating assignment: ' + error.message, 'error');
-            }
-        });
-    }
-}
-
-// Reassign all resources function
-function reassignResources() {
-    if (confirm('This will clear the current assignments and allow you to select new resources. Continue?')) {
-        document.getElementById('editAssignmentBoat').value = '';
-        document.getElementById('editAssignmentGuide').value = '';
-        showNotification('Resources cleared. Please select new boat and guide.', 'info');
-    }
-}
-
-// Remove assignment from modal
-function removeAssignmentFromModal() {
-    const tripId = document.getElementById('editAssignmentTripId').value;
-    if (confirm('Are you sure you want to remove this resource assignment? This action cannot be undone.')) {
-        removeAssignment(tripId);
-        closeModal('editAssignmentModal');
-    }
 }
 
 function removeAssignment(tripId) {
